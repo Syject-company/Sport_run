@@ -12,10 +12,17 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.2
   #Architecture
   flutter_bloc: ^7.0.0
   equatable: ^2.0.0
+
+  #Ui
+  cupertino_icons: ^1.0.2
+  flutter_screenutil: ^5.0.0+2
+  cached_network_image: ^2.0.0
+
+  #Functions
+  shared_preferences: ^2.0.5
 
 dev_dependencies:
   flutter_test:
@@ -23,12 +30,10 @@ dev_dependencies:
 
 
 flutter:
-
   uses-material-design: true
 
   assets:
     - assets/images/
-    - assets/images/img_not_available.jpeg
 
   fonts:
     - family: Poppins-Regular
