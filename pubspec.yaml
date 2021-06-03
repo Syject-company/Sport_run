@@ -20,6 +20,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_screenutil: ^5.0.0+2
   cached_network_image: ^2.0.0
+  fluttertoast: ^8.0.7
 
   #Functions
   shared_preferences: ^2.0.5
@@ -34,6 +35,8 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/fonts/
+    - assets/icons/
 
   fonts:
     - family: Poppins-Regular
@@ -57,3 +60,8 @@ flutter:
     - family: Poppins-Thin
       fonts:
         - asset: assets/fonts/Poppins-Thin.ttf
+    - family: roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Bold.ttf
+        - asset: assets/fonts/Roboto-Light.ttf
+        - asset: assets/fonts/Roboto-Black.ttf
