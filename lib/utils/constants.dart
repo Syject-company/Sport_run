@@ -5,7 +5,8 @@ class Constants {
   //pager routs:
   static const loginRoute = '/login';
   static const registerRoute = '/register';
+  static const runnersDataRoute = '/runnersData';
 
   //Api urls:
-  static const registerUrl = '/api/v1/register';
+  static const registerUrl = '/api/Account/registration';
 }
