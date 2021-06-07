@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "57127894563",
+    "project_id": "one2onerunapp",
+    "storage_bucket": "one2onerunapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:57127894563:android:461ab2db80792b89df7b96",
+        "android_client_info": {
+          "package_name": "com.one2one.one2one_run"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "57127894563-s1a878me7dqvcg7bfo9r5mfun1949svr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.one2one.one2one_run",
+            "certificate_hash": "ef5aac2223e73678b22c94878ddc8fe03d296e5e"
+          }
+        },
+        {
+          "client_id": "57127894563-v2hcvs8ts35ckda1dr0p1t1fruc9gnub.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.one2one.one2one_run",
+            "certificate_hash": "84a8883640851c0bfb3832258223e27bc22f4c0f"
+          }
+        },
+        {
+          "client_id": "57127894563-cgrs9hne52a3muuaciuvrnpe7r6v7dre.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHSyENWOk8_ohEVLD1Zf-t1W06R1fjGeQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "57127894563-cgrs9hne52a3muuaciuvrnpe7r6v7dre.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
