@@ -19,9 +19,21 @@ class NavigatedToSignIn extends RegisterState {}
 
 class TermsIsAccepted extends RegisterState {}
 
-class SignInedGoogle extends RegisterState {}
+class SignInedGoogle extends RegisterState {
+  SignInedGoogle({required this.token});
+  final token;
 
-class SignInedApple extends RegisterState {}
+  @override
+  List<Object> get props => [token];
+}
+
+class SignInedApple extends RegisterState {
+  SignInedApple({required this.token});
+  final token;
+
+  @override
+  List<Object> get props => [token];
+}
 
 class TermsIsShownOrHidden extends RegisterState {}
 

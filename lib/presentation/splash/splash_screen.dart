@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:one2one_run/utils/preference_utils.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -14,10 +15,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    //TODO(Issa) :
-  /*  Timer(const Duration(seconds: 2), () {
-      Navigator.of(context).pushReplacementNamed(Constants.loginRoute);
-    });*/
+    Timer(const Duration(seconds: 2), () {
+      //TODO: issa to home
+      PreferenceUtils.getIsUserAuthenticated()
+          ? Navigator.of(context)
+              .pushReplacementNamed(Constants.runnersDataRoute)
+          : Navigator.of(context).pushReplacementNamed(Constants.registerRoute);
+    });
   }
 
   @override

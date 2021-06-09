@@ -15,9 +15,21 @@ class NavigateToSignIn extends RegisterEvent {}
 
 class AcceptTerms extends RegisterEvent {}
 
-class SignInGoogle extends RegisterEvent {}
+class SignInGoogle extends RegisterEvent {
+  SignInGoogle({required this.token});
+  final token;
 
-class SignInApple extends RegisterEvent {}
+  @override
+  List<Object> get props => [token];
+}
+
+class SignInApple extends RegisterEvent {
+  SignInApple({required this.token});
+  final token;
+
+  @override
+  List<Object> get props => [token];
+}
 
 class ShowOrHideTerms extends RegisterEvent {}
 
