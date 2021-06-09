@@ -83,10 +83,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             RegisterResponseModel.fromJson(
                                     json.decode(value.body))
                                 .token)
-                        .then((value) {
-                      PreferenceUtils.setIsUserAuthenticated(true);
-                      Navigator.of(context)
-                          .pushReplacementNamed(Constants.runnersDataRoute);
+                        .then((value) async {
+                      await PreferenceUtils.setIsUserAuthenticated(true).then(
+                          (value) => Navigator.of(context).pushReplacementNamed(
+                              Constants.runnersDataRoute));
                     });
                   } else {
                     await Fluttertoast.showToast(
@@ -253,9 +253,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           icon: appleIcon,
                           size: 40.h,
                           onPressed: () async {
-
                             if (await isUserPassedToContinue()) {
-                              await  signInWithApple(context: context);
+                              await signInWithApple(context: context);
                             }
                           },
                         ),
@@ -404,10 +403,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<String?> signInWithApple({required BuildContext context}) async {
     await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
+      scopes: [],
     ).then((value) async {
       final token = value.identityToken;
       if (token != null) {

@@ -16,10 +16,11 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 2), () {
-      //TODO: issa
-/*      PreferenceUtils.getIsUserAuthenticated()*/
-          //? Navigator.of(context).pushReplacementNamed(Constants.home)
-         /* :*/ Navigator.of(context).pushReplacementNamed(Constants.registerRoute);
+      //TODO: issa to home
+      PreferenceUtils.getIsUserAuthenticated()
+          ? Navigator.of(context)
+              .pushReplacementNamed(Constants.runnersDataRoute)
+          : Navigator.of(context).pushReplacementNamed(Constants.registerRoute);
     });
   }
 

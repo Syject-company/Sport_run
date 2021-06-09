@@ -3,8 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PreferenceUtils {
   static SharedPreferences? _prefsInstance;
 
-  static Future<SharedPreferences?> init() async {
-    return await SharedPreferences.getInstance();
+  static Future<void> init() async {
+    _prefsInstance = await SharedPreferences.getInstance();
   }
 
   static bool getIsUserAuthenticated() {

@@ -34,8 +34,7 @@ class OneTwoOne extends StatelessWidget {
           Constants.registerRoute: (context) => RegisterPage(),
           Constants.runnersDataRoute: (context) => RunnerDataPage(),
         },
-     //   home: RegisterPage(),
-         home: SplashScreen(),
+        home: SplashScreen(),
       ),
     );
   }
