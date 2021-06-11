@@ -197,27 +197,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         SizedBox(
                           height: 25.h,
                         ),
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              BlocProvider.of<RegisterBloc>(context)
-                                  .add(register_bloc.CheckFields());
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              minimumSize: Size(double.maxFinite, 40.h),
-                              primary: redColor,
-                            ),
-                            child: Text(
-                              'Continue'.toUpperCase(),
-                              style: const TextStyle(
-                                fontSize: 17.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+                        buttonNoIcon(
+                          title: 'Continue',
+                          color: redColor,
+                          height: 40.h,
+                          onPressed: () async {
+                            BlocProvider.of<RegisterBloc>(context)
+                                .add(register_bloc.CheckFields());
+                          },
                         ),
                         SizedBox(
                           height: 15.h,

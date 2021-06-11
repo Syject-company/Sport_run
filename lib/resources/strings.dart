@@ -13,5 +13,13 @@ String get termsText =>
     'sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus '
     'PageMaker including versions of Lorem Ipsum.';
 
+String get paceText => 'Pace is the rate of running activity, '
+    'which is usually the average time spent to run specific distance '
+    '(e.g. 6 min/km=6 minutes per km). Weekly distance is the total '
+    'distance the runner spent running during the week.';
+
+String get weeklyDistanceText =>
+    'Weekly distance is the total distance the runner spent running during the week.';
+
 String get termsButtonText =>
     'I have agree to the Terms of services and Privacy Policy';

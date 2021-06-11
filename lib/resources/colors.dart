@@ -8,6 +8,6 @@ import 'dart:ui';
 
   Color get lightGreenColor => const Color(0xffCFFFB1);
 
-  Color get grayColor => const Color(0xff888889);
+  Color get grayColor => const Color(0xffEDEDED);
 
   Color get whiteColor => const Color(0xffffffff);

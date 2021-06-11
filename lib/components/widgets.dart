@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:one2one_run/resources/colors.dart';
 
 TextStyle get hintTextStyle => const TextStyle(
       color: Color(0xff8E8E93),
@@ -116,5 +119,308 @@ Widget buttonWithIcon(
         ],
       ),
     ),
+  );
+}
+
+Widget buttonNoIcon({
+  required String title,
+  required Color color,
+  required VoidCallback onPressed,
+  double width = double.maxFinite,
+  required double height,
+  Color textColor = Colors.white,
+  Color? shadowColor,
+}) {
+  return Center(
+    child: ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        minimumSize: Size(width, height),
+        primary: color,
+        shadowColor: shadowColor,
+      ),
+      child: Text(
+        title.toUpperCase(),
+        style: TextStyle(
+          fontSize: 17.0,
+          color: textColor,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+  );
+}
+
+Widget buttonSquareNoIcon(
+    {required String title,
+    required String underButtonTitle,
+    required Color color,
+    required Color textColor,
+    required VoidCallback onPressed}) {
+  return Column(
+    children: [
+      Center(
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            minimumSize: Size(140.w, 80.h),
+            primary: color,
+          ),
+          child: Text(
+            title.toUpperCase(),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 17.0,
+              color: textColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(
+        height: 10.0,
+      ),
+      Text(
+        underButtonTitle,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 17.0,
+          color: Colors.grey,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ],
+  );
+}
+
+Widget seekBarPace({
+  required String title,
+  required BuildContext context,
+  required String dialogTitle,
+  required String dialogText,
+  required double timePerKM,
+  required double kmPerHour,
+  required double sliderValue,
+  required double minValue,
+  required double maxValue,
+  required String unit,
+  required Function(double value) onChanged,
+}) {
+  return Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: 'roboto',
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(
+                            dialogTitle,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'roboto',
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          content: Text(
+                            dialogText,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'roboto',
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.normal),
+                          ),
+                          actions: [
+                            Center(
+                              child: Container(
+                                width: 80.0,
+                                height: 50.0,
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                child: buttonNoIcon(
+                                  title: 'Ok',
+                                  color: redColor,
+                                  height: 40.h,
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${timePerKM ~/ 60} min/$unit',
+                  style: TextStyle(
+                      color: Colors.red,
+                      fontFamily: 'roboto',
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+                Text(
+                  '${(kmPerHour.toStringAsFixed(2))} $unit/h',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: 'roboto',
+                      fontSize: 9.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      Slider(
+        value: sliderValue,
+        min: minValue,
+        max: maxValue,
+        divisions: 90,
+        onChanged: onChanged,
+        activeColor: Colors.red,
+        inactiveColor: const Color(0xffF6C3C3),
+      ),
+    ],
+  );
+}
+
+Widget seekBarWeekly({
+  required String title,
+  required BuildContext context,
+  required String dialogTitle,
+  required String dialogText,
+  required double timePerKM,
+  required double sliderValue,
+  required double minValue,
+  required double maxValue,
+  required String unit,
+  required Function(double value) onChanged,
+}) {
+  return Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: 'roboto',
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(
+                            dialogTitle,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'roboto',
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          content: Text(
+                            dialogText,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'roboto',
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.normal),
+                          ),
+                          actions: [
+                            Center(
+                              child: Container(
+                                width: 80.0,
+                                height: 50.0,
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                child: buttonNoIcon(
+                                  title: 'Ok',
+                                  color: redColor,
+                                  height: 40.h,
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            Text(
+              unit == 'km'
+                  ? '${timePerKM.toStringAsFixed(0)} $unit'
+                  : '${timePerKM.toStringAsFixed(1)} $unit',
+              style: TextStyle(
+                  color: Colors.red,
+                  fontFamily: 'roboto',
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+      ),
+      Slider(
+        value: sliderValue,
+        min: minValue,
+        max: maxValue,
+        onChanged: onChanged,
+        divisions: 183,
+        activeColor: Colors.red,
+        inactiveColor: const Color(0xffF6C3C3),
+      ),
+    ],
   );
 }
