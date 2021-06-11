@@ -3,7 +3,6 @@ import 'package:http/http.dart';
 import 'package:one2one_run/data/models/register_google_appple_model.dart';
 import 'package:one2one_run/data/models/register_model.dart';
 import 'package:one2one_run/data/models/register_response_google_appple_model.dart';
-import 'package:one2one_run/data/models/register_response_model.dart';
 import 'package:one2one_run/utils/constants.dart';
 
 class RegisterApi {
