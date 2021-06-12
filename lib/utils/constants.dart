@@ -10,6 +10,7 @@ class Constants {
 
   //Api urls:
   static const registerUrl = '/api/Account/registration';
+  static const logInUrl = '/api/Account/login';
   static const registerGoogleUrl = '/api/Account/Login/Google';
   static const registerAppleUrl = '/api/Account/Login/Apple';
   static const runnersDataUrl = '/api/Account/PrimayData';

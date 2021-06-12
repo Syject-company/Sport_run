@@ -6,9 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:one2one_run/data/apis/register_api.dart';
+import 'package:one2one_run/data/models/error_model.dart';
 import 'package:one2one_run/data/models/register_google_appple_model.dart';
-import 'package:one2one_run/data/models/register_model.dart';
-import 'package:one2one_run/data/models/register_response_model.dart';
+import 'package:one2one_run/data/models/access_user_model.dart';
+import 'package:one2one_run/data/models/access_user_response_model.dart';
 import 'package:one2one_run/presentation/register_screen/register_bloc/bloc.dart'
     as register_bloc;
 import 'package:one2one_run/components/widgets.dart';
@@ -73,14 +74,14 @@ class _RegisterPageState extends State<RegisterPage> {
                 isSecureText = !isSecureText;
               } else if (state is NavigatedToRunnersData) {
                 await registerApi
-                    .registerEmail(RegisterModel(
+                    .registerEmail(AccessUserModel(
                   email: emailController.text,
                   password: passwordController.text,
                 ))
                     .then((value) async {
                   if (value.statusCode == 200) {
                     await PreferenceUtils.setUserToken(
-                            RegisterResponseModel.fromJson(
+                            AccessUserResponseModel.fromJson(
                                     json.decode(value.body))
                                 .token)
                         .then((value) async {
@@ -90,7 +91,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     });
                   } else {
                     await Fluttertoast.showToast(
-                        msg: value.body,
+                        msg: ErrorModel.fromJson(json.decode(value.body))
+                            .title
+                            .toString(),
                         fontSize: 16.0,
                         gravity: ToastGravity.CENTER);
                   }

@@ -37,7 +37,7 @@ class OneTwoOne extends StatelessWidget {
           Constants.homeRoute: (context) => HomePage(),
         },
         // home: SplashScreen(),
-        home: RunnerDataPage(),
+        home: LoginPage(),
       ),
     );
   }

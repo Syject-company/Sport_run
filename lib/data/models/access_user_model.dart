@@ -1,11 +1,11 @@
-class RegisterModel {
-  RegisterModel({
+class AccessUserModel {
+  AccessUserModel({
     required this.email,
     required this.password,
   });
 
-  factory RegisterModel.fromJson(Map<String, dynamic> json) {
-    return RegisterModel(
+  factory AccessUserModel.fromJson(Map<String, dynamic> json) {
+    return AccessUserModel(
       email: json['email'] as String,
       password: json['password'] as String,
     );
@@ -14,11 +14,11 @@ class RegisterModel {
   String email;
   String password;
 
-  RegisterModel copyWith({
+  AccessUserModel copyWith({
     String? email,
     String? password,
   }) {
-    return RegisterModel(
+    return AccessUserModel(
       email: email ?? this.email,
       password: password ?? this.password,
     );
@@ -32,7 +32,7 @@ class RegisterModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is RegisterModel &&
+      (other is AccessUserModel &&
           runtimeType == other.runtimeType &&
           email == other.email &&
           password == other.password);
