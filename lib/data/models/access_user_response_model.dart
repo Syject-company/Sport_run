@@ -1,11 +1,11 @@
-class RegisterResponseModel {
-  RegisterResponseModel({
+class AccessUserResponseModel {
+  AccessUserResponseModel({
     required this.token,
     required this.id,
   });
 
-  factory RegisterResponseModel.fromJson(Map<String, dynamic> map) {
-    return RegisterResponseModel(
+  factory AccessUserResponseModel.fromJson(Map<String, dynamic> map) {
+    return AccessUserResponseModel(
       token: map['token'] as String,
       id: map['id'] as String,
     );
@@ -14,11 +14,11 @@ class RegisterResponseModel {
   String token;
   String id;
 
-  RegisterResponseModel copyWith({
+  AccessUserResponseModel copyWith({
     String? token,
     String? id,
   }) {
-    return RegisterResponseModel(
+    return AccessUserResponseModel(
       token: token ?? this.token,
       id: id ?? this.id,
     );
@@ -32,7 +32,7 @@ class RegisterResponseModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is RegisterResponseModel &&
+      (other is AccessUserResponseModel &&
           runtimeType == other.runtimeType &&
           token == other.token &&
           id == other.id);

@@ -5,16 +5,16 @@ import 'package:one2one_run/data/models/access_user_model.dart';
 import 'package:one2one_run/data/models/register_response_google_appple_model.dart';
 import 'package:one2one_run/utils/constants.dart';
 
-class RegisterApi {
-  final String _urlRegister = '${Constants.domain}${Constants.registerUrl}';
+class LoginApi {
+  final String _urlLogin = '${Constants.domain}${Constants.logInUrl}';
   final String _urlRegisterGoogle =
       '${Constants.domain}${Constants.registerGoogleUrl}';
   final String _urlRegisterApple =
       '${Constants.domain}${Constants.registerAppleUrl}';
 
   //@post
-  Future<Response> registerEmail(AccessUserModel model) async {
-    final res = await post(Uri.parse(_urlRegister),
+  Future<Response> loginEmail(AccessUserModel model) async {
+    final res = await post(Uri.parse(_urlLogin),
         body: json.encode(model),
         headers: {'Content-Type': 'application/json'});
     return res;
