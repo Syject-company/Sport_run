@@ -6,6 +6,7 @@ import 'package:one2one_run/_screen/login_bloc/login_state.dart';
 
 import 'package:one2one_run/_screen/login_bloc/bloc.dart'
     as logInBloc;
+import 'package:one2one_run/resources/images.dart';
 
 
 //NOte:'/login'
@@ -34,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage(
-            'backGround',
+            backGround,
           ),
           fit: BoxFit.cover,
         ),

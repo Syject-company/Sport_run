@@ -7,6 +7,7 @@ class Constants {
   static const registerRoute = '/register';
   static const runnersDataRoute = '/runnersData';
   static const homeRoute = '/home';
+  static const passwordRoute = '/password';
 
   //Api urls:
   static const registerUrl = '/api/Account/registration';
@@ -14,4 +15,7 @@ class Constants {
   static const registerGoogleUrl = '/api/Account/Login/Google';
   static const registerAppleUrl = '/api/Account/Login/Apple';
   static const runnersDataUrl = '/api/Account/PrimayData';
+  static const changePasswordUrl = '/api/Account/ForgotPassword';
+  static const codeVerificationUrl = '/api/Account/CodeVerification';
+  static const updatePasswordUrl = '/api/Account/ChangePassword';
 }

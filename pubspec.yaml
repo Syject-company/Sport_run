@@ -21,6 +21,7 @@ dependencies:
   flutter_screenutil: ^5.0.0+2
   cached_network_image: ^2.0.0
   fluttertoast: ^8.0.7
+  pinput: ^1.2.0
 
   #Functions
   shared_preferences: ^2.0.5

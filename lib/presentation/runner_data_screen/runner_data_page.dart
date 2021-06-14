@@ -28,7 +28,7 @@ class RunnerDataPage extends StatefulWidget {
 class _RunnerDataPageState extends State<RunnerDataPage> {
   final _runnerDataApi = RunnerDataApi();
 
-  final _pageController = PageController(initialPage: 0);
+  final _pageController = PageController();
   final _nickNameController = TextEditingController();
 
   String? _nickNameError;

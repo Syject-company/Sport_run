@@ -424,3 +424,33 @@ Widget seekBarWeekly({
     ],
   );
 }
+
+BoxDecoration get codeDecoration {
+  return BoxDecoration(
+    border: Border.all(color: Colors.grey.withAlpha(80), width: 0.5),
+    color: Colors.white,
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.2),
+        spreadRadius: 1,
+        blurRadius: 7,
+        offset: const Offset(0, 1),
+      ),
+    ],
+    borderRadius: BorderRadius.circular(5.0),
+  );
+}
+
+Widget progressIndicator() {
+  return const Center(
+    child:  SizedBox(
+      width: 24.0,
+      height: 24.0,
+      child: CircularProgressIndicator(
+        strokeWidth: 2.0,
+        backgroundColor: Colors.white,
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+      ),
+    ),
+  );
+}
