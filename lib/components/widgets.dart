@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 TextStyle get hintTextStyle => const TextStyle(
       color: Color(0xff8E8E93),
@@ -149,6 +150,34 @@ Widget buttonNoIcon({
           color: textColor,
           fontWeight: FontWeight.bold,
         ),
+      ),
+    ),
+  );
+}
+
+Widget buildRoundedButton({
+  required String label,
+  required VoidCallback onTap,
+  required Color backColor,
+  required Color textColor,
+  required double height,
+  required double width,
+  required RoundedLoadingButtonController controller,
+}) {
+  return RoundedLoadingButton(
+    width: width,
+    height: height,
+    controller: controller,
+    onPressed: onTap,
+    color: backColor,
+    borderRadius: 10.0,
+    child: Text(
+      label,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: 17,
+        color: textColor,
+        fontWeight: FontWeight.bold,
       ),
     ),
   );
@@ -443,7 +472,7 @@ BoxDecoration get codeDecoration {
 
 Widget progressIndicator() {
   return const Center(
-    child:  SizedBox(
+    child: SizedBox(
       width: 24.0,
       height: 24.0,
       child: CircularProgressIndicator(

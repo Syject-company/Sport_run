@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +8,7 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/change_password_api.dart';
 import 'package:one2one_run/data/models/change_pass_email_model.dart';
 import 'package:one2one_run/data/models/code_verification_model.dart';
+import 'package:one2one_run/data/models/update_password_model.dart';
 import 'package:one2one_run/presentation/password_screen/password_bloc/bloc.dart'
     as password_bloc;
 import 'package:one2one_run/presentation/password_screen/password_bloc/password_bloc.dart';
@@ -13,8 +16,10 @@ import 'package:one2one_run/presentation/password_screen/password_bloc/password_
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:one2one_run/utils/constants.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:one2one_run/utils/extension.dart' show EmailValidator;
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //NOte:'/password'
 class PasswordPage extends StatefulWidget {
@@ -30,6 +35,8 @@ class _PasswordPageState extends State<PasswordPage> {
   final _confirmPasswordController = TextEditingController();
   final _codeController = TextEditingController();
   final _pageController = PageController(initialPage: 0);
+
+  //final _loginController = RoundedLoadingButtonController();
 
   String? emailError;
   String? passwordError;
@@ -129,6 +136,42 @@ class _PasswordPageState extends State<PasswordPage> {
           } else if (state is IsShownCodeError) {
             isCodeError = true;
             codeError = 'Digit code is wrong';
+          } else if (state is FieldsNewPasswordsChecked) {
+            if (isFieldsNewPasswordsChecked()) {
+              isLoading = true;
+              BlocProvider.of<PasswordBloc>(context)
+                  .add(password_bloc.NavigateToPasswordChangedPage());
+            }
+          } else if (state is NavigatedToPasswordChangedPage) {
+            await _changePasswordApi
+                .updatePassword(UpdatePasswordModel(
+              email: _emailController.text,
+              newPassword: _passwordController.text,
+              confirmationCode: _passwordController.text,
+            ))
+                .then((value) async {
+              if (value.isEmpty) {
+                await _pageController.animateToPage(3,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeIn);
+                BlocProvider.of<PasswordBloc>(context)
+                    .add(password_bloc.HideAppBar());
+              } else {
+                await Fluttertoast.showToast(
+                    msg: value, fontSize: 16.0, gravity: ToastGravity.CENTER);
+              }
+              BlocProvider.of<PasswordBloc>(context)
+                  .add(password_bloc.ShowHideLoading());
+            });
+          } else if (state is AppBarIsHidden) {
+            isPasswordChangedPage = true;
+            Timer(const Duration(seconds: 2), () {
+              BlocProvider.of<PasswordBloc>(context)
+                  .add(password_bloc.NavigateToLogInPage());
+            });
+          } else if (state is NavigatedToLogInPage) {
+            await Navigator.of(context)
+                .pushReplacementNamed(Constants.loginRoute);
           }
 
           BlocProvider.of<PasswordBloc>(context)
@@ -177,7 +220,16 @@ class _PasswordPageState extends State<PasswordPage> {
                           context: context,
                           width: width,
                         ),
-                        _createNewPassword(context: context, width: width),
+                        SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: Container(
+                            height: height - 100,
+                            child: _createNewPassword(
+                              context: context,
+                              width: width,
+                            ),
+                          ),
+                        ),
                         _passwordChanged(),
                       ],
                     ),
@@ -245,6 +297,19 @@ class _PasswordPageState extends State<PasswordPage> {
           SizedBox(
             height: 40.h,
           ),
+          //TODO:
+          /*     buildRoundedButton(
+            label: 'Verify',
+            width: width,
+            height: 40.h,
+            controller: _loginController,
+            textColor: Colors.white,
+            backColor: redColor,
+            onTap: () async {
+              BlocProvider.of<PasswordBloc>(context)
+                  .add(password_bloc.CheckFields());
+            },
+          ),*/
           buttonNoIcon(
             title: 'Verify',
             color: redColor,
@@ -490,8 +555,8 @@ class _PasswordPageState extends State<PasswordPage> {
             hintText: 'New password',
             icon: Icons.lock_rounded,
             obscureTextOnTap: () {
-              /*    BlocProvider.of<LoginBloc>(context)
-                  .add(login_bloc.ShowOrHidePass());*/
+              BlocProvider.of<PasswordBloc>(context)
+                  .add(password_bloc.ShowOrHidePass());
             },
             obscureText: isSecureText,
           ),
@@ -504,8 +569,8 @@ class _PasswordPageState extends State<PasswordPage> {
             hintText: 'Repeat new password',
             icon: Icons.lock_rounded,
             obscureTextOnTap: () {
-              /*            BlocProvider.of<LoginBloc>(context)
-                  .add(login_bloc.ShowOrHidePass());*/
+              BlocProvider.of<PasswordBloc>(context)
+                  .add(password_bloc.ShowOrHidePass());
             },
             obscureText: isSecureText,
           ),
@@ -517,13 +582,12 @@ class _PasswordPageState extends State<PasswordPage> {
             color: redColor,
             height: 40.h,
             onPressed: () async {
-              //TODO:
-              /*          BlocProvider.of<LoginBloc>(context)
-                  .add(login_bloc.CheckFields());*/
+              BlocProvider.of<PasswordBloc>(context)
+                  .add(password_bloc.CheckNewPasswordsFields());
             },
           ),
           SizedBox(
-            height: 15.h,
+            height: 10.h,
           ),
           Center(
             child: ElevatedButton(
@@ -574,6 +638,18 @@ class _PasswordPageState extends State<PasswordPage> {
     }
 
     return emailError == null;
+  }
+
+  bool isFieldsNewPasswordsChecked() {
+    if (_confirmPasswordController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _confirmPasswordController.text == _passwordController.text) {
+      passwordError = null;
+    } else {
+      passwordError = 'Empty fields or passwords not matches';
+    }
+
+    return passwordError == null;
   }
 
   bool _isCodeChecked() {

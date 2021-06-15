@@ -25,6 +25,14 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
       yield IsShownHiddenLoading();
     } else if (event is ShowCodeError) {
       yield IsShownCodeError();
+    } else if (event is NavigateToLogInPage) {
+      yield NavigatedToLogInPage();
+    } else if (event is CheckNewPasswordsFields) {
+      yield FieldsNewPasswordsChecked();
+    }else if (event is NavigateToPasswordChangedPage) {
+      yield NavigatedToPasswordChangedPage();
+    }else if (event is HideAppBar) {
+      yield AppBarIsHidden();
     }
   }
 }

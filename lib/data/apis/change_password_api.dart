@@ -43,7 +43,7 @@ class ChangePasswordApi {
     if (res.statusCode == 200) {
       return '';
     } else {
-      return res.reasonPhrase ?? 'error occurred';
+      return res.body ?? 'error occurred';
     }
   }
 
@@ -58,7 +58,7 @@ class ChangePasswordApi {
     if (res.statusCode == 200) {
       return '';
     } else {
-      return res.reasonPhrase ?? 'error occurred';
+      return res.body ?? 'error occurred';
     }
   }
 }

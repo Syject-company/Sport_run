@@ -22,3 +22,11 @@ class NavigateToCreateNewPassword extends PasswordEvent {}
 class ShowHideLoading extends PasswordEvent {}
 
 class ShowCodeError extends PasswordEvent {}
+
+class NavigateToLogInPage extends PasswordEvent {}
+
+class CheckNewPasswordsFields extends PasswordEvent {}
+
+class NavigateToPasswordChangedPage extends PasswordEvent {}
+
+class HideAppBar extends PasswordEvent {}

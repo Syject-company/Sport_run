@@ -26,3 +26,11 @@ class NavigatedToCreateNewPassword extends PasswordState {}
 class IsShownHiddenLoading extends PasswordState {}
 
 class IsShownCodeError extends PasswordState {}
+
+class NavigatedToLogInPage extends PasswordState {}
+
+class NavigatedToPasswordChangedPage extends PasswordState {}
+
+class FieldsNewPasswordsChecked extends PasswordState {}
+
+class AppBarIsHidden extends PasswordState {}
