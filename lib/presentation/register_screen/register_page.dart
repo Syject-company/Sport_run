@@ -383,7 +383,7 @@ class _RegisterPageState extends State<RegisterPage> {
         print('inner error');
       });
     }).catchError((err) async {
-      print('error occured');
+      print('error occurred');
       await Fluttertoast.showToast(
           msg: 'Registration error',
           fontSize: 16.0,

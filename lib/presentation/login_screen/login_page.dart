@@ -99,9 +99,8 @@ class _LoginPageState extends State<LoginPage> {
                 await Navigator.of(context)
                     .pushReplacementNamed(Constants.registerRoute);
               } else if (state is NavigatedToForgotPassword) {
-                //TODO:
-                /*    await Navigator.of(context)
-                    .pushReplacementNamed(Constants.registerRoute);*/
+                await Navigator.of(context).pushNamed(Constants.passwordRoute,
+                    arguments: {'title': 'Forgot password'});
               } else if (state is SignInedGoogle) {
                 await saveToken(value: state.token, context: context);
               } else if (state is SignInedApple) {
@@ -237,7 +236,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 15.h,
                         ),
                         buttonWithIcon(
-                          title: 'Register with Apple',
+                          title: 'Sign in with Apple',
                           icon: appleIcon,
                           size: 40.h,
                           onPressed: () async {
@@ -248,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 15.h,
                         ),
                         buttonWithIcon(
-                          title: 'Register with Google',
+                          title: 'Sign in with Google',
                           icon: googleIcon,
                           size: 40.h,
                           onPressed: () async {
@@ -320,7 +319,7 @@ class _LoginPageState extends State<LoginPage> {
         print('inner error');
       });
     }).catchError((err) async {
-      print('error occured');
+      print('error occurred');
       await Fluttertoast.showToast(
           msg: 'Registration error',
           fontSize: 16.0,

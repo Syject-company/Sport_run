@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/presentation/home_screen/home_page.dart';
 import 'package:one2one_run/presentation/login_screen/login_page.dart';
+import 'package:one2one_run/presentation/password_screen/password_page.dart';
 import 'package:one2one_run/presentation/register_screen/register_page.dart';
 import 'package:one2one_run/presentation/runner_data_screen/runner_data_page.dart';
 import 'package:one2one_run/presentation/splash/splash_screen.dart';
@@ -35,6 +36,7 @@ class OneTwoOne extends StatelessWidget {
           Constants.registerRoute: (context) => RegisterPage(),
           Constants.runnersDataRoute: (context) => RunnerDataPage(),
           Constants.homeRoute: (context) => HomePage(),
+          Constants.passwordRoute: (context) => PasswordPage(),
         },
         // home: SplashScreen(),
         home: LoginPage(),

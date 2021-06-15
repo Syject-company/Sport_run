@@ -15,3 +15,11 @@ String get nickNameBackground => 'assets/images/nick_name_background.png';
 String get profileCreatedBackground => 'assets/images/profile_created.png';
 
 String get popInfoBackground => 'assets/images/pop_info.png';
+
+String get passwordBackground => 'assets/images/password_background.png';
+
+String get verificationCodeBackground => 'assets/images/verification_code.png';
+
+String get newPasswordBackground => 'assets/images/new_password.png';
+
+String get passwordChangedBackground => 'assets/images/password_changed.png';
