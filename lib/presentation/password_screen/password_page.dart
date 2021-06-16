@@ -34,7 +34,7 @@ class _PasswordPageState extends State<PasswordPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _codeController = TextEditingController();
-  final _pageController = PageController(initialPage: 0);
+  final _pageController = PageController();
 
   //final _loginController = RoundedLoadingButtonController();
 
@@ -147,7 +147,7 @@ class _PasswordPageState extends State<PasswordPage> {
                 .updatePassword(UpdatePasswordModel(
               email: _emailController.text,
               newPassword: _passwordController.text,
-              confirmationCode: _passwordController.text,
+              confirmationCode: _codeController.text,
             ))
                 .then((value) async {
               if (value.isEmpty) {

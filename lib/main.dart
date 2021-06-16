@@ -38,8 +38,8 @@ class OneTwoOne extends StatelessWidget {
           Constants.homeRoute: (context) => HomePage(),
           Constants.passwordRoute: (context) => PasswordPage(),
         },
-        // home: SplashScreen(),
-        home: LoginPage(),
+         home: SplashScreen(),
+      //  home: HomePage(),
       ),
     );
   }
