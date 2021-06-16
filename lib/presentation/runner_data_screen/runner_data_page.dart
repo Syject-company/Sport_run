@@ -16,6 +16,7 @@ import 'package:one2one_run/resources/images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //NOte:'/runnersData'
 class RunnerDataPage extends StatefulWidget {
@@ -30,6 +31,8 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
 
   final _pageController = PageController();
   final _nickNameController = TextEditingController();
+  final continueController = RoundedLoadingButtonController();
+  final goController = RoundedLoadingButtonController();
 
   String? _nickNameError;
 
@@ -63,6 +66,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeIn);
                 }
+                continueController.reset();
               } else if (state is KmOrMileIsSelected) {
                 isKM = state.isKM;
                 isKM ? _currentPaceValue = 300 : _currentPaceValue = 480;
@@ -90,6 +94,8 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                           msg: 'Unexpected error happened',
                           fontSize: 16.0,
                           gravity: ToastGravity.CENTER);
+
+                  goController.reset();
                 });
               }
 
@@ -106,9 +112,13 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                   controller: _pageController,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    _nickNameInput(context: context),
+                    _nickNameInput(context: context, width: width),
                     _newRunning(context: context),
-                    _additionalInformation(context: context, height: height),
+                    _additionalInformation(
+                      context: context,
+                      height: height,
+                      width: width,
+                    ),
                     _profileCreated(),
                   ],
                 ),
@@ -120,7 +130,8 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
     );
   }
 
-  Widget _nickNameInput({required BuildContext context}) {
+  Widget _nickNameInput(
+      {required BuildContext context, required double width}) {
     return Container(
       color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 30.h),
@@ -160,11 +171,14 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: buttonNoIcon(
-              title: 'Continue',
-              color: redColor,
+            child: buildRoundedButton(
+              label: 'Continue',
+              width: width,
               height: 40.h,
-              onPressed: () async {
+              controller: continueController,
+              textColor: Colors.white,
+              backColor: redColor,
+              onTap: () async {
                 BlocProvider.of<RunnerDataBloc>(context)
                     .add(runner_data_bloc.CheckFields());
               },
@@ -204,42 +218,49 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                   fontWeight: FontWeight.w900),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              buttonSquareNoIcon(
-                onPressed: () async {
-                  BlocProvider.of<RunnerDataBloc>(context)
-                      .add(runner_data_bloc.NavigateToHome(
-                    RunnerDataModel(
-                      nickName: _nickNameController.text,
-                      isMetric: isKM,
-                      pace: 8.0,
-                      weeklyDistance: 5.0,
-                      workoutsPerWeek: 2,
-                    ),
-                  ));
-                },
-                color: redColor,
-                title: 'Yes, I am a\nbeginner',
-                underButtonTitle: 'All the required data will be\n'
-                    'filled for you. It can be changed\n'
-                    'later in your profile',
-                textColor: Colors.white,
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  buttonSquareNoIcon(
+                    onPressed: () async {
+                      BlocProvider.of<RunnerDataBloc>(context)
+                          .add(runner_data_bloc.NavigateToHome(
+                        RunnerDataModel(
+                          nickName: _nickNameController.text,
+                          isMetric: isKM,
+                          pace: 8.0,
+                          weeklyDistance: 5.0,
+                          workoutsPerWeek: 2,
+                        ),
+                      ));
+                    },
+                    color: redColor,
+                    title: 'Yes, I am a\nbeginner',
+                    underButtonTitle: 'All the required data will be\n'
+                        'filled for you. It can be changed\n'
+                        'later in your profile',
+                    textColor: Colors.white,
+                  ),
+                  buttonSquareNoIcon(
+                    onPressed: () async {
+                      await _pageController.animateToPage(2,
+                          duration: const Duration(milliseconds: 1),
+                          curve: Curves.ease);
+                    },
+                    color: grayColor,
+                    title: 'Nope, I have run\nbefore',
+                    underButtonTitle:
+                        'You will be asked to provide\nsome running data\n',
+                    textColor: Colors.black,
+                  ),
+                ],
               ),
-              buttonSquareNoIcon(
-                onPressed: () async {
-                  await _pageController.animateToPage(2,
-                      duration: const Duration(milliseconds: 1),
-                      curve: Curves.ease);
-                },
-                color: grayColor,
-                title: 'Nope, I have run\nbefore',
-                underButtonTitle:
-                    'You will be asked to provide\nsome running data\n',
-                textColor: Colors.black,
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -247,9 +268,10 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
   }
 
   Widget _additionalInformation(
-      {required BuildContext context, required double height}) {
+      {required BuildContext context,
+      required double height,
+      required double width}) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 30),
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage(
@@ -258,235 +280,247 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
           fit: BoxFit.cover,
         ),
       ),
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Please provide additional\ninformation',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: 'roboto',
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w900),
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 15.0,
             ),
-          ),
-          const SizedBox(
-            height: 15.0,
-          ),
-          seekBarPace(
-            title: 'Pace',
-            context: context,
-            dialogTitle: 'Pace',
-            dialogText: paceText,
-            timePerKM: _currentPaceValue,
-            unit: isKM ? 'km' : 'mile',
-            kmPerHour: (60 * 60) / _currentPaceValue,
-            minValue: (isKM ? 2 : 3) * 60,
-            maxValue: (isKM ? 11 : 18) * 60,
-            sliderValue: _currentPaceValue,
-            onChanged: (value) {
-              setState(() {
-                _currentPaceValue = value;
-              });
-            },
-          ),
-          seekBarWeekly(
-            title: 'Weekly distance',
-            context: context,
-            dialogTitle: 'Weekly distance',
-            dialogText: weeklyDistanceText,
-            timePerKM: _currentWeeklyDistanceValue,
-            unit: isKM ? 'km' : 'mile',
-            minValue: isKM ? 4 : 2.5,
-            maxValue: isKM ? 150 : 94,
-            sliderValue: _currentWeeklyDistanceValue,
-            onChanged: (value) {
-              setState(() {
-                _currentWeeklyDistanceValue = value;
-              });
-            },
-          ),
-          SizedBox(
-            height: 15.h,
-          ),
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Show pace and distances in',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: 'roboto',
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400),
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Please provide additional\ninformation',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'roboto',
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w900),
+              ),
             ),
-          ),
-          SizedBox(
-            height: 15.h,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                buttonNoIcon(
-                  title: 'KM',
-                  color: isKM ? redColor : grayColor,
-                  textColor: isKM ? Colors.white : Colors.black,
-                  width: 156.w,
-                  height: 60.h,
-                  onPressed: () async {
-                    BlocProvider.of<RunnerDataBloc>(context)
-                        .add(runner_data_bloc.SelectKmOrMile(true));
-                  },
-                ),
-                buttonNoIcon(
-                  title: 'MI',
-                  color: isKM ? grayColor : redColor,
-                  textColor: isKM ? Colors.black : Colors.white,
-                  width: 156.w,
-                  height: 60.h,
-                  onPressed: () async {
-                    BlocProvider.of<RunnerDataBloc>(context)
-                        .add(runner_data_bloc.SelectKmOrMile(false));
-                  },
-                ),
-              ],
+            const SizedBox(
+              height: 15.0,
             ),
-          ),
-          SizedBox(
-            height: 25.h,
-          ),
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'How often do you run?',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: 'roboto',
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400),
+            seekBarPace(
+              title: 'Pace',
+              context: context,
+              dialogTitle: 'Pace',
+              dialogText: paceText,
+              timePerKM: _currentPaceValue,
+              unit: isKM ? 'km' : 'mile',
+              kmPerHour: (60 * 60) / _currentPaceValue,
+              minValue: (isKM ? 2 : 3) * 60,
+              maxValue: (isKM ? 11 : 18) * 60,
+              sliderValue: _currentPaceValue,
+              onChanged: (value) {
+                setState(() {
+                  _currentPaceValue = value;
+                });
+              },
             ),
-          ),
-          SizedBox(
-            height: 15.h,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                buttonNoIcon(
-                  title: '-',
-                  color: grayColor,
-                  textColor: Colors.black,
-                  width: 100.w,
-                  height: 30.h,
-                  onPressed: () async {
-                    if (_countOfRuns > 1) {
-                      BlocProvider.of<RunnerDataBloc>(context).add(
-                          runner_data_bloc.SelectTimesPerWeek(
-                              _countOfRuns -= 1));
-                    }
-                  },
-                ),
-                Container(
-                  width: 80.w,
-                  height: 40.h,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _countOfRuns.toString(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'roboto',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      const Divider(
-                        height: 3,
-                        thickness: 2,
-                      ),
-                      Text(
-                        'times per week',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'roboto',
-                            fontSize: 11.sp,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
-                ),
-                buttonNoIcon(
-                  title: '+',
-                  color: redColor,
-                  width: 100.w,
-                  height: 30.h,
-                  onPressed: () async {
-                    if (_countOfRuns < 7) {
-                      BlocProvider.of<RunnerDataBloc>(context).add(
-                          runner_data_bloc.SelectTimesPerWeek(
-                              _countOfRuns += 1));
-                    }
-                  },
-                ),
-              ],
+            seekBarWeekly(
+              title: 'Weekly distance',
+              context: context,
+              dialogTitle: 'Weekly distance',
+              dialogText: weeklyDistanceText,
+              timePerKM: _currentWeeklyDistanceValue,
+              unit: isKM ? 'km' : 'mile',
+              minValue: isKM ? 4 : 2.5,
+              maxValue: isKM ? 150 : 94,
+              sliderValue: _currentWeeklyDistanceValue,
+              onChanged: (value) {
+                setState(() {
+                  _currentWeeklyDistanceValue = value;
+                });
+              },
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            margin: EdgeInsets.only(top: height * 0.18),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: buttonNoIcon(
-                    title: 'Let\'s go!',
-                    color: redColor,
-                    height: 40.h,
+            SizedBox(
+              height: 15.h,
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Show pace and distances in',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'roboto',
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            SizedBox(
+              height: 15.h,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  buttonNoIcon(
+                    title: 'KM',
+                    color: isKM ? redColor : grayColor,
+                    textColor: isKM ? Colors.white : Colors.black,
+                    width: 156.w,
+                    height: 60.h,
                     onPressed: () async {
                       BlocProvider.of<RunnerDataBloc>(context)
-                          .add(runner_data_bloc.NavigateToHome(
-                        RunnerDataModel(
-                          nickName: _nickNameController.text,
-                          isMetric: isKM,
-                          pace: _currentPaceValue / 60,
-                          weeklyDistance: _currentWeeklyDistanceValue,
-                          workoutsPerWeek: _countOfRuns,
-                        ),
-                      ));
+                          .add(runner_data_bloc.SelectKmOrMile(true));
                     },
                   ),
-                ),
-                SizedBox(
-                  height: 15.h,
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: buttonNoIcon(
-                    title: 'Go back',
-                    color: Colors.transparent,
-                    height: 40.h,
-                    textColor: Colors.black,
-                    shadowColor: Colors.transparent,
+                  buttonNoIcon(
+                    title: 'MI',
+                    color: isKM ? grayColor : redColor,
+                    textColor: isKM ? Colors.black : Colors.white,
+                    width: 156.w,
+                    height: 60.h,
                     onPressed: () async {
-                      await _pageController.animateToPage(1,
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeIn);
+                      BlocProvider.of<RunnerDataBloc>(context)
+                          .add(runner_data_bloc.SelectKmOrMile(false));
                     },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            SizedBox(
+              height: 25.h,
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'How often do you run?',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'roboto',
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            SizedBox(
+              height: 15.h,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  buttonNoIcon(
+                    title: '-',
+                    color: grayColor,
+                    textColor: Colors.black,
+                    width: 100.w,
+                    height: 30.h,
+                    onPressed: () async {
+                      if (_countOfRuns > 1) {
+                        BlocProvider.of<RunnerDataBloc>(context).add(
+                            runner_data_bloc.SelectTimesPerWeek(
+                                _countOfRuns -= 1));
+                      }
+                    },
+                  ),
+                  Container(
+                    width: 80.w,
+                    height: 50.h,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _countOfRuns.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'roboto',
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700),
+                        ),
+                        const Divider(
+                          height: 3,
+                          thickness: 2,
+                        ),
+                        Text(
+                          'times per week',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'roboto',
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    ),
+                  ),
+                  buttonNoIcon(
+                    title: '+',
+                    color: redColor,
+                    width: 100.w,
+                    height: 30.h,
+                    onPressed: () async {
+                      if (_countOfRuns < 7) {
+                        BlocProvider.of<RunnerDataBloc>(context).add(
+                            runner_data_bloc.SelectTimesPerWeek(
+                                _countOfRuns += 1));
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              margin: EdgeInsets.only(top: height * 0.18),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: buildRoundedButton(
+                      label: 'Let\'s go!',
+                      width: width,
+                      height: 40.h,
+                      controller: goController,
+                      textColor: Colors.white,
+                      backColor: redColor,
+                      onTap: () async {
+                        BlocProvider.of<RunnerDataBloc>(context)
+                            .add(runner_data_bloc.NavigateToHome(
+                          RunnerDataModel(
+                            nickName: _nickNameController.text,
+                            isMetric: isKM,
+                            pace: _currentPaceValue / 60,
+                            weeklyDistance: _currentWeeklyDistanceValue,
+                            workoutsPerWeek: _countOfRuns,
+                          ),
+                        ));
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: buttonNoIcon(
+                      title: 'Go back',
+                      color: Colors.transparent,
+                      height: 40.h,
+                      textColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      onPressed: () async {
+                        await _pageController.animateToPage(1,
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeIn);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 15.0,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -517,6 +551,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
   @override
   void dispose() {
     _pageController.dispose();
+    _nickNameController.dispose();
     super.dispose();
   }
 }

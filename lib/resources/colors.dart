@@ -11,3 +11,5 @@ import 'dart:ui';
   Color get grayColor => const Color(0xffEDEDED);
 
   Color get whiteColor => const Color(0xffffffff);
+
+  Color get homeBackground => const Color(0xffF5F5F5);

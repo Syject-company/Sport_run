@@ -20,6 +20,7 @@ import 'package:one2one_run/data/apis/login_api.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -34,6 +35,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final signInController = RoundedLoadingButtonController();
 
   String? emailError;
   String? passwordError;
@@ -82,11 +84,13 @@ class _LoginPageState extends State<LoginPage> {
                                     json.decode(value.body))
                                 .token)
                         .then((value) async {
+                      signInController.success();
                       await PreferenceUtils.setIsUserAuthenticated(true).then(
                           (value) => Navigator.of(context)
                               .pushReplacementNamed(Constants.homeRoute));
                     });
                   } else {
+                    signInController.reset();
                     await Fluttertoast.showToast(
                         msg: ErrorModel.fromJson(json.decode(value.body))
                             .title
@@ -109,6 +113,8 @@ class _LoginPageState extends State<LoginPage> {
                 if (isFieldsChecked()) {
                   BlocProvider.of<LoginBloc>(context)
                       .add(login_bloc.NavigateToHome());
+                } else {
+                  signInController.reset();
                 }
               }
               BlocProvider.of<LoginBloc>(context).add(
@@ -197,11 +203,14 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 25.h,
                         ),
-                        buttonNoIcon(
-                          title: 'Sign in',
-                          color: redColor,
+                        buildRoundedButton(
+                          label: 'Sign in',
+                          width: width,
                           height: 40.h,
-                          onPressed: () async {
+                          controller: signInController,
+                          textColor: Colors.white,
+                          backColor: redColor,
+                          onTap: () async {
                             BlocProvider.of<LoginBloc>(context)
                                 .add(login_bloc.CheckFields());
                           },

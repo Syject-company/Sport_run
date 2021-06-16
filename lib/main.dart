@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -38,8 +39,8 @@ class OneTwoOne extends StatelessWidget {
           Constants.homeRoute: (context) => HomePage(),
           Constants.passwordRoute: (context) => PasswordPage(),
         },
-        // home: SplashScreen(),
-        home: LoginPage(),
+        home: SplashScreen(),
+        // home: RegisterPage(),
       ),
     );
   }

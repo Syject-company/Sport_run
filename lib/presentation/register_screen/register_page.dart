@@ -22,6 +22,7 @@ import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/extension.dart' show EmailValidator;
 import 'package:one2one_run/utils/preference_utils.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 //NOte:'/register'
@@ -35,6 +36,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final continueController = RoundedLoadingButtonController();
 
   String? emailError;
   String? passwordError;
@@ -89,6 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           (value) => Navigator.of(context).pushReplacementNamed(
                               Constants.runnersDataRoute));
                     });
+                    continueController.success();
                   } else {
                     await Fluttertoast.showToast(
                         msg: ErrorModel.fromJson(json.decode(value.body))
@@ -96,6 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             .toString(),
                         fontSize: 16.0,
                         gravity: ToastGravity.CENTER);
+                    continueController.reset();
                   }
                 });
               } else if (state is NavigatedToSignIn) {
@@ -113,6 +117,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 if (isFieldsChecked() && await isUserPassedToContinue()) {
                   BlocProvider.of<RegisterBloc>(context)
                       .add(register_bloc.NavigateToRunnersData());
+                } else {
+                  continueController.reset();
                 }
               }
 
@@ -200,11 +206,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         SizedBox(
                           height: 25.h,
                         ),
-                        buttonNoIcon(
-                          title: 'Continue',
-                          color: redColor,
+                        buildRoundedButton(
+                          label: 'Continue',
+                          width: width,
                           height: 40.h,
-                          onPressed: () async {
+                          controller: continueController,
+                          textColor: Colors.white,
+                          backColor: redColor,
+                          onTap: () async {
                             BlocProvider.of<RegisterBloc>(context)
                                 .add(register_bloc.CheckFields());
                           },

@@ -34,9 +34,10 @@ class _PasswordPageState extends State<PasswordPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _codeController = TextEditingController();
-  final _pageController = PageController(initialPage: 0);
-
-  //final _loginController = RoundedLoadingButtonController();
+  final _pageController = PageController();
+  final _verifyNameController = RoundedLoadingButtonController();
+  final _checkCodeController = RoundedLoadingButtonController();
+  final _applyNewPassController = RoundedLoadingButtonController();
 
   String? emailError;
   String? passwordError;
@@ -72,6 +73,8 @@ class _PasswordPageState extends State<PasswordPage> {
               isLoading = true;
               BlocProvider.of<PasswordBloc>(context)
                   .add(password_bloc.NavigateToEnterCodePage());
+            } else {
+              _verifyNameController.reset();
             }
           } else if (state is NavigatedToEnterCodePage) {
             await _changePasswordApi
@@ -82,9 +85,11 @@ class _PasswordPageState extends State<PasswordPage> {
                 await _pageController.animateToPage(1,
                     duration: const Duration(milliseconds: 400),
                     curve: Curves.easeIn);
+                _verifyNameController.success();
               } else {
                 await Fluttertoast.showToast(
                     msg: value, fontSize: 16.0, gravity: ToastGravity.CENTER);
+                _verifyNameController.reset();
               }
               BlocProvider.of<PasswordBloc>(context)
                   .add(password_bloc.ShowHideLoading());
@@ -112,6 +117,7 @@ class _PasswordPageState extends State<PasswordPage> {
                   .add(password_bloc.NavigateToCreateNewPassword());
             } else {
               isCodeError = true;
+              _checkCodeController.reset();
             }
           } else if (state is NavigatedToCreateNewPassword) {
             await _changePasswordApi
@@ -121,12 +127,14 @@ class _PasswordPageState extends State<PasswordPage> {
             ))
                 .then((value) async {
               if (value.isEmpty) {
+                _checkCodeController.success();
                 await _pageController.animateToPage(2,
                     duration: const Duration(milliseconds: 400),
                     curve: Curves.easeIn);
               } else {
                 BlocProvider.of<PasswordBloc>(context)
                     .add(password_bloc.ShowCodeError());
+                _checkCodeController.reset();
               }
             });
             BlocProvider.of<PasswordBloc>(context)
@@ -141,22 +149,26 @@ class _PasswordPageState extends State<PasswordPage> {
               isLoading = true;
               BlocProvider.of<PasswordBloc>(context)
                   .add(password_bloc.NavigateToPasswordChangedPage());
+            } else {
+              _applyNewPassController.reset();
             }
           } else if (state is NavigatedToPasswordChangedPage) {
             await _changePasswordApi
                 .updatePassword(UpdatePasswordModel(
               email: _emailController.text,
               newPassword: _passwordController.text,
-              confirmationCode: _passwordController.text,
+              confirmationCode: _codeController.text,
             ))
                 .then((value) async {
               if (value.isEmpty) {
+                _applyNewPassController.success();
                 await _pageController.animateToPage(3,
                     duration: const Duration(milliseconds: 400),
                     curve: Curves.easeIn);
                 BlocProvider.of<PasswordBloc>(context)
                     .add(password_bloc.HideAppBar());
               } else {
+                _applyNewPassController.reset();
                 await Fluttertoast.showToast(
                     msg: value, fontSize: 16.0, gravity: ToastGravity.CENTER);
               }
@@ -297,24 +309,14 @@ class _PasswordPageState extends State<PasswordPage> {
           SizedBox(
             height: 40.h,
           ),
-          //TODO:
-          /*     buildRoundedButton(
+          buildRoundedButton(
             label: 'Verify',
             width: width,
             height: 40.h,
-            controller: _loginController,
+            controller: _verifyNameController,
             textColor: Colors.white,
             backColor: redColor,
             onTap: () async {
-              BlocProvider.of<PasswordBloc>(context)
-                  .add(password_bloc.CheckFields());
-            },
-          ),*/
-          buttonNoIcon(
-            title: 'Verify',
-            color: redColor,
-            height: 40.h,
-            onPressed: () async {
               BlocProvider.of<PasswordBloc>(context)
                   .add(password_bloc.CheckFields());
             },
@@ -463,11 +465,14 @@ class _PasswordPageState extends State<PasswordPage> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: buttonNoIcon(
-            title: 'Verify',
-            color: redColor,
+          child: buildRoundedButton(
+            label: 'Verify',
+            width: width,
             height: 40.h,
-            onPressed: () async {
+            controller: _checkCodeController,
+            textColor: Colors.white,
+            backColor: redColor,
+            onTap: () async {
               BlocProvider.of<PasswordBloc>(context)
                   .add(password_bloc.CheckCode());
             },
@@ -577,11 +582,14 @@ class _PasswordPageState extends State<PasswordPage> {
           SizedBox(
             height: 40.h,
           ),
-          buttonNoIcon(
-            title: 'Apply',
-            color: redColor,
+          buildRoundedButton(
+            label: 'Apply',
+            width: width,
             height: 40.h,
-            onPressed: () async {
+            controller: _applyNewPassController,
+            textColor: Colors.white,
+            backColor: redColor,
+            onTap: () async {
               BlocProvider.of<PasswordBloc>(context)
                   .add(password_bloc.CheckNewPasswordsFields());
             },
