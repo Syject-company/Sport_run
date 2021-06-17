@@ -16,20 +16,28 @@ import 'package:one2one_run/resources/images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //NOte:'/runnersData'
 class RunnerDataPage extends StatefulWidget {
-  RunnerDataPage({Key? key}) : super(key: key);
+  RunnerDataPage({Key? key, this.pageIndex = 0}) : super(key: key);
+
+  final int pageIndex;
 
   @override
-  _RunnerDataPageState createState() => _RunnerDataPageState();
+  _RunnerDataPageState createState() =>
+      _RunnerDataPageState(pageIndex: pageIndex);
 }
 
 class _RunnerDataPageState extends State<RunnerDataPage> {
+  _RunnerDataPageState({this.pageIndex = 0});
+
+  var pageIndex;
+
   final _runnerDataApi = RunnerDataApi();
 
-  final _pageController = PageController();
+  late PageController _pageController;
   final _nickNameController = TextEditingController();
   final continueController = RoundedLoadingButtonController();
   final goController = RoundedLoadingButtonController();
@@ -46,6 +54,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: pageIndex);
   }
 
   @override
@@ -62,6 +71,9 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
             listener: (final context, final state) async {
               if (state is FieldsChecked) {
                 if (isFieldsChecked()) {
+                  await PreferenceUtils.setUserNickName(
+                      _nickNameController.text);
+                  await PreferenceUtils.setPageRout('NewRunner');
                   await _pageController.animateToPage(1,
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeIn);
@@ -79,22 +91,24 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                 await _runnerDataApi
                     .sendRunnerData(state.runnerDataModel)
                     .then((value) async {
-                  value
-                      ? await _pageController
-                          .animateToPage(3,
-                              duration: const Duration(milliseconds: 1),
-                              curve: Curves.easeIn)
-                          .then((_) {
-                          Timer(const Duration(seconds: 3), () async {
-                            await Navigator.of(context)
-                                .pushReplacementNamed(Constants.homeRoute);
-                          });
-                        })
-                      : await Fluttertoast.showToast(
-                          msg: 'Unexpected error happened',
-                          fontSize: 16.0,
-                          gravity: ToastGravity.CENTER);
-
+                  if (value) {
+                    await _pageController
+                        .animateToPage(3,
+                            duration: const Duration(milliseconds: 1),
+                            curve: Curves.easeIn)
+                        .then((_) {
+                      Timer(const Duration(seconds: 3), () async {
+                        await PreferenceUtils.setIsUserAuthenticated(true);
+                        await Navigator.of(context)
+                            .pushReplacementNamed(Constants.homeRoute);
+                      });
+                    });
+                  } else {
+                    await Fluttertoast.showToast(
+                        msg: 'Unexpected error happened',
+                        fontSize: 16.0,
+                        gravity: ToastGravity.CENTER);
+                  }
                   goController.reset();
                 });
               }
@@ -231,7 +245,9 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                       BlocProvider.of<RunnerDataBloc>(context)
                           .add(runner_data_bloc.NavigateToHome(
                         RunnerDataModel(
-                          nickName: _nickNameController.text,
+                          nickName: _nickNameController.text.isNotEmpty
+                              ? _nickNameController.text
+                              : PreferenceUtils.getUserNickName(),
                           isMetric: isKM,
                           pace: 8.0,
                           weeklyDistance: 5.0,
@@ -248,6 +264,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                   ),
                   buttonSquareNoIcon(
                     onPressed: () async {
+                      await PreferenceUtils.setPageRout('NewRunner');
                       await _pageController.animateToPage(2,
                           duration: const Duration(milliseconds: 1),
                           curve: Curves.ease);
@@ -485,7 +502,9 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                         BlocProvider.of<RunnerDataBloc>(context)
                             .add(runner_data_bloc.NavigateToHome(
                           RunnerDataModel(
-                            nickName: _nickNameController.text,
+                            nickName: _nickNameController.text.isNotEmpty
+                                ? _nickNameController.text
+                                : PreferenceUtils.getUserNickName(),
                             isMetric: isKM,
                             pace: _currentPaceValue / 60,
                             weeklyDistance: _currentWeeklyDistanceValue,
@@ -507,6 +526,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                       textColor: Colors.black,
                       shadowColor: Colors.transparent,
                       onPressed: () async {
+                        await PreferenceUtils.setPageRout('NewRunner');
                         await _pageController.animateToPage(1,
                             duration: const Duration(milliseconds: 400),
                             curve: Curves.easeIn);

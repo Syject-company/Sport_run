@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:one2one_run/presentation/runner_data_screen/runner_data_page.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -16,11 +17,40 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 2), () {
-      PreferenceUtils.getIsUserAuthenticated()
-          ? Navigator.of(context)
-              .pushReplacementNamed(Constants.homeRoute)
-          : Navigator.of(context).pushReplacementNamed(Constants.registerRoute);
+      navigateTo();
     });
+  }
+
+  void navigateTo() {
+    if (PreferenceUtils.getIsUserAuthenticated()) {
+      Navigator.of(context).pushReplacementNamed(Constants.homeRoute);
+    } else {
+      switch (PreferenceUtils.getPageRout()) {
+        case 'Register':
+          {
+            Navigator.of(context).pushReplacementNamed(Constants.registerRoute);
+            break;
+          }
+
+        case 'Nickname':
+          {
+            Navigator.of(context)
+                .pushReplacementNamed(Constants.runnersDataRoute);
+            break;
+          }
+
+        case 'NewRunner':
+          {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => RunnerDataPage(
+                          pageIndex: 1,
+                        )));
+            break;
+          }
+      }
+    }
   }
 
   @override
