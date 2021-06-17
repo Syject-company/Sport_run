@@ -20,6 +20,7 @@ import 'package:one2one_run/resources/images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show EmailValidator;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -87,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     json.decode(value.body))
                                 .token)
                         .then((value) async {
-                      await PreferenceUtils.setIsUserAuthenticated(true).then(
+                      await PreferenceUtils.setPageRout('Nickname').then(
                           (value) => Navigator.of(context).pushReplacementNamed(
                               Constants.runnersDataRoute));
                     });
@@ -289,7 +290,7 @@ class _RegisterPageState extends State<RegisterPage> {
       {required String? value, required BuildContext context}) async {
     if (value != null) {
       await PreferenceUtils.setUserToken(value).then((value) {
-        PreferenceUtils.setIsUserAuthenticated(true);
+        PreferenceUtils.setPageRout('Nickname');
         Navigator.of(context).pushReplacementNamed(Constants.runnersDataRoute);
       });
     } else {
@@ -365,11 +366,22 @@ class _RegisterPageState extends State<RegisterPage> {
       emailError = 'Check your email format';
     }
 
-    if (passwordController.text.isNotEmpty) {
-      passwordError = null;
-    } else {
+    if (!passwordController.text.isValidPasswordInput() ||
+        passwordController.text.length < 7) {
+      passwordError =
+          'Min 7 chars and at least one lower case letter!';
+    }
+
+    if (passwordController.text.isEmpty) {
       passwordError = 'Password is empty';
     }
+
+    if (passwordController.text.isNotEmpty &&
+        passwordController.text.length >= 7 &&
+        passwordController.text.isValidPasswordInput()) {
+      passwordError = null;
+    }
+
     return emailError == null && passwordError == null;
   }
 
