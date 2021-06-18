@@ -10,12 +10,6 @@ TextStyle get hintTextStyle => const TextStyle(
       fontWeight: FontWeight.bold,
     );
 
-TextStyle get labelTextStyle => const TextStyle(
-      color: Colors.black87,
-      fontSize: 15,
-      fontWeight: FontWeight.bold,
-    );
-
 TextStyle get errorTextStyle => const TextStyle(
       color: Colors.red,
       fontSize: 15,
@@ -37,14 +31,21 @@ Widget inputTextFieldRounded({
   bool isNumbers = false,
   VoidCallback? obscureTextOnTap,
   IconData? icon,
+  bool isReadOnly = false,
+  double fontSize = 15.0,
 }) {
   return TextFormField(
     controller: controller,
-    style: labelTextStyle,
+    style: TextStyle(
+      color: Colors.black87,
+      fontSize: fontSize,
+      fontWeight: FontWeight.bold,
+    ),
     obscureText: obscureText,
     cursorColor: const Color(0xffFF1744),
     maxLength: isCounterShown ? 6 : null,
     keyboardType: isNumbers ? TextInputType.number : null,
+    readOnly: isReadOnly,
     decoration: InputDecoration(
       contentPadding: const EdgeInsets.only(
         bottom: 5.0,

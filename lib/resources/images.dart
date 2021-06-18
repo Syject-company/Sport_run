@@ -35,3 +35,5 @@ String get enjoyIcon => 'assets/icons/enjoy.png';
 String get profileIcon => 'assets/icons/profile.png';
 
 String get settingsIcon => 'assets/icons/settings.png';
+
+String get editImageIcon => 'assets/icons/edit_image.png';

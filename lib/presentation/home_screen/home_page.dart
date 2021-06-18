@@ -7,10 +7,14 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/home_api.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_page.dart';
+import 'package:one2one_run/presentation/enjoy_screen/enjoy_page.dart';
 import 'package:one2one_run/presentation/home_screen/home_bloc/bloc.dart'
     as home_bloc;
 import 'package:one2one_run/presentation/home_screen/home_bloc/home_bloc.dart';
 import 'package:one2one_run/presentation/home_screen/home_bloc/home_state.dart';
+import 'package:one2one_run/presentation/interact_screen/interact_page.dart';
+import 'package:one2one_run/presentation/profile_screen/profile_page.dart';
+import 'package:one2one_run/presentation/settings_screen/settings_page.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,11 +31,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _keyScaffold = GlobalKey<ScaffoldState>();
 
-  final _pageController = PageController();
+  final _pageController = PageController(initialPage: 3);
 
   DrawerItems selectedDrawerItem = DrawerItems.Connect;
 
   HomeApi homeApi = HomeApi();
+
+  String pageTitle = 'Connect';
 
   @override
   void initState() {
@@ -48,7 +54,15 @@ class _HomePageState extends State<HomePage> {
       create: (final context) => HomeBloc(),
       child: BlocListener<HomeBloc, HomeState>(
         listener: (final context, final state) async {
-          if (state is StateUpdated) {}
+          if (state is NavigatedToPage) {
+            if (_keyScaffold.currentState != null &&
+                _keyScaffold.currentState!.isDrawerOpen) {
+              _keyScaffold.currentState!.openEndDrawer();
+            }
+            await _pageController.animateToPage(state.pageIndex,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeIn);
+          }
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
         },
         child: BlocBuilder<HomeBloc, HomeState>(
@@ -62,8 +76,7 @@ class _HomePageState extends State<HomePage> {
                         backgroundColor: homeBackground,
                         appBar: AppBar(
                           title: Text(
-                            //TODO: when change page
-                            'Connect',
+                            pageTitle,
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'roboto',
@@ -93,6 +106,10 @@ class _HomePageState extends State<HomePage> {
                               physics: const NeverScrollableScrollPhysics(),
                               children: [
                                 ConnectPage(),
+                                InteractPage(),
+                                EnjoyPage(),
+                                ProfilePage(),
+                                SettingsPage(),
                               ],
                             ),
                           ),
@@ -211,7 +228,12 @@ class _HomePageState extends State<HomePage> {
                 selectedItemColor: selectedDrawerItem == DrawerItems.Connect
                     ? const Color(0xfffef0f0)
                     : Colors.transparent,
-                onPressed: () {},
+                onPressed: () {
+                  selectedDrawerItem = DrawerItems.Connect;
+                  pageTitle = 'Connect';
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(home_bloc.NavigateToPage(pageIndex: 0));
+                },
               ),
               _drawerItem(
                 label: 'Interact',
@@ -222,7 +244,12 @@ class _HomePageState extends State<HomePage> {
                 selectedItemColor: selectedDrawerItem == DrawerItems.Interact
                     ? const Color(0xfffef0f0)
                     : Colors.transparent,
-                onPressed: () {},
+                onPressed: () {
+                  selectedDrawerItem = DrawerItems.Interact;
+                  pageTitle = 'Interact';
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(home_bloc.NavigateToPage(pageIndex: 1));
+                },
               ),
               _drawerItem(
                 label: 'Enjoy',
@@ -233,7 +260,12 @@ class _HomePageState extends State<HomePage> {
                 selectedItemColor: selectedDrawerItem == DrawerItems.Enjoy
                     ? const Color(0xfffef0f0)
                     : Colors.transparent,
-                onPressed: () {},
+                onPressed: () {
+                  selectedDrawerItem = DrawerItems.Enjoy;
+                  pageTitle = 'Enjoy';
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(home_bloc.NavigateToPage(pageIndex: 2));
+                },
               ),
               _drawerItem(
                 label: 'Profile',
@@ -244,7 +276,12 @@ class _HomePageState extends State<HomePage> {
                 selectedItemColor: selectedDrawerItem == DrawerItems.Profile
                     ? const Color(0xfffef0f0)
                     : Colors.transparent,
-                onPressed: () {},
+                onPressed: () {
+                  pageTitle = 'Profile';
+                  selectedDrawerItem = DrawerItems.Profile;
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(home_bloc.NavigateToPage(pageIndex: 3));
+                },
               ),
               _drawerItem(
                 label: 'Settings',
@@ -255,7 +292,12 @@ class _HomePageState extends State<HomePage> {
                 selectedItemColor: selectedDrawerItem == DrawerItems.Settings
                     ? const Color(0xfffef0f0)
                     : Colors.transparent,
-                onPressed: () {},
+                onPressed: () {
+                  selectedDrawerItem = DrawerItems.Settings;
+                  pageTitle = 'Settings';
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(home_bloc.NavigateToPage(pageIndex: 40));
+                },
               ),
             ],
           ),
