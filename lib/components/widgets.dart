@@ -132,6 +132,7 @@ Widget buttonNoIcon({
   required double height,
   Color textColor = Colors.white,
   Color? shadowColor,
+  double buttonTextSize = 17.0,
 }) {
   return Center(
     child: ElevatedButton(
@@ -147,7 +148,7 @@ Widget buttonNoIcon({
       child: Text(
         title.toUpperCase(),
         style: TextStyle(
-          fontSize: 17.0,
+          fontSize: buttonTextSize,
           color: textColor,
           fontWeight: FontWeight.bold,
         ),
@@ -345,6 +346,68 @@ Widget seekBarPace({
         inactiveColor: const Color(0xffF6C3C3),
       ),
     ],
+  );
+}
+
+void dialog({
+  required BuildContext context,
+  required String Title,
+  required String text,
+  required String cancelButtonText,
+  required String applyButtonText,
+  required VoidCallback onApplyPressed,
+}) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Text(
+          text,
+          style: TextStyle(
+              color: Colors.black,
+              fontFamily: 'roboto',
+              fontSize: 13.sp,
+              fontWeight: FontWeight.normal),
+        ),
+        actions: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                width: 100.0,
+                height: 50.0,
+                child: buttonNoIcon(
+                  title: cancelButtonText,
+                  color: Colors.transparent,
+                  height: 40.h,
+                  shadowColor: Colors.transparent,
+                  textColor: Colors.grey,
+                  buttonTextSize: 13.sp,
+                  onPressed: () async {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+              Container(
+                width:100.0,
+                height: 50.0,
+
+                child: buttonNoIcon(
+                  title: applyButtonText,
+                  color: Colors.transparent,
+                  height: 40.h,
+                  shadowColor: Colors.transparent,
+                  textColor: redColor,
+                  buttonTextSize: 13.sp,
+                  onPressed: onApplyPressed,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    },
   );
 }
 

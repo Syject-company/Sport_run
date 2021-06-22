@@ -11,5 +11,7 @@ class ProfileInitial extends ProfileState {}
 
 class StateUpdated extends ProfileState {}
 
+class GalleryIsOpened extends ProfileState {}
 
+class UserPhotoUploaded extends ProfileState {}
 

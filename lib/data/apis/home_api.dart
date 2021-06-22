@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:one2one_run/data/models/runner_data_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';

@@ -19,5 +19,6 @@ class Constants {
   static const codeVerificationUrl = '/api/Account/CodeVerification';
   static const updatePasswordUrl = '/api/Account/ChangePassword';
   static const getUserModelUrl = '/api/Account';
+  static const updateUserPhotoUrl = '/api/Account/Photo';
 
 }

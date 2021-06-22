@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/home_api.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:one2one_run/data/apis/profile_api.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/presentation/profile_screen/profile_bloc/bloc.dart'
     as profile_bloc;
@@ -28,6 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
   File? _imageFile;
 
   HomeApi homeApi = HomeApi();
+  ProfileApi profileApi = ProfileApi();
 
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -46,7 +47,21 @@ class _ProfilePageState extends State<ProfilePage> {
       create: (final context) => ProfileBloc(),
       child: BlocListener<ProfileBloc, ProfileState>(
         listener: (final context, final state) async {
-          if (state is StateUpdated) {}
+          if (state is GalleryIsOpened) {
+            Navigator.pop(context);
+            await _pickImage(context: context);
+          } else if (state is UserPhotoUploaded) {
+            await profileApi.uploadImageProfile(_imageFile).then((value) async {
+              if (value) {
+                setState(() {});
+              } else {
+                await Fluttertoast.showToast(
+                    msg: 'Unexpected error happened',
+                    fontSize: 16.0,
+                    gravity: ToastGravity.CENTER);
+              }
+            });
+          }
           BlocProvider.of<ProfileBloc>(context).add(profile_bloc.UpdateState());
         },
         child: BlocBuilder<ProfileBloc, ProfileState>(
@@ -57,14 +72,14 @@ class _ProfilePageState extends State<ProfilePage> {
             color: Colors.white,
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              child: FutureBuilder(
+              child: FutureBuilder<UserModel>(
                   future: homeApi.getUserModel(),
                   builder: (ctx, snapshot) {
-                    if (snapshot.hasData) {
-                      //TODO;
-                      _nameController.text = 'Issa Mirage';
+                    if (snapshot.hasData && snapshot.data != null) {
+                      _nameController.text =
+                          snapshot.data!.nickName ?? 'NickName';
                       _emailController.text =
-                          (snapshot.data as UserModel).email!;
+                          snapshot.data!.email ?? 'email@gmail.com';
                       return Padding(
                         padding: const EdgeInsets.only(
                           left: 8.0,
@@ -93,9 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       padding:
                                           EdgeInsets.only(left: height * 0.12),
                                       child: Text(
-                                        'Lorem ipsum dolor sit amet,'
-                                        'consectetur adipiscing elit,'
-                                        'sed do eiusmod tempor',
+                                        '${snapshot.data!.moto ?? 'Here will be your Motto.'}',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                             color: Colors.black,
@@ -107,7 +120,18 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      _pickImage();
+                                      dialog(
+                                          context: context,
+                                          Title: 'Profile picture',
+                                          text: 'Profile picture',
+                                          applyButtonText: 'Change',
+                                          cancelButtonText: 'Cancel',
+                                          onApplyPressed: () {
+                                            BlocProvider.of<ProfileBloc>(
+                                                    context)
+                                                .add(
+                                                    profile_bloc.OpenGallery());
+                                          });
                                     },
                                     child: SizedBox(
                                       height: height * 0.12,
@@ -115,13 +139,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                       child: CircleAvatar(
                                         backgroundColor: Colors.transparent,
                                         radius: 80,
-                                        backgroundImage: _imageFile == null
-                                            ? AssetImage(
-                                                defaultProfileBackground,
-                                              )
-                                            : FileImage(_imageFile!)
-                                                as ImageProvider,
-                                        // : NetworkImage(imageLink),
+                                        backgroundImage:
+                                            snapshot.data!.photoLink == null
+                                                ? _imageFile == null
+                                                    ? AssetImage(
+                                                        defaultProfileImage,
+                                                      )
+                                                    : FileImage(_imageFile!)
+                                                        as ImageProvider
+                                                : NetworkImage(
+                                                    snapshot.data!.photoLink!),
                                       ),
                                     ),
                                   ),
@@ -161,7 +188,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       errorText: null,
                                       isReadOnly: true,
                                       hintText: 'Name',
-                                      fontSize: 17.0),
+                                      fontSize: 16.0),
                                   const SizedBox(
                                     height: 15.0,
                                   ),
@@ -171,15 +198,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                     hintText: 'E-mail address',
                                     icon: Icons.email,
                                     isReadOnly: true,
-                                    fontSize: 17.0,
+                                    fontSize: 16.0,
                                   ),
                                   SizedBox(
                                     height: height * 0.05,
                                   ),
                                   const Divider(
                                     height: 3,
-                                    endIndent: 10.0,
-                                    indent: 10.0,
+                                    endIndent: 3.0,
+                                    indent: 3.0,
                                   ),
                                   SizedBox(
                                     height: height * 0.02,
@@ -188,14 +215,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                     children: [
                                       _userPaceDistance(
                                         title: 'Pace',
-                                        value: '05:00 min/km',
+                                        value:
+                                            '${snapshot.data!.pace}:00 min/${snapshot.data!.isMetric ? 'km' : 'mile'}',
                                       ),
                                       SizedBox(
                                         width: width * 0.2,
                                       ),
                                       _userPaceDistance(
                                         title: 'Weekly Distance',
-                                        value: '02:00 min/km',
+                                        value:
+                                            '${snapshot.data!.weeklyDistance} ${snapshot.data!.isMetric ? 'km' : 'mile'}',
                                       ),
                                     ],
                                   ),
@@ -204,15 +233,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   _userPaceDistance(
                                     title: 'Running frequency',
-                                    value: '3 times per week',
+                                    value:
+                                        '${snapshot.data!.workoutsPerWeek} times per week',
                                   ),
                                   SizedBox(
                                     height: height * 0.02,
                                   ),
                                   const Divider(
                                     height: 3,
-                                    endIndent: 10.0,
-                                    indent: 10.0,
+                                    endIndent: 3.0,
+                                    indent: 3.0,
                                   ),
                                   SizedBox(
                                     height: height * 0.02,
@@ -223,19 +253,34 @@ class _ProfilePageState extends State<ProfilePage> {
                                     children: [
                                       _userWonLoss(
                                           title: 'Won',
-                                          value: '14',
+                                          value: '${snapshot.data!.wins}',
                                           colorValue: Colors.red),
+                                      Container(
+                                        color: Colors.grey,
+                                        height: 10.h,
+                                        width: 0.5,
+                                      ),
                                       _userWonLoss(
                                         title: 'Loss',
-                                        value: '14',
+                                        value: '${snapshot.data!.loses}',
+                                      ),
+                                      Container(
+                                        color: Colors.grey,
+                                        height: 10.h,
+                                        width: 0.5,
                                       ),
                                       _userWonLoss(
                                         title: 'Discarded',
-                                        value: '0',
+                                        value: '${snapshot.data!.discarded}',
+                                      ),
+                                      Container(
+                                        color: Colors.grey,
+                                        height: 10.h,
+                                        width: 0.5,
                                       ),
                                       _userWonLoss(
                                         title: 'My score',
-                                        value: '14',
+                                        value: '${snapshot.data!.score}',
                                       ),
                                     ],
                                   ),
@@ -244,26 +289,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   const Divider(
                                     height: 3,
-                                    endIndent: 10.0,
-                                    indent: 10.0,
+                                    endIndent: 3.0,
+                                    indent: 3.0,
                                   ),
                                   SizedBox(
                                     height: height * 0.02,
                                   ),
                                   _userBio(
-                                    value: 'Lorem ipsum dolor sit amet, '
-                                        'consectetur'
-                                        ' adipiscing elit, sed do eiusmod '
-                                        'tempor incididunt ut labore et '
-                                        'dolore magna aliqua. Ut enim ad '
-                                        'minim veniam, quis nostrud '
-                                        'exercitation ullamco laboris '
-                                        'nisi ut aliquip ex ea commodo '
-                                        'consequat. Duis aute irure dolor '
-                                        'in reprehenderit in voluptate '
-                                        'velit esse cillum dolore eu fugiat'
-                                        ' nulla pariatur.',
-                                  ),
+                                      value:
+                                          '${snapshot.data!.description ?? 'Here will be your Biography.'}'),
                                 ],
                               ),
                             ),
@@ -271,9 +305,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       );
                     } else {
-                      return Center(
-                        child: Align(
-                          child: progressIndicator(),
+                      return SizedBox(
+                        width: width,
+                        height: height,
+                        child: Center(
+                          child: Align(
+                            child: progressIndicator(),
+                          ),
                         ),
                       );
                     }
@@ -330,7 +368,7 @@ class _ProfilePageState extends State<ProfilePage> {
               fontWeight: FontWeight.w500),
         ),
         const SizedBox(
-          width: 10.0,
+          width: 5.0,
         ),
         Text(
           value,
@@ -376,13 +414,14 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage({required BuildContext context}) async {
     await _imagePicker
         .getImage(source: ImageSource.gallery)
         .then((value) async {
       if (value != null) {
         _imageFile = File(value.path);
-        setState(() {});
+        BlocProvider.of<ProfileBloc>(context)
+            .add(profile_bloc.UploadUserPhoto());
       } else {
         await Fluttertoast.showToast(
             msg: 'No image selected.',

@@ -74,6 +74,10 @@ class _HomePageState extends State<HomePage> {
                     ? Scaffold(
                         key: _keyScaffold,
                         backgroundColor: homeBackground,
+                        onDrawerChanged: (value){
+                          //TODO:
+                          setState(() {});
+                        },
                         appBar: AppBar(
                           title: Text(
                             pageTitle,
@@ -84,13 +88,20 @@ class _HomePageState extends State<HomePage> {
                                 fontWeight: FontWeight.w500),
                           ),
                           backgroundColor: colorPrimary,
+                          actions: selectedDrawerItem == DrawerItems.Profile
+                              ? appBarButtons(
+                                  firstButtonIcon: const Icon(Icons.edit),
+                                  onTapFirstButton: () {},
+                                  secondButtonIcon: const Icon(Icons.logout),
+                                  onTapSecondButton: () {},
+                                )
+                              : null,
                         ),
                         drawer: _drawer(
                           context: context,
                           userName: (snapshot.data as UserModel).nickName ??
                               'Nickname',
-                          userImage: (snapshot.data as UserModel).photoLink ??
-                              defaultProfileBackground,
+                          userImage: (snapshot.data as UserModel).photoLink,
                           userEmail: (snapshot.data as UserModel).email ??
                               'email@gmail.com',
                           width: width,
@@ -127,9 +138,29 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  List<Widget> appBarButtons({
+    required Widget firstButtonIcon,
+    required Widget secondButtonIcon,
+    required VoidCallback onTapFirstButton,
+    required VoidCallback onTapSecondButton,
+  }) {
+    return [
+      IconButton(
+        icon: firstButtonIcon,
+        onPressed: onTapFirstButton,
+        iconSize: 20,
+      ),
+      IconButton(
+        icon: secondButtonIcon,
+        onPressed: onTapSecondButton,
+        iconSize: 20,
+      ),
+    ];
+  }
+
   Widget _drawer(
       {required BuildContext context,
-      required String userImage,
+      required String? userImage,
       required String userName,
       required String userEmail,
       required double height,
@@ -150,20 +181,22 @@ class _HomePageState extends State<HomePage> {
                 color: const Color(0xff717171).withOpacity(0.7),
                 child: Stack(
                   children: [
-                    Positioned(
-                      height: 172.h,
-                      width: 172.h,
-                      right: 15,
-                      child: ClipRRect(
-                        child: ImageFiltered(
-                          imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                          child: Image.asset(
-                            userImage,
-                            height: 172.h,
-                            width: 172.h,
-                            fit: BoxFit.fill,
-                          ),
-                        ),
+                    ClipRRect(
+                      child: ImageFiltered(
+                        imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                        child: userImage != null
+                            ? Image.network(
+                                userImage,
+                                height: 172.h,
+                                width: width,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                defaultProfileImage,
+                                height: 172.h,
+                                width: width,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                     Padding(
@@ -179,9 +212,11 @@ class _HomePageState extends State<HomePage> {
                               width: 64.h,
                               child: CircleAvatar(
                                 radius: 30.0,
-                                backgroundImage: AssetImage(
-                                  defaultProfileBackground,
-                                ),
+                                backgroundImage: userImage != null
+                                    ? NetworkImage(userImage) as ImageProvider
+                                    : AssetImage(
+                                        defaultProfileImage,
+                                      ),
                                 backgroundColor: Colors.transparent,
                               ),
                             ),

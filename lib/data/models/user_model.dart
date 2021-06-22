@@ -1,13 +1,4 @@
 class UserModel {
-
-
-  String id;
-  String? email;
-  String? nickName;
-  String description;
-
-  //<editor-fold desc="Data Methods" defaultstate="collapsed">
-
   UserModel({
     required this.id,
     required this.email,
@@ -23,7 +14,47 @@ class UserModel {
     required this.wins,
     required this.loses,
     required this.draws,
+    required this.discarded,
+    required this.score,
   });
+
+  factory UserModel.fromJson(Map<String, dynamic> map) {
+    return UserModel(
+      id: map['id'] as String,
+      email: map['email'] as String?,
+      nickName: map['nickName'] as String?,
+      description: map['description'] as String?,
+      moto: map['moto'] as String?,
+      photoLink: map['photoLink'] as String?,
+      isMetric: map['isMetric'] as bool,
+      pace: map['pace'] as num,
+      weeklyDistance: map['weeklyDistance'] as num,
+      rank: map['rank'] as num,
+      workoutsPerWeek: map['workoutsPerWeek'] as num,
+      wins: map['wins'] as num,
+      loses: map['loses'] as num,
+      draws: map['draws'] as num,
+      discarded: map['discarded'] as num,
+      score: map['score'] as num,
+    );
+  }
+
+  String id;
+  String? email;
+  String? nickName;
+  String? description;
+  String? moto;
+  String? photoLink;
+  bool isMetric;
+  num pace;
+  num weeklyDistance;
+  num rank;
+  num workoutsPerWeek;
+  num wins;
+  num loses;
+  num draws;
+  num discarded;
+  num score;
 
   UserModel copyWith({
     String? id,
@@ -40,6 +71,8 @@ class UserModel {
     num? wins,
     num? loses,
     num? draws,
+    num? discarded,
+    num? score,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -56,12 +89,14 @@ class UserModel {
       wins: wins ?? this.wins,
       loses: loses ?? this.loses,
       draws: draws ?? this.draws,
+      discarded: discarded ?? this.discarded,
+      score: score ?? this.score,
     );
   }
 
   @override
   String toString() {
-    return 'UserModel{id: $id, email: $email, nickName: $nickName, description: $description, moto: $moto, photoLink: $photoLink, isMetric: $isMetric, pace: $pace, weeklyDistance: $weeklyDistance, rank: $rank, workoutsPerWeek: $workoutsPerWeek, wins: $wins, loses: $loses, draws: $draws}';
+    return 'UserModel{id: $id, email: $email, nickName: $nickName, description: $description, moto: $moto, photoLink: $photoLink, isMetric: $isMetric, pace: $pace, weeklyDistance: $weeklyDistance, rank: $rank, workoutsPerWeek: $workoutsPerWeek, wins: $wins, loses: $loses, draws: $draws, discarded: $discarded, score: $score}';
   }
 
   @override
@@ -82,7 +117,9 @@ class UserModel {
           workoutsPerWeek == other.workoutsPerWeek &&
           wins == other.wins &&
           loses == other.loses &&
-          draws == other.draws);
+          draws == other.draws &&
+          discarded == other.discarded &&
+          score == other.score);
 
   @override
   int get hashCode =>
@@ -99,60 +136,32 @@ class UserModel {
       workoutsPerWeek.hashCode ^
       wins.hashCode ^
       loses.hashCode ^
-      draws.hashCode;
-
-  factory UserModel.fromJson(Map<String, dynamic> map) {
-    return UserModel(
-      id: map['id'] as String,
-      email: map['email'] as String,
-      nickName: map['nickName'] as String,
-      description: map['description'] as String,
-      moto: map['moto'] as String,
-      photoLink: map['photoLink'] as String,
-      isMetric: map['isMetric'] as bool,
-      pace: map['pace'] as num,
-      weeklyDistance: map['weeklyDistance'] as num,
-      rank: map['rank'] as num,
-      workoutsPerWeek: map['workoutsPerWeek'] as num,
-      wins: map['wins'] as num,
-      loses: map['loses'] as num,
-      draws: map['draws'] as num,
-    );
-  }
+      draws.hashCode ^
+      discarded.hashCode ^
+      score.hashCode;
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
     return {
-      'id': this.id,
-      'email': this.email,
-      'nickName': this.nickName,
-      'description': this.description,
-      'moto': this.moto,
-      'photoLink': this.photoLink,
-      'isMetric': this.isMetric,
-      'pace': this.pace,
-      'weeklyDistance': this.weeklyDistance,
-      'rank': this.rank,
-      'workoutsPerWeek': this.workoutsPerWeek,
-      'wins': this.wins,
-      'loses': this.loses,
-      'draws': this.draws,
+      'id': id,
+      'email': email,
+      'nickName': nickName,
+      'description': description,
+      'moto': moto,
+      'photoLink': photoLink,
+      'isMetric': isMetric,
+      'pace': pace,
+      'weeklyDistance': weeklyDistance,
+      'rank': rank,
+      'workoutsPerWeek': workoutsPerWeek,
+      'wins': wins,
+      'loses': loses,
+      'draws': draws,
+      'discarded': discarded,
+      'score': score,
     } as Map<String, dynamic>;
   }
 
-  //</editor-fold>
-
-  String moto;
-  String? photoLink;
-  bool isMetric;
-  num pace;
-  num weeklyDistance;
-  num rank;
-  num workoutsPerWeek;
-  num wins;
-  num loses;
-  num draws;
-
-
+//</editor-fold>
 
 }
