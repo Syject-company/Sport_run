@@ -11,5 +11,14 @@ class HomeInitial extends HomeState {}
 
 class StateUpdated extends HomeState {}
 
+class NavigatedToPage extends HomeState {
+  NavigatedToPage({required this.pageIndex});
+
+  final int pageIndex;
+
+  @override
+  List<Object> get props => [pageIndex];
+}
+
 
 

@@ -2,23 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:one2one_run/presentation/connect_screen/connect_bloc/bloc.dart'
-    as connect_bloc;
-import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_bloc.dart';
-import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_state.dart';
-import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/resources/images.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:one2one_run/presentation/settings_screen/settings_bloc/bloc.dart'
+    as settings_bloc;
 
-//NOte:'/connect'
-class ConnectPage extends StatefulWidget {
-  ConnectPage({Key? key}) : super(key: key);
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:one2one_run/presentation/settings_screen/settings_bloc/settings_bloc.dart';
+import 'package:one2one_run/presentation/settings_screen/settings_bloc/settings_state.dart';
+
+//NOte:'/settings'
+class SettingsPage extends StatefulWidget {
+  SettingsPage({Key? key}) : super(key: key);
 
   @override
-  _ConnectPageState createState() => _ConnectPageState();
+  _SettingsPageState createState() => _SettingsPageState();
 }
 
-class _ConnectPageState extends State<ConnectPage> {
+class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
@@ -30,14 +29,15 @@ class _ConnectPageState extends State<ConnectPage> {
         (MediaQuery.of(context).padding.top + kToolbarHeight);
     final width = MediaQuery.of(context).size.width;
 
-    return BlocProvider<ConnectBloc>(
-      create: (final context) => ConnectBloc(),
-      child: BlocListener<ConnectBloc, ConnectState>(
+    return BlocProvider<SettingsBloc>(
+      create: (final context) => SettingsBloc(),
+      child: BlocListener<SettingsBloc, SettingsState>(
         listener: (final context, final state) async {
           if (state is StateUpdated) {}
-          BlocProvider.of<ConnectBloc>(context).add(connect_bloc.UpdateState());
+          BlocProvider.of<SettingsBloc>(context)
+              .add(settings_bloc.UpdateState());
         },
-        child: BlocBuilder<ConnectBloc, ConnectState>(
+        child: BlocBuilder<SettingsBloc, SettingsState>(
             builder: (final context, final state) {
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -47,7 +47,7 @@ class _ConnectPageState extends State<ConnectPage> {
               color: Colors.white,
               child: Center(
                 child: Text(
-                  'Connect',
+                  'Settings',
                   style: TextStyle(
                       color: Colors.red,
                       fontFamily: 'roboto',

@@ -24,7 +24,7 @@ String get newPasswordBackground => 'assets/images/new_password.png';
 
 String get passwordChangedBackground => 'assets/images/password_changed.png';
 
-String get defaultProfileBackground => 'assets/icons/default_profile.png';
+String get defaultProfileImage => 'assets/icons/default_profile.png';
 
 String get connectIcon => 'assets/icons/connect.png';
 
@@ -35,3 +35,5 @@ String get enjoyIcon => 'assets/icons/enjoy.png';
 String get profileIcon => 'assets/icons/profile.png';
 
 String get settingsIcon => 'assets/icons/settings.png';
+
+String get editImageIcon => 'assets/icons/edit_image.png';

@@ -7,7 +7,7 @@ import 'package:one2one_run/presentation/login_screen/login_page.dart';
 import 'package:one2one_run/presentation/password_screen/password_page.dart';
 import 'package:one2one_run/presentation/register_screen/register_page.dart';
 import 'package:one2one_run/presentation/runner_data_screen/runner_data_page.dart';
-import 'package:one2one_run/presentation/splash/splash_screen.dart';
+import 'package:one2one_run/presentation/splash_screen/splash_screen.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';

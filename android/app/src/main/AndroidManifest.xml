@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.one2one.one2one_run">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="one2one_run"
         android:icon="@mipmap/ic_launcher">
