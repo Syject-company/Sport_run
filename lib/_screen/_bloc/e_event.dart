@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-abstract class LoginEvent extends Equatable {
+abstract class EEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
 
 
-class UpdateState extends LoginEvent {}
+class UpdateState extends EEvent {}

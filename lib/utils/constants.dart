@@ -8,6 +8,7 @@ class Constants {
   static const runnersDataRoute = '/runnersData';
   static const homeRoute = '/home';
   static const passwordRoute = '/password';
+  static const editProfileRoute = '/editProfile';
 
   //Api urls:
   static const registerUrl = '/api/Account/registration';
@@ -19,6 +20,7 @@ class Constants {
   static const codeVerificationUrl = '/api/Account/CodeVerification';
   static const updatePasswordUrl = '/api/Account/ChangePassword';
   static const getUserModelUrl = '/api/Account';
+  static const editUserModelUrl = '/api/Account';
   static const updateUserPhotoUrl = '/api/Account/Photo';
 
 }

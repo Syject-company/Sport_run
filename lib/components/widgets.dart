@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -22,7 +23,7 @@ TextStyle get errorTextStyleSmall => const TextStyle(
       fontWeight: FontWeight.w600,
     );
 
-Widget inputTextFieldRounded({
+Widget inputTextField({
   required TextEditingController controller,
   required String hintText,
   required String? errorText,
@@ -33,6 +34,7 @@ Widget inputTextFieldRounded({
   IconData? icon,
   bool isReadOnly = false,
   double fontSize = 15.0,
+  int maxLength = 6,
 }) {
   return TextFormField(
     controller: controller,
@@ -43,8 +45,9 @@ Widget inputTextFieldRounded({
     ),
     obscureText: obscureText,
     cursorColor: const Color(0xffFF1744),
-    maxLength: isCounterShown ? 6 : null,
-    keyboardType: isNumbers ? TextInputType.number : null,
+    maxLength: isCounterShown ? maxLength : null,
+    keyboardType: isNumbers ? TextInputType.number : TextInputType.multiline,
+    maxLines: null,
     readOnly: isReadOnly,
     decoration: InputDecoration(
       contentPadding: const EdgeInsets.only(
@@ -61,13 +64,15 @@ Widget inputTextFieldRounded({
       fillColor: Colors.transparent,
       filled: true,
       hintText: hintText,
-      suffixIcon: GestureDetector(
-        onTap: obscureTextOnTap,
-        child: Icon(
-          icon,
-          color: icon != null ? Colors.redAccent : null,
-        ),
-      ),
+      suffixIcon: icon != null
+          ? GestureDetector(
+              onTap: obscureTextOnTap,
+              child: Icon(
+                icon,
+                color: Colors.redAccent,
+              ),
+            )
+          : null,
       hintStyle: hintTextStyle,
       errorText: errorText,
       errorStyle: errorTextStyleSmall,
@@ -390,9 +395,8 @@ void dialog({
                 ),
               ),
               Container(
-                width:100.0,
+                width: 100.0,
                 height: 50.0,
-
                 child: buttonNoIcon(
                   title: applyButtonText,
                   color: Colors.transparent,

@@ -17,7 +17,9 @@ import 'package:one2one_run/resources/images.dart';
 
 //NOte:'/profile'
 class ProfilePage extends StatefulWidget {
-  ProfilePage({Key? key}) : super(key: key);
+  ProfilePage({Key? key, required this.userDataListener}) : super(key: key);
+
+  final VoidCallback userDataListener;
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -53,6 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
           } else if (state is UserPhotoUploaded) {
             await profileApi.uploadImageProfile(_imageFile).then((value) async {
               if (value) {
+                widget.userDataListener();
                 setState(() {});
               } else {
                 await Fluttertoast.showToast(
@@ -183,7 +186,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  inputTextFieldRounded(
+                                  inputTextField(
                                       controller: _nameController,
                                       errorText: null,
                                       isReadOnly: true,
@@ -192,7 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   const SizedBox(
                                     height: 15.0,
                                   ),
-                                  inputTextFieldRounded(
+                                  inputTextField(
                                     controller: _emailController,
                                     errorText: null,
                                     hintText: 'E-mail address',
@@ -216,7 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       _userPaceDistance(
                                         title: 'Pace',
                                         value:
-                                            '${snapshot.data!.pace}:00 min/${snapshot.data!.isMetric ? 'km' : 'mile'}',
+                                            '${snapshot.data!.pace ~/ 60}:00 min/${snapshot.data!.isMetric ? 'km' : 'mile'}',
                                       ),
                                       SizedBox(
                                         width: width * 0.2,

@@ -154,7 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         SizedBox(
                           height: 25.h,
                         ),
-                        inputTextFieldRounded(
+                        inputTextField(
                           controller: emailController,
                           errorText: emailError,
                           hintText: 'E-mail address',
@@ -163,7 +163,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         SizedBox(
                           height: 25.h,
                         ),
-                        inputTextFieldRounded(
+                        inputTextField(
                           controller: passwordController,
                           errorText: passwordError,
                           hintText: 'Password',

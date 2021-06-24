@@ -300,7 +300,7 @@ class _PasswordPageState extends State<PasswordPage> {
           SizedBox(
             height: 25.h,
           ),
-          inputTextFieldRounded(
+          inputTextField(
             controller: _emailController,
             errorText: emailError,
             hintText: 'E-mail address',
@@ -554,7 +554,7 @@ class _PasswordPageState extends State<PasswordPage> {
           SizedBox(
             height: 25.h,
           ),
-          inputTextFieldRounded(
+          inputTextField(
             controller: _passwordController,
             errorText: passwordError,
             hintText: 'New password',
@@ -568,7 +568,7 @@ class _PasswordPageState extends State<PasswordPage> {
           SizedBox(
             height: 20.h,
           ),
-          inputTextFieldRounded(
+          inputTextField(
             controller: _confirmPasswordController,
             errorText: passwordError,
             hintText: 'Repeat new password',
