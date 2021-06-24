@@ -11,6 +11,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield StateUpdated();
     } else if (event is NavigateToPage) {
       yield NavigatedToPage(pageIndex: event.pageIndex);
+    } else if (event is UpdateUserData) {
+      yield UserDataUpdated();
     }
   }
 }

@@ -15,3 +15,5 @@ class NavigateToPage extends HomeEvent {
   @override
   List<Object> get props => [pageIndex];
 }
+
+class UpdateUserData extends HomeEvent {}

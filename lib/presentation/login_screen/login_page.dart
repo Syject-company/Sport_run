@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 20.h,
                         ),
-                        inputTextFieldRounded(
+                        inputTextField(
                           controller: emailController,
                           errorText: emailError,
                           hintText: 'E-mail address',
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 25.h,
                         ),
-                        inputTextFieldRounded(
+                        inputTextField(
                           controller: passwordController,
                           errorText: passwordError,
                           hintText: 'Password',

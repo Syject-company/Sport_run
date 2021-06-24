@@ -20,5 +20,4 @@ class NavigatedToPage extends HomeState {
   List<Object> get props => [pageIndex];
 }
 
-
-
+class UserDataUpdated extends HomeState {}

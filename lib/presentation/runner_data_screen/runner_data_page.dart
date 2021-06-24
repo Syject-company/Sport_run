@@ -166,7 +166,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: inputTextFieldRounded(
+            child: inputTextField(
               controller: _nickNameController,
               errorText: _nickNameError,
               hintText: 'Nick Name',
@@ -379,8 +379,8 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                     title: 'KM',
                     color: isKM ? redColor : grayColor,
                     textColor: isKM ? Colors.white : Colors.black,
-                    width: 156.w,
-                    height: 60.h,
+                    width: width * 0.35,
+                    height: height * 0.07,
                     onPressed: () async {
                       BlocProvider.of<RunnerDataBloc>(context)
                           .add(runner_data_bloc.SelectKmOrMile(true));
@@ -390,8 +390,8 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                     title: 'MI',
                     color: isKM ? grayColor : redColor,
                     textColor: isKM ? Colors.black : Colors.white,
-                    width: 156.w,
-                    height: 60.h,
+                    width: width * 0.35,
+                    height: height * 0.07,
                     onPressed: () async {
                       BlocProvider.of<RunnerDataBloc>(context)
                           .add(runner_data_bloc.SelectKmOrMile(false));
