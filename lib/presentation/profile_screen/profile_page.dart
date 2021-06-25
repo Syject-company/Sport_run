@@ -75,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
             color: Colors.white,
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              child: FutureBuilder<UserModel>(
+              child: FutureBuilder<UserModel?>(
                   future: homeApi.getUserModel(),
                   builder: (ctx, snapshot) {
                     if (snapshot.hasData && snapshot.data != null) {

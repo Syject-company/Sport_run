@@ -72,7 +72,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 moto: _mottoController.text,
                 nickName: _nameController.text,
                 pace: _currentPaceValue,
-                weeklyDistance: _currentWeeklyDistanceValue,
+                weeklyDistance: _isKM
+                    ? double.parse(
+                        _currentWeeklyDistanceValue.toStringAsFixed(0))
+                    : double.parse(
+                        _currentWeeklyDistanceValue.toStringAsFixed(1)),
                 isMetric: _isKM,
                 workoutsPerWeek: _countOfRuns,
                 description: _bioController.text,
@@ -177,6 +181,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           errorText: null,
                           hintText: 'Bio',
                           fontSize: 14,
+                          isMultiLine: true,
+                          keyboardType: TextInputType.multiline,
                         ),
                       ),
                       SizedBox(

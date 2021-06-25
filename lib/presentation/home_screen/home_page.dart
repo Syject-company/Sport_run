@@ -1,8 +1,10 @@
 import 'dart:ui';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/home_api.dart';
 import 'package:one2one_run/data/models/user_model.dart';
@@ -21,6 +23,7 @@ import 'package:one2one_run/resources/images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
+import 'package:one2one_run/utils/no_glow_scroll_behavior.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 
 //NOte:'/home'
@@ -42,13 +45,16 @@ class _HomePageState extends State<HomePage> {
 
   String pageTitle = 'Connect';
 
-  late Future<UserModel> _userModel;
-  late UserModel _user;
+  late Future<UserModel?> _userModel;
+  late FirebaseMessaging messaging;
 
   @override
   void initState() {
     super.initState();
-
+    messaging = FirebaseMessaging.instance;
+    messaging.getToken().then((value) {
+      print('Firebase token: $value');
+    });
     _userModel = homeApi.getUserModel();
   }
 
@@ -94,17 +100,7 @@ class _HomePageState extends State<HomePage> {
                   ? appBarButtons(
                       firstButtonIcon: const Icon(Icons.edit),
                       onTapFirstButton: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => EditProfilePage(
-                                    userModel: _user,
-                                    userDataListener: () {
-                                      BlocProvider.of<HomeBloc>(context)
-                                          .add(home_bloc.UpdateUserData());
-                                    },
-                                  )),
-                        );
+                        await navigateToEditProfile(context: context);
                       },
                       secondButtonIcon: const Icon(Icons.logout),
                       onTapSecondButton: () {
@@ -137,21 +133,24 @@ class _HomePageState extends State<HomePage> {
                 width: width,
                 height: height,
                 color: Colors.white,
-                child: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    ConnectPage(),
-                    InteractPage(),
-                    EnjoyPage(),
-                    ProfilePage(
-                      userDataListener: () {
-                        BlocProvider.of<HomeBloc>(context)
-                            .add(home_bloc.UpdateUserData());
-                      },
-                    ),
-                    SettingsPage(),
-                  ],
+                child: ScrollConfiguration(
+                  behavior: NoGlowScrollBehavior(),
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      ConnectPage(),
+                      InteractPage(),
+                      EnjoyPage(),
+                      ProfilePage(
+                        userDataListener: () {
+                          BlocProvider.of<HomeBloc>(context)
+                              .add(home_bloc.UpdateUserData());
+                        },
+                      ),
+                      SettingsPage(),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -159,6 +158,29 @@ class _HomePageState extends State<HomePage> {
         }),
       ),
     );
+  }
+
+  Future<void> navigateToEditProfile({required BuildContext context}) async {
+    await homeApi.getUserModel().then((userModel) async {
+      if (userModel != null) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => EditProfilePage(
+                    userModel: userModel,
+                    userDataListener: () {
+                      BlocProvider.of<HomeBloc>(context)
+                          .add(home_bloc.UpdateUserData());
+                    },
+                  )),
+        );
+      } else {
+        await Fluttertoast.showToast(
+            msg: 'Unexpected error happened',
+            fontSize: 16.0,
+            gravity: ToastGravity.CENTER);
+      }
+    });
   }
 
   List<Widget> appBarButtons({
@@ -192,11 +214,10 @@ class _HomePageState extends State<HomePage> {
         child: Container(
           height: height,
           color: Colors.white,
-          child: FutureBuilder<UserModel>(
+          child: FutureBuilder<UserModel?>(
               future: _userModel,
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
-                  _user = snapshot.data!;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
