@@ -29,12 +29,13 @@ Widget inputTextField({
   required String? errorText,
   bool obscureText = false,
   bool isCounterShown = false,
-  bool isNumbers = false,
+  bool isMultiLine = false,
   VoidCallback? obscureTextOnTap,
   IconData? icon,
   bool isReadOnly = false,
   double fontSize = 15.0,
   int maxLength = 6,
+  TextInputType? keyboardType,
 }) {
   return TextFormField(
     controller: controller,
@@ -46,8 +47,9 @@ Widget inputTextField({
     obscureText: obscureText,
     cursorColor: const Color(0xffFF1744),
     maxLength: isCounterShown ? maxLength : null,
-    keyboardType: isNumbers ? TextInputType.number : TextInputType.multiline,
-    maxLines: null,
+    //  keyboardType: isNumbers ? TextInputType.number : TextInputType.multiline,
+    keyboardType: keyboardType,
+    maxLines: isMultiLine ? null : 1,
     readOnly: isReadOnly,
     decoration: InputDecoration(
       contentPadding: const EdgeInsets.only(

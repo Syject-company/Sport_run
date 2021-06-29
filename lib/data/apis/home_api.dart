@@ -14,7 +14,7 @@ class HomeApi {
       '${Constants.domain}${Constants.editUserModelUrl}';
 
   //@get
-  Future<UserModel> getUserModel() async {
+  Future<UserModel?> getUserModel() async {
     final token = PreferenceUtils.getUserToken();
     print('User token: $token');
     final res = await get(Uri.parse(_urlUserModel), headers: {

@@ -1,4 +1,6 @@
 // @dart=2.9
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +15,10 @@ import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 
+Future<void> _messageHandler(RemoteMessage message) async {
+  print('background message ${message.notification.body}');
+}
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
@@ -21,6 +27,8 @@ void main() {
   ]).then((_) async {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: redColor));
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(_messageHandler);
     await PreferenceUtils.init();
     runApp(OneTwoOne());
   });
