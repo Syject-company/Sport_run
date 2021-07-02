@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:one2one_run/components/widgets.dart';
-import 'package:one2one_run/data/apis/home_api.dart';
+import 'package:one2one_run/data/apis/apis.dart';
+/*import 'package:one2one_run/data/apis/home_api.dart';*/
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_page.dart';
 import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_page.dart';
@@ -98,6 +99,7 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: colorPrimary,
               actions: selectedDrawerItem == DrawerItems.Profile
                   ? appBarButtons(
+                      isNeedSecondButton: true,
                       firstButtonIcon: const Icon(Icons.edit),
                       onTapFirstButton: () async {
                         await navigateToEditProfile(context: context);
@@ -121,7 +123,16 @@ class _HomePageState extends State<HomePage> {
                             });
                       },
                     )
-                  : null,
+                  : selectedDrawerItem == DrawerItems.Connect
+                      ? appBarButtons(
+                          isNeedSecondButton: false,
+                          firstButtonIcon:
+                              const Icon(Icons.filter_alt_outlined),
+                          onTapFirstButton: () async {},
+                          secondButtonIcon: const Icon(Icons.search),
+                          onTapSecondButton: () {},
+                        )
+                      : null,
             ),
             drawer: _drawer(
               context: context,
@@ -188,6 +199,7 @@ class _HomePageState extends State<HomePage> {
     required Widget secondButtonIcon,
     required VoidCallback onTapFirstButton,
     required VoidCallback onTapSecondButton,
+    required bool isNeedSecondButton,
   }) {
     return [
       IconButton(
@@ -195,11 +207,13 @@ class _HomePageState extends State<HomePage> {
         onPressed: onTapFirstButton,
         iconSize: 20,
       ),
-      IconButton(
-        icon: secondButtonIcon,
-        onPressed: onTapSecondButton,
-        iconSize: 20,
-      ),
+      isNeedSecondButton
+          ? IconButton(
+              icon: secondButtonIcon,
+              onPressed: onTapSecondButton,
+              iconSize: 20,
+            )
+          : Container(),
     ];
   }
 
@@ -410,8 +424,8 @@ class _HomePageState extends State<HomePage> {
     required String label,
     required String icon,
     required VoidCallback onPressed,
-    double height = 46.0,
-    double width = 46.0,
+    double height = 22.0,
+    double width = 22.0,
     Color iconColor = const Color(0xff9F9F9F),
     Color selectedItemColor = Colors.transparent,
   }) {

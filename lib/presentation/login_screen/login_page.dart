@@ -247,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                         buttonWithIcon(
                           title: 'Sign in with Apple',
                           icon: appleIcon,
-                          size: 40.h,
+                          height: 40.h,
                           onPressed: () async {
                             await signInWithApple(context: context);
                           },
@@ -258,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
                         buttonWithIcon(
                           title: 'Sign in with Google',
                           icon: googleIcon,
-                          size: 40.h,
+                          height: 40.h,
                           onPressed: () async {
                             await signInWithGoogle(context: context);
                           },

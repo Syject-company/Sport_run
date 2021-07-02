@@ -9,6 +9,8 @@ class ConnectBloc extends Bloc<ConnectEvent, ConnectState> {
   Stream<ConnectState> mapEventToState(ConnectEvent event) async* {
     if (event is UpdateState) {
       yield StateUpdated();
+    } else if (event is NavigateToUserInfo) {
+      yield NavigatedToUserInfo(event.userModel);
     }
   }
 }
