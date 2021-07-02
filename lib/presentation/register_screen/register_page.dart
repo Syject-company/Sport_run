@@ -94,13 +94,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     });
                     continueController.success();
                   } else {
+                    continueController.reset();
                     await Fluttertoast.showToast(
-                        msg: ErrorModel.fromJson(json.decode(value.body))
-                            .title
-                            .toString(),
+                     //   msg: ErrorModel.fromJson(json.decode(value.body)).title.toString(),
+                        msg: value.body.toString(),
                         fontSize: 16.0,
                         gravity: ToastGravity.CENTER);
-                    continueController.reset();
                   }
                 });
               } else if (state is NavigatedToSignIn) {
@@ -251,7 +250,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         buttonWithIcon(
                           title: 'Register with Apple',
                           icon: appleIcon,
-                          size: 40.h,
+                          height: 40.h,
                           onPressed: () async {
                             if (await isUserPassedToContinue()) {
                               await signInWithApple(context: context);
@@ -264,7 +263,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         buttonWithIcon(
                           title: 'Register with Google',
                           icon: googleIcon,
-                          size: 40.h,
+                          height: 40.h,
                           onPressed: () async {
                             if (await isUserPassedToContinue()) {
                               await signInWithGoogle(context: context);

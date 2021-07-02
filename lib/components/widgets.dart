@@ -94,7 +94,12 @@ Widget inputTextField({
 
 Widget buttonWithIcon(
     {required VoidCallback onPressed,
-    required double size,
+    required double height,
+    double width = double.maxFinite,
+    double iconSize = 24.0,
+    Color titleColor = Colors.black,
+    Color buttonColor = Colors.white,
+    Color? iconColor,
     required String icon,
     required String title}) {
   return Center(
@@ -104,26 +109,25 @@ Widget buttonWithIcon(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
-        minimumSize: Size(double.maxFinite, size),
-        primary: Colors.white,
+        minimumSize: Size(width, height),
+        primary: buttonColor,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
             icon,
-            height: 24,
-            width: 24,
+            height: iconSize,
+            width: iconSize,
+            color: iconColor,
           ),
           const SizedBox(
             width: 15.0,
           ),
           Text(
             title,
-            style: const TextStyle(
-                fontSize: 17.0,
-                fontWeight: FontWeight.w600,
-                color: Colors.black),
+            style: TextStyle(
+                fontSize: 17.0, fontWeight: FontWeight.w600, color: titleColor),
           ),
         ],
       ),

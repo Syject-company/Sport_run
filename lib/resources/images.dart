@@ -37,3 +37,13 @@ String get profileIcon => 'assets/icons/profile.png';
 String get settingsIcon => 'assets/icons/settings.png';
 
 String get editImageIcon => 'assets/icons/edit_image.png';
+
+String get rankIcon => 'assets/icons/rank.png';
+
+String get paceIcon => 'assets/icons/pace.png';
+
+String get weeklyDistanceIcon => 'assets/icons/weekly_distance.png';
+
+String get runsIcon => 'assets/icons/runs.png';
+
+String get battleIcon => 'assets/icons/battle.png';

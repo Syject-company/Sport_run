@@ -105,11 +105,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                     alignment: Alignment.center,
                                     margin: EdgeInsets.only(
                                       top: (height * 0.12) / 7,
-                                      left: 10.0,
+                                      left: (height * 0.12 / 2),
                                     ),
                                     child: Padding(
-                                      padding:
-                                          EdgeInsets.only(left: height * 0.12),
+                                      padding: EdgeInsets.only(
+                                          left: (height * 0.12) / 2),
                                       child: Text(
                                         '${snapshot.data!.moto ?? 'Here will be your Motto.'}',
                                         textAlign: TextAlign.start,
