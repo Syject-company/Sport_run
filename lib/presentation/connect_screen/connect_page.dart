@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/connect_api.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
-
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/bloc.dart'
     as connect_bloc;
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_bloc.dart';
@@ -12,12 +12,13 @@ import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_sta
 import 'package:one2one_run/presentation/connect_screen/user_info.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/utils/constants.dart';
 
 //NOte:'/connect'
 class ConnectPage extends StatefulWidget {
-  ConnectPage({Key? key}) : super(key: key);
+  ConnectPage({Key? key, required this.users}) : super(key: key);
+
+  final List<ConnectUsersModel> users;
 
   @override
   _ConnectPageState createState() => _ConnectPageState();
@@ -26,15 +27,9 @@ class ConnectPage extends StatefulWidget {
 class _ConnectPageState extends State<ConnectPage> {
   final _connectApi = ConnectApi();
 
-  bool isNeedFilter = false;
-
-  late Future<List<ConnectUsersModel>?> _users;
-
   @override
   void initState() {
     super.initState();
-
-    _users = getUsers(isFilterIncluded: isNeedFilter);
   }
 
   @override
@@ -60,32 +55,21 @@ class _ConnectPageState extends State<ConnectPage> {
         },
         child: BlocBuilder<ConnectBloc, ConnectState>(
             builder: (final context, final state) {
-          return Container(
-            width: width,
-            height: height,
-            color: Colors.white,
-            child: FutureBuilder<List<ConnectUsersModel>?>(
-                future: _users,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data != null) {
-                    return ListView.builder(
-                        itemCount: snapshot.data?.length,
-                        itemBuilder: (BuildContext con, int index) {
-                          return _userCard(
-                              context: context,
-                              width: width,
-                              height: height,
-                              model: snapshot.data![index]);
-                        });
-                  } else {
-                    return Container(
-                      color: Colors.white,
-                      width: width,
-                      height: height,
-                      child: progressIndicator(),
-                    );
-                  }
-                }),
+          return Scaffold(
+            body: Container(
+              width: width,
+              height: height,
+              color: Colors.white,
+              child: ListView.builder(
+                  itemCount: widget.users.length,
+                  itemBuilder: (BuildContext con, int index) {
+                    return _userCard(
+                        context: context,
+                        width: width,
+                        height: height,
+                        model: widget.users[index]);
+                  }),
+            ),
           );
         }),
       ),
@@ -106,145 +90,150 @@ class _ConnectPageState extends State<ConnectPage> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Container(
-              margin: EdgeInsets.only(
-                top: height * 0.055,
-                left: width * 0.025,
-                right: width * 0.025,
-                bottom: height * 0.02,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 3,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(
-                      left: (width * 0.09) + (height * 0.1),
-                      top: height * 0.015,
+            GestureDetector(
+              onTap: () {
+                BlocProvider.of<ConnectBloc>(context)
+                    .add(connect_bloc.NavigateToUserInfo(model));
+              },
+              child: Container(
+                margin: EdgeInsets.only(
+                  top: height * 0.055,
+                  left: width * 0.025,
+                  right: width * 0.025,
+                  bottom: height * 0.02,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 3,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
-                    child: Text(
-                      model.nickName ?? 'NickName',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.sp,
-                          fontFamily: 'roboto',
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(
-                      left: (width * 0.09) + (height * 0.1),
-                      top: height * 0.013,
-                    ),
-                    child: Text(
-                      model.moto ?? '',
-                      style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12.sp,
-                          fontFamily: 'roboto',
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  SizedBox(
-                    height: height * 0.02,
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: height * 0.03,
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.only(
+                        left: (width * 0.09) + (height * 0.1),
+                        top: height * 0.015,
                       ),
-                      _cardItem(
+                      child: Text(
+                        model.nickName ?? 'NickName',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18.sp,
+                            fontFamily: 'roboto',
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.only(
+                        left: (width * 0.09) + (height * 0.1),
+                        top: height * 0.013,
+                      ),
+                      child: Text(
+                        model.moto ?? '',
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12.sp,
+                            fontFamily: 'roboto',
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    SizedBox(
+                      height: height * 0.02,
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: height * 0.03,
+                        ),
+                        _cardItem(
+                          height: height,
+                          width: width,
+                          title: 'Pace',
+                          icon: paceIcon,
+                          value:
+                              '${model.pace} min/${model.isMetric ? 'km' : 'mile'}',
+                        ),
+                        SizedBox(
+                          width: height * 0.02,
+                        ),
+                        _cardItem(
+                          height: height,
+                          width: width,
+                          title: 'Runs',
+                          icon: runsIcon,
+                          value: '${model.workoutsPerWeek}+ times/week',
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: height * 0.02,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: height * 0.03),
+                      alignment: Alignment.centerLeft,
+                      child: _cardItem(
                         height: height,
-                        width: width,
-                        title: 'Pace',
-                        icon: paceIcon,
+                        width: width + 120,
+                        title: 'Weekly Distance',
+                        icon: weeklyDistanceIcon,
                         value:
-                            '${model.pace} min/${model.isMetric ? 'km' : 'mile'}',
+                            '${model.weeklyDistance} ${model.isMetric ? 'km' : 'mile'}',
                       ),
-                      SizedBox(
-                        width: height * 0.02,
-                      ),
-                      _cardItem(
-                        height: height,
-                        width: width,
-                        title: 'Runs',
-                        icon: runsIcon,
-                        value: '${model.workoutsPerWeek}+ times/week',
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: height * 0.02,
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: height * 0.03),
-                    alignment: Alignment.centerLeft,
-                    child: _cardItem(
-                      height: height,
-                      width: width + 120,
-                      title: 'Weekly Distance',
-                      icon: weeklyDistanceIcon,
-                      value:
-                          '${model.weeklyDistance} ${model.isMetric ? 'km' : 'mile'}',
                     ),
-                  ),
-                  SizedBox(
-                    height: height * 0.02,
-                  ),
-                  Divider(
-                    height: 3,
-                    endIndent: height * 0.03,
-                    indent: height * 0.03,
-                  ),
-                  SizedBox(
-                    height: height * 0.02,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _userWonLoss(
-                          title: 'Won',
-                          value: '${model.wins}',
-                          colorValue: Colors.red),
-                      Container(
-                        color: Colors.grey,
-                        height: 10.h,
-                        width: 0.5,
-                      ),
-                      _userWonLoss(
-                        title: 'Loss',
-                        value: '${model.loses}',
-                      ),
-                      SizedBox(
-                        width: height * 0.02,
-                      ),
-                      buttonWithIcon(
-                        title: 'BATTLE',
-                        icon: battleIcon,
-                        iconSize: 13.0,
-                        titleColor: Colors.red,
-                        height: height * 0.06,
-                        width: width * 0.05,
-                        onPressed: () async {
-                          BlocProvider.of<ConnectBloc>(context)
-                              .add(connect_bloc.NavigateToUserInfo(model));
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                    SizedBox(
+                      height: height * 0.02,
+                    ),
+                    Divider(
+                      height: 3,
+                      endIndent: height * 0.03,
+                      indent: height * 0.03,
+                    ),
+                    SizedBox(
+                      height: height * 0.02,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _userWonLoss(
+                            title: 'Won',
+                            value: '${model.wins}',
+                            colorValue: Colors.red),
+                        Container(
+                          color: Colors.grey,
+                          height: 10.h,
+                          width: 0.5,
+                        ),
+                        _userWonLoss(
+                          title: 'Loss',
+                          value: '${model.loses}',
+                        ),
+                        SizedBox(
+                          width: height * 0.02,
+                        ),
+                        buttonWithIcon(
+                          title: 'BATTLE',
+                          icon: battleIcon,
+                          iconSize: 13.0,
+                          titleColor: Colors.red,
+                          height: height * 0.06,
+                          width: width * 0.05,
+                          onPressed: () async {
+                            //TODO: need action
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             Positioned(
@@ -378,24 +367,6 @@ class _ConnectPageState extends State<ConnectPage> {
               fontWeight: FontWeight.w700),
         ),
       ],
-    );
-  }
-
-  Future<List<ConnectUsersModel>?> getUsers({
-    required bool isFilterIncluded,
-    double? paceFrom,
-    double? paceTo,
-    double? weeklyDistanceFrom,
-    double? weeklyDistanceTo,
-    int? workoutsPerWeek,
-  }) async {
-    return await _connectApi.getUsersConnect(
-      isFilterIncluded: isFilterIncluded,
-      paceFrom: paceFrom,
-      paceTo: paceTo,
-      weeklyDistanceFrom: weeklyDistanceFrom,
-      weeklyDistanceTo: weeklyDistanceTo,
-      workoutsPerWeek: workoutsPerWeek,
     );
   }
 

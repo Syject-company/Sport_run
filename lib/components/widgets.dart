@@ -175,6 +175,7 @@ Widget buildRoundedButton({
   required Color textColor,
   required double height,
   required double width,
+  double buttonTextSize = 17.0,
   required RoundedLoadingButtonController controller,
 }) {
   return RoundedLoadingButton(
@@ -188,7 +189,7 @@ Widget buildRoundedButton({
       label,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 17,
+        fontSize: buttonTextSize,
         color: textColor,
         fontWeight: FontWeight.bold,
       ),
@@ -360,6 +361,126 @@ Widget seekBarPace({
   );
 }
 
+Widget rangeSeekBarPace({
+  required String title,
+  required BuildContext context,
+  required String dialogTitle,
+  required String dialogText,
+  required double endTimePerKM,
+  required double startTimePerKM,
+  required double kmPerHour,
+  required double minValue,
+  required double maxValue,
+  required String unit,
+  required Function(RangeValues value) onRangeChanged,
+  required RangeValues rangeValue,
+}) {
+  return Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 13.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: 'roboto',
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(
+                            dialogTitle,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'roboto',
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          content: Text(
+                            dialogText,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'roboto',
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.normal),
+                          ),
+                          actions: [
+                            Center(
+                              child: Container(
+                                width: 80.0,
+                                height: 50.0,
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                child: buttonNoIcon(
+                                  title: 'Ok',
+                                  color: redColor,
+                                  height: 40.h,
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${startTimePerKM ~/ 60} - ${endTimePerKM ~/ 60} min/$unit',
+                  style: TextStyle(
+                      color: Colors.red,
+                      fontFamily: 'roboto',
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+                Text(
+                  '${(kmPerHour.toStringAsFixed(2))} $unit/h',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: 'roboto',
+                      fontSize: 9.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      RangeSlider(
+        values: rangeValue,
+        min: minValue,
+        max: maxValue,
+        divisions: 90,
+        onChanged: onRangeChanged,
+        activeColor: Colors.red,
+        inactiveColor: const Color(0xffF6C3C3),
+      ),
+    ],
+  );
+}
+
 void dialog({
   required BuildContext context,
   required String Title,
@@ -517,6 +638,114 @@ Widget seekBarWeekly({
       ),
       Slider(
         value: sliderValue,
+        min: minValue,
+        max: maxValue,
+        onChanged: onChanged,
+        divisions: 183,
+        activeColor: Colors.red,
+        inactiveColor: const Color(0xffF6C3C3),
+      ),
+    ],
+  );
+}
+
+Widget rangeSeekBarWeekly({
+  required String title,
+  required BuildContext context,
+  required String dialogTitle,
+  required String dialogText,
+  required double endTimePerKM,
+  required double startTimePerKM,
+  required double minValue,
+  required double maxValue,
+  required String unit,
+  required Function(RangeValues value) onChanged,
+  required RangeValues rangeValue,
+}) {
+  return Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: 'roboto',
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(
+                            dialogTitle,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'roboto',
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          content: Text(
+                            dialogText,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'roboto',
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.normal),
+                          ),
+                          actions: [
+                            Center(
+                              child: Container(
+                                width: 80.0,
+                                height: 50.0,
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                child: buttonNoIcon(
+                                  title: 'Ok',
+                                  color: redColor,
+                                  height: 40.h,
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            Text(
+              unit == 'km'
+                  ? '${startTimePerKM.toStringAsFixed(0)} - ${endTimePerKM.toStringAsFixed(0)} $unit'
+                  : '${startTimePerKM.toStringAsFixed(1)} - ${endTimePerKM.toStringAsFixed(1)} $unit',
+              style: TextStyle(
+                  color: Colors.red,
+                  fontFamily: 'roboto',
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+      ),
+      RangeSlider(
+        values: rangeValue,
         min: minValue,
         max: maxValue,
         onChanged: onChanged,

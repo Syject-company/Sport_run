@@ -219,7 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       _userPaceDistance(
                                         title: 'Pace',
                                         value:
-                                            '${snapshot.data!.pace ~/ 60}:00 min/${snapshot.data!.isMetric ? 'km' : 'mile'}',
+                                            '${snapshot.data!.pace.floor()/*~/ 60*/}:00 min/${snapshot.data!.isMetric ? 'km' : 'mile'}',
                                       ),
                                       SizedBox(
                                         width: width * 0.2,

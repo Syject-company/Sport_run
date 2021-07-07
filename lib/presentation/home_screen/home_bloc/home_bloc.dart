@@ -13,6 +13,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield NavigatedToPage(pageIndex: event.pageIndex);
     } else if (event is UpdateUserData) {
       yield UserDataUpdated();
+    } else if (event is SwitchIsNeedFilter) {
+      yield SwitchedIsNeedFilter(isNeedFilter: event.isNeedFilter);
+    } else if (event is SelectKmOrMile) {
+      yield KmOrMileIsSelected(event.isKM);
+    } else if (event is SelectTimesPerWeek) {
+      yield TimesPerWeekIsSelected(event.timesPerWeek);
+    } else if (event is SelectConnectFilters) {
+      yield SelectedConnectFilters(
+          event.isFilterIncluded,
+          event.paceFrom,
+          event.paceTo,
+          event.weeklyDistanceFrom,
+          event.weeklyDistanceTo,
+          event.workoutsPerWeek);
     }
   }
 }

@@ -39,6 +39,13 @@ class PreferenceUtils {
   static Future<void> setUserNickName(String value) async {
     await _prefsInstance?.setString(userNickName, value);
   }
+  static bool getIsUserUnitInKM() {
+    return _prefsInstance?.getBool(userUnit) ?? true;
+  }
+
+  static Future<void> setIsUserUnitInKM(bool value) async {
+    await _prefsInstance?.setBool(userUnit, value);
+  }
 }
 
 String get isUserAuthenticated => 'is_user_authenticated';
@@ -48,3 +55,5 @@ String get userToken => 'user_token';
 String get pageRout => 'page_rout';
 
 String get userNickName => 'user_nickname';
+
+String get userUnit => 'user_unit';

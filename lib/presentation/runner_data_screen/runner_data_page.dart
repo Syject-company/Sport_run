@@ -81,6 +81,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                 continueController.reset();
               } else if (state is KmOrMileIsSelected) {
                 isKM = state.isKM;
+                await PreferenceUtils.setIsUserUnitInKM(isKM);
                 isKM ? _currentPaceValue = 300 : _currentPaceValue = 480;
                 isKM
                     ? _currentWeeklyDistanceValue = 30
@@ -242,6 +243,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                 children: [
                   buttonSquareNoIcon(
                     onPressed: () async {
+                      await PreferenceUtils.setIsUserUnitInKM(isKM);
                       BlocProvider.of<RunnerDataBloc>(context)
                           .add(runner_data_bloc.NavigateToHome(
                         RunnerDataModel(

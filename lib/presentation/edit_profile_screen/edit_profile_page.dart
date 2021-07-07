@@ -13,6 +13,7 @@ import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/e
 import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/edit_profile_state.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/strings.dart';
+import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //NOte:'/editProfile'
@@ -61,6 +62,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           listener: (final context, final state) async {
             if (state is KmOrMileIsSelected) {
               _isKM = state.isKM;
+              await PreferenceUtils.setIsUserUnitInKM(_isKM);
               _isKM ? _currentPaceValue = 300 : _currentPaceValue = 480;
               _isKM
                   ? _currentWeeklyDistanceValue = 30
@@ -71,7 +73,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               final model = UserProfileRequestModel(
                 moto: _mottoController.text,
                 nickName: _nameController.text,
-                pace: _currentPaceValue,
+                pace: _currentPaceValue / 60,
                 weeklyDistance: _isKM
                     ? double.parse(
                         _currentWeeklyDistanceValue.toStringAsFixed(0))
@@ -426,7 +428,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _emailController.text = data.email ?? 'email@gmail.com';
     _bioController.text = data.description ?? 'Here will be your Biography.';
     _isKM = data.isMetric;
-    _currentPaceValue = data.pace.toDouble();
+    _currentPaceValue = (data.pace.toDouble() * 60);
     _currentWeeklyDistanceValue = data.weeklyDistance.toDouble();
     _countOfRuns = data.workoutsPerWeek.toInt();
   }
