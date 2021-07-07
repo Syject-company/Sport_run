@@ -24,6 +24,8 @@ String get newPasswordBackground => 'assets/images/new_password.png';
 
 String get passwordChangedBackground => 'assets/images/password_changed.png';
 
+String get noFiltersBackground => 'assets/images/no_filters.png';
+
 String get defaultProfileImage => 'assets/icons/default_profile.png';
 
 String get connectIcon => 'assets/icons/connect.png';

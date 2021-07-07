@@ -33,203 +33,205 @@ class UserInfo extends StatelessWidget {
       body: Container(
         width: width,
         height: height,
-        padding: const EdgeInsets.all(15.0),
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  SizedBox(
-                    height: height * 0.12,
-                    width: height * 0.12,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: 80,
-                      backgroundImage: userModel.photoLink == null
-                          ? AssetImage(
-                              defaultProfileImage,
-                            ) as ImageProvider
-                          : NetworkImage(userModel.photoLink!),
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      height: height * 0.12,
+                      width: height * 0.12,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        radius: 80,
+                        backgroundImage: userModel.photoLink == null
+                            ? AssetImage(
+                                defaultProfileImage,
+                              ) as ImageProvider
+                            : NetworkImage(userModel.photoLink!),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: width * 0.04,
-                  ),
-                  Column(
-                    children: [
-                      Container(
-                        width: width * 0.65,
-                        child: Row(
-                          children: [
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                '${userModel.nickName ?? 'NickName'}',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18.sp,
-                                    fontFamily: 'roboto',
-                                    fontWeight: FontWeight.w700),
+                    SizedBox(
+                      width: width * 0.04,
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          width: width * 0.65,
+                          child: Row(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '${userModel.nickName ?? 'NickName'}',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18.sp,
+                                      fontFamily: 'roboto',
+                                      fontWeight: FontWeight.w700),
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              width: width * 0.15,
-                            ),
-                            Image.asset(
-                              rankIcon,
-                              height: height * 0.015,
-                              width: height * 0.015,
-                              fit: BoxFit.fill,
-                              color: Colors.red,
-                            ),
-                            const SizedBox(
-                              width: 7.0,
-                            ),
-                            Text(
-                              'Rank ${userModel.rank}',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12.sp,
-                                  fontFamily: 'roboto',
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ],
+                              SizedBox(
+                                width: width * 0.15,
+                              ),
+                              Image.asset(
+                                rankIcon,
+                                height: height * 0.015,
+                                width: height * 0.015,
+                                fit: BoxFit.fill,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(
+                                width: 7.0,
+                              ),
+                              Text(
+                                'Rank ${userModel.rank}',
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12.sp,
+                                    fontFamily: 'roboto',
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: height * 0.02,
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        width: width * 0.65,
-                        child: Text(
-                          userModel.moto ?? 'Here will be your Motto.',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.sp,
-                              fontFamily: 'roboto',
-                              fontWeight: FontWeight.w500),
+                        SizedBox(
+                          height: height * 0.02,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: height * 0.04,
-              ),
-              Row(
-                children: [
-                  _cardItem(
-                    height: height,
-                    width: width + 10,
-                    title: 'Pace',
-                    icon: paceIcon,
-                    value:
-                        '${userModel.pace} min/${userModel.isMetric ? 'km' : 'mile'}',
-                  ),
-                  SizedBox(
-                    width: height * 0.02,
-                  ),
-                  _cardItem(
-                    height: height,
-                    width: width + 10,
-                    title: 'Runs',
-                    icon: runsIcon,
-                    value: '${userModel.workoutsPerWeek}+ times/week',
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: _cardItem(
-                  height: height,
-                  width: width + 120,
-                  title: 'Weekly Distance',
-                  icon: weeklyDistanceIcon,
-                  value:
-                      '${userModel.weeklyDistance} ${userModel.isMetric ? 'km' : 'mile'}',
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          width: width * 0.65,
+                          child: Text(
+                            userModel.moto ?? 'Here will be your Motto.',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12.sp,
+                                fontFamily: 'roboto',
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              const Divider(
-                height: 3,
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _userWonLoss(
-                      title: 'Won',
-                      value: '${userModel.wins}',
-                      colorValue: Colors.red),
-                  Container(
-                    color: Colors.grey,
-                    height: 10.h,
-                    width: 0.5,
-                  ),
-                  _userWonLoss(
-                    title: 'Loss',
-                    value: '${userModel.loses}',
-                  ),
-                  Container(
-                    color: Colors.grey,
-                    height: 10.h,
-                    width: 0.5,
-                  ),
-                  _userWonLoss(
-                    title: 'Discarded',
-                    value: '${userModel.discarded}',
-                  ),
-                  Container(
-                    color: Colors.grey,
-                    height: 10.h,
-                    width: 0.5,
-                  ),
-                  _userWonLoss(
-                    title: 'My score',
-                    value: '${userModel.score}',
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              const Divider(
-                height: 3,
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                height: height * 0.5,
-                child: _userBio(
+                SizedBox(
+                  height: height * 0.04,
+                ),
+                Row(
+                  children: [
+                    _cardItem(
+                      height: height,
+                      width: width + 10,
+                      title: 'Pace',
+                      icon: paceIcon,
+                      value:
+                          '${userModel.pace} min/${userModel.isMetric ? 'km' : 'mile'}',
+                    ),
+                    SizedBox(
+                      width: height * 0.02,
+                    ),
+                    _cardItem(
+                      height: height,
+                      width: width + 10,
+                      title: 'Runs',
+                      icon: runsIcon,
+                      value: '${userModel.workoutsPerWeek}+ times/week',
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: _cardItem(
+                    height: height,
+                    width: width + 120,
+                    title: 'Weekly Distance',
+                    icon: weeklyDistanceIcon,
                     value:
-                        '${userModel.description ?? 'Here will be your Biography.'}'),
-              ),
-              buttonWithIcon(
-                title: 'BATTLE',
-                icon: battleIcon,
-                buttonColor: Colors.red,
-                iconColor: Colors.white,
-                iconSize: 13.0,
-                titleColor: Colors.white,
-                height: height * 0.06,
-                onPressed: () async {
-                  //TODO: action here back then open battle draw
-                },
-              ),
-            ],
+                        '${userModel.weeklyDistance} ${userModel.isMetric ? 'km' : 'mile'}',
+                  ),
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
+                const Divider(
+                  height: 3,
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _userWonLoss(
+                        title: 'Won',
+                        value: '${userModel.wins}',
+                        colorValue: Colors.red),
+                    Container(
+                      color: Colors.grey,
+                      height: 10.h,
+                      width: 0.5,
+                    ),
+                    _userWonLoss(
+                      title: 'Loss',
+                      value: '${userModel.loses}',
+                    ),
+                    Container(
+                      color: Colors.grey,
+                      height: 10.h,
+                      width: 0.5,
+                    ),
+                    _userWonLoss(
+                      title: 'Discarded',
+                      value: '${userModel.discarded}',
+                    ),
+                    Container(
+                      color: Colors.grey,
+                      height: 10.h,
+                      width: 0.5,
+                    ),
+                    _userWonLoss(
+                      title: 'My score',
+                      value: '${userModel.score}',
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
+                const Divider(
+                  height: 3,
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  height: height * 0.5,
+                  child: _userBio(
+                      value:
+                          '${userModel.description ?? 'Here will be your Biography.'}'),
+                ),
+                buttonWithIcon(
+                  title: 'BATTLE',
+                  icon: battleIcon,
+                  buttonColor: Colors.red,
+                  iconColor: Colors.white,
+                  iconSize: 13.0,
+                  titleColor: Colors.white,
+                  height: height * 0.06,
+                  onPressed: () async {
+                    //TODO: action here back then open battle draw
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
