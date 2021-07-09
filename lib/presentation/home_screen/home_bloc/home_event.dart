@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:one2one_run/data/models/connect_users_model.dart';
+import 'package:one2one_run/utils/enums.dart';
 
 abstract class HomeEvent extends Equatable {
   @override
@@ -25,15 +27,6 @@ class SwitchIsNeedFilter extends HomeEvent {
 
   @override
   List<Object> get props => [isNeedFilter];
-}
-
-class SelectKmOrMile extends HomeEvent {
-  SelectKmOrMile(this.isKM);
-
-  final bool isKM;
-
-  @override
-  List<Object> get props => [isKM];
 }
 
 class SelectTimesPerWeek extends HomeEvent {
@@ -65,4 +58,28 @@ class SelectConnectFilters extends HomeEvent {
         weeklyDistanceTo,
         workoutsPerWeek
       ];
+}
+
+class OpenBattleDrawer extends HomeEvent {
+  OpenBattleDrawer(this.userModel);
+
+  final ConnectUsersModel userModel;
+
+  @override
+  List<Object> get props => [userModel];
+}
+
+class OpenFilterDrawer extends HomeEvent {}
+
+class GetDatePicker extends HomeEvent {}
+
+class OpenCloseMessageDrawer extends HomeEvent {}
+
+class SendMessageToOpponent extends HomeEvent {
+  SendMessageToOpponent(this.message);
+
+  final String message;
+
+  @override
+  List<Object> get props => [message];
 }

@@ -47,7 +47,6 @@ Widget inputTextField({
     obscureText: obscureText,
     cursorColor: const Color(0xffFF1744),
     maxLength: isCounterShown ? maxLength : null,
-    //  keyboardType: isNumbers ? TextInputType.number : TextInputType.multiline,
     keyboardType: keyboardType,
     maxLines: isMultiLine ? null : 1,
     readOnly: isReadOnly,
@@ -276,6 +275,7 @@ Widget seekBarPace({
                   icon: const Icon(
                     Icons.info_outline_rounded,
                     color: Colors.grey,
+                    size: 20.0,
                   ),
                   onPressed: () {
                     showDialog(

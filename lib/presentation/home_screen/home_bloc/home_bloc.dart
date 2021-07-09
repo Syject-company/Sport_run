@@ -15,8 +15,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield UserDataUpdated();
     } else if (event is SwitchIsNeedFilter) {
       yield SwitchedIsNeedFilter(isNeedFilter: event.isNeedFilter);
-    } else if (event is SelectKmOrMile) {
-      yield KmOrMileIsSelected(event.isKM);
     } else if (event is SelectTimesPerWeek) {
       yield TimesPerWeekIsSelected(event.timesPerWeek);
     } else if (event is SelectConnectFilters) {
@@ -27,6 +25,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           event.weeklyDistanceFrom,
           event.weeklyDistanceTo,
           event.workoutsPerWeek);
+    } else if (event is OpenBattleDrawer) {
+      yield BattleDrawerIsOpen(event.userModel);
+    } else if (event is OpenFilterDrawer) {
+      yield FilterDrawerIsOpen();
+    } else if (event is GetDatePicker) {
+      yield GotDatePicker();
+    } else if (event is OpenCloseMessageDrawer) {
+      yield MessageDrawerIsOpenOrClose();
+    } else if (event is SendMessageToOpponent) {
+      yield MessageToOpponentDrawerIsSent(event.message);
     }
   }
 }

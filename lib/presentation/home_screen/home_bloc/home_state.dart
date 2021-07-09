@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:one2one_run/data/models/connect_users_model.dart';
+import 'package:one2one_run/utils/enums.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
@@ -30,14 +32,6 @@ class SwitchedIsNeedFilter extends HomeState {
   @override
   List<Object> get props => [isNeedFilter];
 }
-class KmOrMileIsSelected extends HomeState {
-  KmOrMileIsSelected(this.isKM);
-
-  final bool isKM;
-
-  @override
-  List<Object> get props => [isKM];
-}
 
 class TimesPerWeekIsSelected extends HomeState {
   TimesPerWeekIsSelected(this.timesPerWeek);
@@ -61,11 +55,35 @@ class SelectedConnectFilters extends HomeState {
 
   @override
   List<Object> get props => [
-    isFilterIncluded,
-    paceFrom,
-    paceTo,
-    weeklyDistanceFrom,
-    weeklyDistanceTo,
-    workoutsPerWeek
-  ];
+        isFilterIncluded,
+        paceFrom,
+        paceTo,
+        weeklyDistanceFrom,
+        weeklyDistanceTo,
+        workoutsPerWeek
+      ];
+}
+
+class BattleDrawerIsOpen extends HomeState {
+  BattleDrawerIsOpen(this.userModel);
+
+  final ConnectUsersModel userModel;
+
+  @override
+  List<Object> get props => [userModel];
+}
+
+class FilterDrawerIsOpen extends HomeState {}
+
+class GotDatePicker extends HomeState {}
+
+class MessageDrawerIsOpenOrClose extends HomeState {}
+
+class MessageToOpponentDrawerIsSent extends HomeState {
+  MessageToOpponentDrawerIsSent(this.message);
+
+  final String message;
+
+  @override
+  List<Object> get props => [message];
 }

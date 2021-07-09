@@ -23,3 +23,18 @@ String get weeklyDistanceText =>
 
 String get termsButtonText =>
     'I have agree to the Terms of services and Privacy Policy';
+
+String get distanceText =>
+    'The running distance you want to challenge your opponent with.';
+
+List<String> get messagesToOpponent => [
+      'It will be a piece of cake!',
+      'Let’s battle!',
+      'Can you tackle this challenge?',
+      'It will be a piece of cake!',
+      'Let’s battle!',
+      'Can you tackle this challenge?',
+      'It will be a piece of cake!',
+      'Let’s battle!',
+      'Can you tackle this challenge?',
+    ];

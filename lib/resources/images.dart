@@ -49,3 +49,5 @@ String get weeklyDistanceIcon => 'assets/icons/weekly_distance.png';
 String get runsIcon => 'assets/icons/runs.png';
 
 String get battleIcon => 'assets/icons/battle.png';
+
+String get calendarIcon => 'assets/icons/calendar.png';
