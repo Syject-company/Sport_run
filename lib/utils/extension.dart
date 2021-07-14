@@ -20,7 +20,7 @@ extension DateTimeExtension on void {
   }) {
     return DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(
         DateTime(date.year, date.month, date.day, time.hour, time.minute)
-            .toUtc());
+            .toLocal());
   }
 
   String getFormattedDateForUser({
@@ -29,7 +29,7 @@ extension DateTimeExtension on void {
   }) {
     return DateFormat('yyyy-MM-dd HH:mm').format(
         DateTime(date.year, date.month, date.day, time.hour, time.minute)
-            .toUtc());
+            .toLocal());
   }
 }
 

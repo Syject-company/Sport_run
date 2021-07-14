@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_conditional_rendering/flutter_conditional_rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:one2one_run/data/models/battle_request_model.dart';
 import 'package:one2one_run/utils/extension.dart' show DateTimeExtension;
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/apis.dart';
@@ -46,6 +47,7 @@ class _HomePageState extends State<HomePage> {
   final _pageController = PageController();
   final _applyController = RoundedLoadingButtonController();
   final _refreshController = RoundedLoadingButtonController();
+  final _applyMessageController = RoundedLoadingButtonController();
   final _applyBattleController = RoundedLoadingButtonController();
   final _battleNameController = TextEditingController();
   final _messageController = TextEditingController();
@@ -57,38 +59,48 @@ class _HomePageState extends State<HomePage> {
   ConnectApi connectApi = ConnectApi();
 
   String pageTitle = 'Connect';
-  String messageToOpponent = 'It will be a piece of cake!';
+  String messageToOpponent = 'Come as you are, join the run!';
   String dateAndTime = '';
   late String dateAndTimeForUser;
 
   late Future<UserModel?> _userModel;
-  late FirebaseMessaging messaging;
   late Future<List<ConnectUsersModel>?> _users;
+  ConnectUsersModel? _userBattleModel;
+  late FirebaseMessaging _messaging;
   late RangeValues _currentRangeValuesPace;
   late RangeValues _currentRangeValuesWeekly;
 
-  ConnectUsersModel? userBattleModel;
-
   bool _isNeedFilter = false;
   bool _isNeedToOpenMessageDrawer = false;
-  bool isNeedToOpenBattleDrawer = false;
   late bool isKM;
 
   int _countOfRuns = 1;
+  int _selectedMessageIndex = 1000;
 
   double _currentDistanceValue = 300;
 
   @override
   void initState() {
     super.initState();
-    messaging = FirebaseMessaging.instance;
-    messaging.getToken().then((value) {
-      print('Firebase token: $value');
+    prepareData();
+  }
+
+  void prepareData() {
+    _messaging = FirebaseMessaging.instance;
+    _messaging.getToken().then((token) {
+      homeApi.sendFireBaseToken(tokenFireBase: token ?? '');
+      print('Firebase token: $token');
     });
     dateAndTimeForUser =
         getFormattedDateForUser(date: DateTime.now(), time: TimeOfDay.now());
+    dateAndTime = getFormattedDate(date: DateTime.now(), time: TimeOfDay.now());
     updateRangeValuesAndUnit();
     _userModel = homeApi.getUserModel();
+    _userModel.then((value) {
+      if (value != null) {
+        PreferenceUtils.setCurrentUserModel(value);
+      }
+    });
     _users = getUsers(isFilterIncluded: _isNeedFilter);
   }
 
@@ -125,7 +137,7 @@ class _HomePageState extends State<HomePage> {
           } else if (state is BattleDrawerIsOpen) {
             dateAndTimeForUser = getFormattedDateForUser(
                 date: DateTime.now(), time: TimeOfDay.now());
-            userBattleModel = state.userModel;
+            _userBattleModel = state.userModel;
             selectedDrawersType = DrawersType.BattleDrawer;
             if (_keyScaffold.currentState != null &&
                 !_keyScaffold.currentState!.isEndDrawerOpen) {
@@ -166,8 +178,55 @@ class _HomePageState extends State<HomePage> {
             });
           } else if (state is MessageDrawerIsOpenOrClose) {
             _isNeedToOpenMessageDrawer = !_isNeedToOpenMessageDrawer;
+            _selectedMessageIndex = 1000;
+            _messageController.text = '';
           } else if (state is MessageToOpponentDrawerIsSent) {
+            _applyMessageController.reset();
             messageToOpponent = state.message;
+            BlocProvider.of<HomeBloc>(context)
+                .add(home_bloc.OpenCloseMessageDrawer());
+          } else if (state is SelectedMessageToOpponent) {
+            _selectedMessageIndex = state.messageIndex;
+          } else if (state is BattleCreated) {
+            await homeApi
+                .createBattle(
+                    model: BattleRequestModel(
+              dateTime: dateAndTime,
+              battleName: _battleNameController.text.isNotEmpty
+                  ? _battleNameController.text
+                  : null,
+              distance: _currentDistanceValue / 60,
+              message: messageToOpponent,
+              opponentId: _userBattleModel!.id,
+            ))
+                .then((value) async {
+              if (value) {
+                final currentUserModel = PreferenceUtils.getCurrentUserModel();
+                if (_keyScaffold.currentState != null &&
+                    _keyScaffold.currentState!.isEndDrawerOpen) {
+                  Navigator.of(context).pop();
+                }
+                battleCreated(
+                  context: context,
+                  height: height,
+                  width: width,
+                  currentUserName: currentUserModel.nickName ?? 'NickName',
+                  currentUserPhoto: currentUserModel.photoLink,
+                  opponentUserName: _userBattleModel?.nickName ?? 'NickName',
+                  opponentUserPhoto: _userBattleModel?.photoLink,
+                );
+
+                Timer(const Duration(seconds: 3), () {
+                  Navigator.of(context).pop();
+                });
+              } else {
+                await Fluttertoast.showToast(
+                    msg: 'Unexpected error happened',
+                    fontSize: 16.0,
+                    gravity: ToastGravity.CENTER);
+              }
+            });
+            _applyBattleController.reset();
           }
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
         },
@@ -178,6 +237,9 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: homeBackground,
             onEndDrawerChanged: (value) {
               if (!value && selectedDrawersType != DrawersType.FilterDrawer) {
+                _isNeedToOpenMessageDrawer = false;
+                _currentDistanceValue = 300;
+                _battleNameController.text = '';
                 Timer(const Duration(milliseconds: 300), () {
                   BlocProvider.of<HomeBloc>(context)
                       .add(home_bloc.OpenFilterDrawer());
@@ -236,7 +298,7 @@ class _HomePageState extends State<HomePage> {
                         )
                       : null,
             ),
-            drawer: _drawer(
+            drawer: _homeDrawer(
               context: context,
               width: width,
               height: height,
@@ -246,24 +308,135 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                     valueBuilder: (context) => selectedDrawersType,
                     caseBuilders: {
-                      DrawersType.FilterDrawer: (context) => _filterDrawer(
+                      DrawersType.FilterDrawer: (context) => filterDrawer(
                             context: context,
                             width: width,
                             height: height,
+                            isNeedFilter: _isNeedFilter,
+                            onSwitchFilter: (value) {
+                              BlocProvider.of<HomeBloc>(context).add(
+                                  home_bloc.SwitchIsNeedFilter(
+                                      isNeedFilter: value));
+                            },
+                            valuePaceStart: _currentRangeValuesPace.start,
+                            valuePaceEnd: _currentRangeValuesPace.end,
+                            isKM: isKM,
+                            currentRangeValuesPace: _currentRangeValuesPace,
+                            onRangePaceChanged: (values) {
+                              setState(() {
+                                _currentRangeValuesPace = values;
+                              });
+                            },
+                            valueWeeklyStart: _currentRangeValuesWeekly.start,
+                            valueWeeklyEnd: _currentRangeValuesWeekly.end,
+                            currentRangeValuesWeekly: _currentRangeValuesWeekly,
+                            onRangeWeeklyChanged: (values) {
+                              setState(() {
+                                _currentRangeValuesWeekly = values;
+                              });
+                            },
+                            onTapMinusRuns: () {
+                              if (_countOfRuns > 1) {
+                                BlocProvider.of<HomeBloc>(context).add(
+                                    home_bloc.SelectTimesPerWeek(
+                                        _countOfRuns -= 1));
+                              }
+                            },
+                            countOfRuns: _countOfRuns,
+                            onTapPlusRuns: () {
+                              if (_countOfRuns < 7) {
+                                BlocProvider.of<HomeBloc>(context).add(
+                                    home_bloc.SelectTimesPerWeek(
+                                        _countOfRuns += 1));
+                              }
+                            },
+                            applyController: _applyController,
+                            onTapApply: () {
+                              BlocProvider.of<HomeBloc>(context)
+                                  .add(home_bloc.SelectConnectFilters(
+                                _isNeedFilter,
+                                _currentRangeValuesPace.start,
+                                _currentRangeValuesPace.end,
+                                _currentRangeValuesWeekly.start,
+                                _currentRangeValuesWeekly.end,
+                                _countOfRuns,
+                              ));
+                              _applyController.reset();
+                            },
+                            onTapCancel: () {
+                              if (_keyScaffold.currentState != null &&
+                                  _keyScaffold.currentState!.isEndDrawerOpen) {
+                                Navigator.of(context).pop();
+                              }
+                            },
                           ),
                       DrawersType.BattleDrawer: (context) {
                         return _createBattleDrawer(
                           context: context,
-                          model: userBattleModel,
+                          model: _userBattleModel,
                           width: width,
                           height: height,
                         );
                       },
                     },
-                    fallbackBuilder: (context) => _filterDrawer(
+                    fallbackBuilder: (context) => filterDrawer(
                       context: context,
                       width: width,
                       height: height,
+                      isNeedFilter: _isNeedFilter,
+                      onSwitchFilter: (value) {
+                        BlocProvider.of<HomeBloc>(context).add(
+                            home_bloc.SwitchIsNeedFilter(isNeedFilter: value));
+                      },
+                      valuePaceStart: _currentRangeValuesPace.start,
+                      valuePaceEnd: _currentRangeValuesPace.end,
+                      isKM: isKM,
+                      currentRangeValuesPace: _currentRangeValuesPace,
+                      onRangePaceChanged: (values) {
+                        setState(() {
+                          _currentRangeValuesPace = values;
+                        });
+                      },
+                      valueWeeklyStart: _currentRangeValuesWeekly.start,
+                      valueWeeklyEnd: _currentRangeValuesWeekly.end,
+                      currentRangeValuesWeekly: _currentRangeValuesWeekly,
+                      onRangeWeeklyChanged: (values) {
+                        setState(() {
+                          _currentRangeValuesWeekly = values;
+                        });
+                      },
+                      onTapMinusRuns: () {
+                        if (_countOfRuns > 1) {
+                          BlocProvider.of<HomeBloc>(context).add(
+                              home_bloc.SelectTimesPerWeek(_countOfRuns -= 1));
+                        }
+                      },
+                      countOfRuns: _countOfRuns,
+                      onTapPlusRuns: () {
+                        if (_countOfRuns < 7) {
+                          BlocProvider.of<HomeBloc>(context).add(
+                              home_bloc.SelectTimesPerWeek(_countOfRuns += 1));
+                        }
+                      },
+                      applyController: _applyController,
+                      onTapApply: () {
+                        BlocProvider.of<HomeBloc>(context)
+                            .add(home_bloc.SelectConnectFilters(
+                          _isNeedFilter,
+                          _currentRangeValuesPace.start,
+                          _currentRangeValuesPace.end,
+                          _currentRangeValuesWeekly.start,
+                          _currentRangeValuesWeekly.end,
+                          _countOfRuns,
+                        ));
+                        _applyController.reset();
+                      },
+                      onTapCancel: () {
+                        if (_keyScaffold.currentState != null &&
+                            _keyScaffold.currentState!.isEndDrawerOpen) {
+                          Navigator.of(context).pop();
+                        }
+                      },
                     ),
                   )
                 : null,
@@ -431,7 +604,8 @@ class _HomePageState extends State<HomePage> {
     ];
   }
 
-  Widget _drawer(
+////////////////////////////////////////////////////
+  Widget _homeDrawer(
       {required BuildContext context,
       required double height,
       required double width}) {
@@ -681,256 +855,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _filterDrawer(
-      {required BuildContext context,
-      required double height,
-      required double width}) {
-    return Container(
-      width: width,
-      margin: EdgeInsets.only(left: width * 0.15),
-      color: Colors.white,
-      child: Drawer(
-        child: Padding(
-          padding: EdgeInsets.only(top: height * 0.05),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                child: Text(
-                  'Filters',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.sp,
-                      fontFamily: 'roboto',
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
-              SizedBox(
-                height: 15.h,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${!_isNeedFilter ? 'Enable' : 'Disable'} filters',
-                      style: TextStyle(
-                          color: const Color(0xff838383),
-                          fontSize: 13.sp,
-                          fontFamily: 'roboto',
-                          fontWeight: FontWeight.w500),
-                    ),
-                    Switch(
-                      value: _isNeedFilter,
-                      activeColor: const Color(0xffc1ff9b),
-                      onChanged: (val) {
-                        BlocProvider.of<HomeBloc>(context).add(
-                            home_bloc.SwitchIsNeedFilter(isNeedFilter: val));
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Stack(
-                children: [
-                  Column(
-                    children: [
-                      rangeSeekBarPace(
-                        title: 'Pace',
-                        context: context,
-                        dialogTitle: 'Pace',
-                        dialogText: paceText,
-                        startTimePerKM: _currentRangeValuesPace.start,
-                        endTimePerKM: _currentRangeValuesPace.end,
-                        unit: isKM ? 'km' : 'mile',
-                        kmPerHour: (60 * 60) / _currentRangeValuesPace.end,
-                        minValue: (isKM ? 2 : 3) * 60,
-                        maxValue: (isKM ? 11 : 18) * 60,
-                        rangeValue: _currentRangeValuesPace,
-                        onRangeChanged: (value) {
-                          setState(() {
-                            _currentRangeValuesPace = value;
-                          });
-                        },
-                      ),
-                      rangeSeekBarWeekly(
-                        title: 'Weekly distance',
-                        context: context,
-                        dialogTitle: 'Weekly distance',
-                        dialogText: weeklyDistanceText,
-                        endTimePerKM: _currentRangeValuesWeekly.end,
-                        startTimePerKM: _currentRangeValuesWeekly.start,
-                        unit: isKM ? 'km' : 'mile',
-                        minValue: isKM ? 4 : 2.5,
-                        maxValue: isKM ? 150 : 94,
-                        rangeValue: _currentRangeValuesWeekly,
-                        onChanged: (value) {
-                          setState(() {
-                            _currentRangeValuesWeekly = value;
-                          });
-                        },
-                      ),
-                      SizedBox(
-                        height: 25.h,
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                        child: Text(
-                          'How often do you run?',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'roboto',
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            buttonNoIcon(
-                              title: '-',
-                              color: grayColor,
-                              textColor: Colors.black,
-                              width: width * 0.17,
-                              height: 30.h,
-                              onPressed: () async {
-                                if (_countOfRuns > 1) {
-                                  BlocProvider.of<HomeBloc>(context).add(
-                                      home_bloc.SelectTimesPerWeek(
-                                          _countOfRuns -= 1));
-                                }
-                              },
-                            ),
-                            Container(
-                              width: 80.w,
-                              height: 50.h,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    _countOfRuns.toString(),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'roboto',
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  const Divider(
-                                    height: 3,
-                                    thickness: 2,
-                                  ),
-                                  Text(
-                                    'times per week',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'roboto',
-                                        fontSize: 11.sp,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            buttonNoIcon(
-                              title: '+',
-                              color: redColor,
-                              width: width * 0.17,
-                              height: 30.h,
-                              onPressed: () async {
-                                if (_countOfRuns < 7) {
-                                  BlocProvider.of<HomeBloc>(context).add(
-                                      home_bloc.SelectTimesPerWeek(
-                                          _countOfRuns += 1));
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                        margin: EdgeInsets.only(top: height * 0.25),
-                        alignment: Alignment.bottomCenter,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: buildRoundedButton(
-                                label: 'APPLY',
-                                width: width,
-                                height: 40.h,
-                                buttonTextSize: 14.0,
-                                controller: _applyController,
-                                textColor: Colors.white,
-                                backColor: redColor,
-                                onTap: () async {
-                                  BlocProvider.of<HomeBloc>(context)
-                                      .add(home_bloc.SelectConnectFilters(
-                                    _isNeedFilter,
-                                    _currentRangeValuesPace.start,
-                                    _currentRangeValuesPace.end,
-                                    _currentRangeValuesWeekly.start,
-                                    _currentRangeValuesWeekly.end,
-                                    _countOfRuns,
-                                  ));
-                                  _applyController.reset();
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15.h,
-                            ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: buttonNoIcon(
-                                title: 'Cancel',
-                                color: Colors.transparent,
-                                height: 40.h,
-                                textColor: Colors.black,
-                                buttonTextSize: 14.0,
-                                shadowColor: Colors.transparent,
-                                onPressed: () {
-                                  if (_keyScaffold.currentState != null &&
-                                      _keyScaffold
-                                          .currentState!.isEndDrawerOpen) {
-                                    Navigator.of(context).pop();
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Visibility(
-                    visible: !_isNeedFilter,
-                    child: Container(
-                      width: width,
-                      height: height - (height * 0.07),
-                      color: Colors.white.withOpacity(0.7),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
+/////////////////////////////////
   Widget _createBattleDrawer(
       {required BuildContext context,
       required ConnectUsersModel? model,
@@ -941,387 +866,74 @@ class _HomePageState extends State<HomePage> {
       margin: EdgeInsets.only(left: width * 0.15),
       color: Colors.white,
       child: !_isNeedToOpenMessageDrawer
-          ? Drawer(
-              child: Padding(
-                padding: EdgeInsets.only(top: height * 0.07),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            interactIcon,
-                            height: 12.0,
-                            width: 12.0,
-                            fit: BoxFit.contain,
-                            color: Colors.red,
-                          ),
-                          const SizedBox(
-                            width: 20.0,
-                          ),
-                          Text(
-                            'Battle',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 22.sp,
-                                fontFamily: 'roboto',
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: height * 0.03,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-                      child: Text(
-                        'Opponent',
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13.sp,
-                            fontFamily: 'roboto',
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    Container(
-                      height: height * 0.12,
-                      margin: EdgeInsets.symmetric(
-                          horizontal: width * 0.04, vertical: height * 0.01),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: const Color(0xffCDCDCD).withOpacity(0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: height * 0.08,
-                            width: height * 0.08,
-                            margin:
-                                EdgeInsets.symmetric(horizontal: width * 0.05),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              radius: 80,
-                              backgroundImage: model?.photoLink == null
-                                  ? AssetImage(
-                                      defaultProfileImage,
-                                    ) as ImageProvider
-                                  : NetworkImage(model!.photoLink!),
-                            ),
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                model?.nickName ?? 'NickName',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18.sp,
-                                    fontFamily: 'roboto',
-                                    fontWeight: FontWeight.w700),
-                              ),
-                              SizedBox(
-                                height: height * 0.01,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    rankIcon,
-                                    height: height * 0.015,
-                                    width: height * 0.015,
-                                    fit: BoxFit.fill,
-                                    color: Colors.red,
-                                  ),
-                                  const SizedBox(
-                                    width: 7.0,
-                                  ),
-                                  Text(
-                                    'Rank ${model?.rank}',
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12.sp,
-                                        fontFamily: 'roboto',
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: width * 0.04,
-                      ),
-                      child: inputTextField(
-                        controller: _battleNameController,
-                        errorText: null,
-                        maxLength: 25,
-                        isCounterShown: true,
-                        hintText: 'Battle vs ${model?.nickName}',
-                      ),
-                    ),
-                    SizedBox(
-                      height: height * 0.01,
-                    ),
-                    seekBarPace(
-                      title: 'Distance',
-                      context: context,
-                      dialogTitle: 'Distance',
-                      dialogText: distanceText,
-                      timePerKM: _currentDistanceValue,
-                      unit: isKM ? 'km' : 'mile',
-                      kmPerHour: (60 * 60) / _currentDistanceValue,
-                      minValue: (isKM ? 2 : 3) * 60,
-                      maxValue: (isKM ? 11 : 18) * 60,
-                      sliderValue: _currentDistanceValue,
-                      onChanged: (value) {
-                        setState(() {
-                          _currentDistanceValue = value;
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      height: height * 0.03,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-                      child: Text(
-                        'Deadline date',
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13.sp,
-                            fontFamily: 'roboto',
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          left: width * 0.02, right: width * 0.03),
-                      child: TextButton(
-                        onPressed: () {
-                          BlocProvider.of<HomeBloc>(context)
-                              .add(home_bloc.GetDatePicker());
-                        },
-                        child: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                dateAndTimeForUser,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15.sp,
-                                    fontFamily: 'roboto',
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              Image.asset(
-                                calendarIcon,
-                                height: height * 0.02,
-                                width: height * 0.02,
-                                fit: BoxFit.contain,
-                                color: Colors.red,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          left: width * 0.04, top: height * 0.02),
-                      child: Text(
-                        'Message to opponent',
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13.sp,
-                            fontFamily: 'roboto',
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          left: width * 0.02, right: width * 0.03),
-                      child: TextButton(
-                        onPressed: () {
-                          BlocProvider.of<HomeBloc>(context)
-                              .add(home_bloc.OpenCloseMessageDrawer());
-                        },
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  messageToOpponent,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15.sp,
-                                    fontFamily: 'roboto',
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_drop_down,
-                                  color: Colors.grey[400],
-                                  size: 24.0,
-                                ),
-                              ],
-                            ),
-                            const Divider(
-                              height: 5,
-                              thickness: 2.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                      margin: EdgeInsets.only(top: height * 0.12),
-                      alignment: Alignment.bottomCenter,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: buildRoundedButton(
-                              label: 'APPLY',
-                              width: width,
-                              height: 40.h,
-                              buttonTextSize: 14.0,
-                              controller: _applyBattleController,
-                              textColor: Colors.white,
-                              backColor: redColor,
-                              onTap: () async {},
-                            ),
-                          ),
-                          SizedBox(
-                            height: 15.h,
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: buttonNoIcon(
-                              title: 'Cancel',
-                              color: Colors.transparent,
-                              height: 40.h,
-                              textColor: Colors.black,
-                              buttonTextSize: 14.0,
-                              shadowColor: Colors.transparent,
-                              onPressed: () {
-                                if (_keyScaffold.currentState != null &&
-                                    _keyScaffold
-                                        .currentState!.isEndDrawerOpen) {
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+          ? battleDrawer(
+              height: height,
+              width: width,
+              model: model,
+              battleNameController: _battleNameController,
+              context: context,
+              currentDistanceValue: _currentDistanceValue,
+              isKM: isKM,
+              onSeekChanged: (value) {
+                setState(() {
+                  _currentDistanceValue = value;
+                });
+              },
+              onTapGetDatePicker: () {
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.GetDatePicker());
+              },
+              dateAndTimeForUser: dateAndTimeForUser,
+              onTapOpenCloseMessageDrawer: () {
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.OpenCloseMessageDrawer());
+              },
+              messageToOpponent: messageToOpponent,
+              applyBattleController: _applyBattleController,
+              onTapApplyBattle: () {
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.CreateBattle());
+              },
+              onTapCancelBattle: () {
+                if (_keyScaffold.currentState != null &&
+                    _keyScaffold.currentState!.isEndDrawerOpen) {
+                  Navigator.of(context).pop();
+                }
+              },
             )
-          : _getMessageToOpponentDrawer(
-              context: context, width: width, height: height),
-    );
-  }
-
-  Widget _getMessageToOpponentDrawer(
-      {required BuildContext context,
-      required double height,
-      required double width}) {
-    return Drawer(
-      child: Padding(
-        padding: EdgeInsets.only(top: height * 0.07),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      BlocProvider.of<HomeBloc>(context)
-                          .add(home_bloc.OpenCloseMessageDrawer());
-                    },
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.grey,
-                      size: 20.0,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20.0,
-                  ),
-                  Text(
-                    'Message to opponent',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18.sp,
-                        fontFamily: 'roboto',
-                        fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
+          : messageToOpponentDrawer(
+              context: context,
+              width: width,
+              height: height,
+              onTapOpenCloseMessageDrawer: () {
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.OpenCloseMessageDrawer());
+              },
+              onTapSelectMessageToOpponent: (index) {
+                BlocProvider.of<HomeBloc>(context).add(
+                  home_bloc.SelectMessageToOpponent(index),
+                );
+              },
+              onTapApplyMessage: () async {
+                if (_messageController.text.isNotEmpty ||
+                    _selectedMessageIndex != 1000) {
+                  BlocProvider.of<HomeBloc>(context).add(
+                      home_bloc.SendMessageToOpponent(
+                          _messageController.text.isNotEmpty
+                              ? _messageController.text
+                              : messagesToOpponent[_selectedMessageIndex]));
+                } else {
+                  _applyMessageController.reset();
+                  await Fluttertoast.showToast(
+                      msg: 'No message selected!',
+                      fontSize: 16.0,
+                      gravity: ToastGravity.CENTER);
+                }
+              },
+              messageController: _messageController,
+              selectedMessageIndex: _selectedMessageIndex,
+              applyMessageController: _applyMessageController,
             ),
-            SizedBox(
-              height: height * 0.05,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.04,
-              ),
-              child: inputTextField(
-                controller: _messageController,
-                errorText: null,
-                maxLength: 30,
-                isCounterShown: true,
-                hintText: 'My variant',
-              ),
-            ),
-            SizedBox(
-              height: height * 0.05,
-            ),
-            Container(
-              height: height * 0.65,
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.04,
-              ),
-              child: ListView.builder(
-                  itemCount: messagesToOpponent.length,
-                  itemBuilder: (BuildContext con, int index) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(vertical: height * 0.015),
-                      child: InkWell(
-                        onTap: (){
-
-                        },
-
-                        child: Text(
-                          messagesToOpponent[index],
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16.sp,
-                              fontFamily: 'roboto',
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    );
-                  }),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

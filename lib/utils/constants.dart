@@ -24,5 +24,7 @@ class Constants {
   static const editUserModelUrl = '/api/Account';
   static const updateUserPhotoUrl = '/api/Account/Photo';
   static const connectUrl = '/api/Battle/Users/';
+  static const createBattleUrl = '/api/Battle';
+  static const sendFireBaseTokenUrl = '/api/Account/FirebaseToken/';
 
 }

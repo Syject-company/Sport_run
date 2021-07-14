@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:one2one_run/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenceUtils {
@@ -39,12 +42,22 @@ class PreferenceUtils {
   static Future<void> setUserNickName(String value) async {
     await _prefsInstance?.setString(userNickName, value);
   }
+
   static bool getIsUserUnitInKM() {
     return _prefsInstance?.getBool(userUnit) ?? true;
   }
 
   static Future<void> setIsUserUnitInKM(bool value) async {
     await _prefsInstance?.setBool(userUnit, value);
+  }
+
+  static UserModel getCurrentUserModel() {
+    return UserModel.fromJson(
+        json.decode(_prefsInstance?.getString(userModel) ?? ''));
+  }
+
+  static Future<void> setCurrentUserModel(UserModel value) async {
+    await _prefsInstance?.setString(userModel, json.encode(value));
   }
 }
 
@@ -57,3 +70,5 @@ String get pageRout => 'page_rout';
 String get userNickName => 'user_nickname';
 
 String get userUnit => 'user_unit';
+
+String get userModel => 'user_model';

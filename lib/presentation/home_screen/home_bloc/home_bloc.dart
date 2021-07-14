@@ -35,6 +35,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield MessageDrawerIsOpenOrClose();
     } else if (event is SendMessageToOpponent) {
       yield MessageToOpponentDrawerIsSent(event.message);
+    }else if (event is SelectMessageToOpponent) {
+      yield SelectedMessageToOpponent(event.messageIndex);
+    }else if (event is CreateBattle) {
+      yield BattleCreated();
     }
   }
 }

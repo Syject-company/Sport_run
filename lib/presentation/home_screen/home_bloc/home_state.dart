@@ -87,3 +87,13 @@ class MessageToOpponentDrawerIsSent extends HomeState {
   @override
   List<Object> get props => [message];
 }
+
+class SelectedMessageToOpponent extends HomeState {
+  SelectedMessageToOpponent(this.messageIndex);
+
+  final int messageIndex;
+
+  @override
+  List<Object> get props => [messageIndex];
+}
+class BattleCreated extends HomeState {}

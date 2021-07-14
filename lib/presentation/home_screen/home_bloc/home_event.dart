@@ -83,3 +83,14 @@ class SendMessageToOpponent extends HomeEvent {
   @override
   List<Object> get props => [message];
 }
+
+class SelectMessageToOpponent extends HomeEvent {
+  SelectMessageToOpponent(this.messageIndex);
+
+  final int messageIndex;
+
+  @override
+  List<Object> get props => [messageIndex];
+}
+
+class CreateBattle extends HomeEvent {}
