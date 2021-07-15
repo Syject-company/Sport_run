@@ -26,6 +26,8 @@ String get passwordChangedBackground => 'assets/images/password_changed.png';
 
 String get noFiltersBackground => 'assets/images/no_filters.png';
 
+String get battleCreatedBackground => 'assets/images/battle_created.png';
+
 String get defaultProfileImage => 'assets/icons/default_profile.png';
 
 String get connectIcon => 'assets/icons/connect.png';
@@ -49,3 +51,5 @@ String get weeklyDistanceIcon => 'assets/icons/weekly_distance.png';
 String get runsIcon => 'assets/icons/runs.png';
 
 String get battleIcon => 'assets/icons/battle.png';
+
+String get calendarIcon => 'assets/icons/calendar.png';

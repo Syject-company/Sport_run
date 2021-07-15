@@ -5,3 +5,8 @@ enum DrawerItems {
   Profile,
   Settings,
 }
+
+enum DrawersType {
+  FilterDrawer,
+  BattleDrawer,
+}

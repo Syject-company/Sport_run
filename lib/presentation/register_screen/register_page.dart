@@ -413,7 +413,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<String?> signInWithApple({required BuildContext context}) async {
     await SignInWithApple.getAppleIDCredential(
-      scopes: [],
+      scopes: [AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,],
+
     ).then((value) async {
       final token = value.identityToken;
       if (token != null) {

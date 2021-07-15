@@ -16,9 +16,11 @@ import 'package:one2one_run/utils/constants.dart';
 
 //NOte:'/connect'
 class ConnectPage extends StatefulWidget {
-  ConnectPage({Key? key, required this.users}) : super(key: key);
+  ConnectPage({Key? key, required this.users, required this.onBattleTap})
+      : super(key: key);
 
   final List<ConnectUsersModel> users;
+  final Function(ConnectUsersModel userModel) onBattleTap;
 
   @override
   _ConnectPageState createState() => _ConnectPageState();
@@ -48,6 +50,12 @@ class _ConnectPageState extends State<ConnectPage> {
               MaterialPageRoute(
                   builder: (_) => UserInfo(
                         userModel: state.userModel,
+                        onBattleTap: (userModel) {
+                          Navigator.of(context).pop();
+                          widget.onBattleTap(
+                            userModel,
+                          );
+                        },
                       )),
             );
           }
@@ -227,7 +235,9 @@ class _ConnectPageState extends State<ConnectPage> {
                           height: height * 0.06,
                           width: width * 0.05,
                           onPressed: () async {
-                            //TODO: need action
+                            widget.onBattleTap(
+                              model,
+                            );
                           },
                         ),
                       ],

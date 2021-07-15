@@ -1,14 +1,17 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_conditional_rendering/flutter_conditional_rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:one2one_run/data/models/battle_request_model.dart';
+import 'package:one2one_run/utils/extension.dart' show DateTimeExtension;
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/apis.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
-/*import 'package:one2one_run/data/apis/home_api.dart';*/
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_page.dart';
 import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_page.dart';
@@ -44,35 +47,74 @@ class _HomePageState extends State<HomePage> {
   final _pageController = PageController();
   final _applyController = RoundedLoadingButtonController();
   final _refreshController = RoundedLoadingButtonController();
+  final _applyMessageController = RoundedLoadingButtonController();
+  final _applyBattleController = RoundedLoadingButtonController();
+  final _battleNameController = TextEditingController();
+  final _messageController = TextEditingController();
 
   DrawerItems selectedDrawerItem = DrawerItems.Connect;
+  DrawersType selectedDrawersType = DrawersType.FilterDrawer;
 
   HomeApi homeApi = HomeApi();
   ConnectApi connectApi = ConnectApi();
 
   String pageTitle = 'Connect';
+  String messageToOpponent = 'Come as you are, join the run!';
+  String dateAndTime = '';
+  late String dateAndTimeForUser;
 
   late Future<UserModel?> _userModel;
-  late FirebaseMessaging messaging;
   late Future<List<ConnectUsersModel>?> _users;
+  ConnectUsersModel? _userBattleModel;
+  late FirebaseMessaging _messaging;
+  late RangeValues _currentRangeValuesPace;
+  late RangeValues _currentRangeValuesWeekly;
 
   bool _isNeedFilter = false;
+  bool _isNeedToOpenMessageDrawer = false;
   late bool isKM;
 
   int _countOfRuns = 1;
+  int _selectedMessageIndex = 1000;
 
-  late RangeValues _currentRangeValuesPace;
-  late RangeValues _currentRangeValuesWeekly;
+  double _currentDistanceValue = 300;
 
   @override
   void initState() {
     super.initState();
-    messaging = FirebaseMessaging.instance;
-    messaging.getToken().then((value) {
-      print('Firebase token: $value');
+    prepareData();
+  }
+
+  void prepareData() {
+    _messaging = FirebaseMessaging.instance;
+    _messaging.getToken().then((token) {
+      homeApi.sendFireBaseToken(tokenFireBase: token ?? '');
+      print('Firebase token: $token');
     });
+
+    //NOte: when app is terminated
+    _messaging.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        var dd = message.data['title'];
+      }
+    });
+    //TODO: to get the user model when battle is created
+    //NOte: when app is in background state
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      var dd = event.data['title'];
+      print('onMessageOpenedApp: $dd');
+    });
+
+    dateAndTimeForUser =
+        getFormattedDateForUser(date: DateTime.now(), time: TimeOfDay.now());
+    dateAndTime = getFormattedDate(date: DateTime.now(), time: TimeOfDay.now());
     updateRangeValuesAndUnit();
     _userModel = homeApi.getUserModel();
+    _userModel.then((value) {
+      if (value != null) {
+        PreferenceUtils.setCurrentUserModel(value);
+      }
+    });
     _users = getUsers(isFilterIncluded: _isNeedFilter);
   }
 
@@ -106,12 +148,15 @@ class _HomePageState extends State<HomePage> {
             if (!_isNeedFilter) {
               _users = getUsers(isFilterIncluded: _isNeedFilter);
             }
-          } else if (state is KmOrMileIsSelected) {
-/*            isKM = state.isKM;
-            _currentRangeValuesPace =
-                RangeValues((isKM ? 2 : 3) * 60, (isKM ? 11 : 18) * 60);
-            _currentRangeValuesWeekly =
-                RangeValues((isKM ? 4 : 2.5), (isKM ? 150 : 94));*/
+          } else if (state is BattleDrawerIsOpen) {
+            dateAndTimeForUser = getFormattedDateForUser(
+                date: DateTime.now(), time: TimeOfDay.now());
+            _userBattleModel = state.userModel;
+            selectedDrawersType = DrawersType.BattleDrawer;
+            if (_keyScaffold.currentState != null &&
+                !_keyScaffold.currentState!.isEndDrawerOpen) {
+              _keyScaffold.currentState!.openEndDrawer();
+            }
           } else if (state is TimesPerWeekIsSelected) {
             _countOfRuns = state.timesPerWeek;
           } else if (state is SelectedConnectFilters) {
@@ -131,6 +176,71 @@ class _HomePageState extends State<HomePage> {
                 _keyScaffold.currentState!.isEndDrawerOpen) {
               Navigator.of(context).pop();
             }
+          } else if (state is FilterDrawerIsOpen) {
+            selectedDrawersType = DrawersType.FilterDrawer;
+          } else if (state is GotDatePicker) {
+            await getDate(context: context).then((date) async {
+              if (date != null) {
+                final time = await getTime(context: context);
+                if (time != null) {
+                  dateAndTime = getFormattedDate(date: date, time: time);
+                  dateAndTimeForUser =
+                      getFormattedDateForUser(date: date, time: time);
+                  print('Date: $dateAndTime');
+                }
+              }
+            });
+          } else if (state is MessageDrawerIsOpenOrClose) {
+            _isNeedToOpenMessageDrawer = !_isNeedToOpenMessageDrawer;
+            _selectedMessageIndex = 1000;
+            _messageController.text = '';
+          } else if (state is MessageToOpponentDrawerIsSent) {
+            _applyMessageController.reset();
+            messageToOpponent = state.message;
+            BlocProvider.of<HomeBloc>(context)
+                .add(home_bloc.OpenCloseMessageDrawer());
+          } else if (state is SelectedMessageToOpponent) {
+            _selectedMessageIndex = state.messageIndex;
+          } else if (state is BattleCreated) {
+            await homeApi
+                .createBattle(
+                    model: BattleRequestModel(
+              dateTime: dateAndTime,
+              battleName: _battleNameController.text.isNotEmpty
+                  ? _battleNameController.text
+                  : null,
+              distance: _currentDistanceValue / 60,
+              message: messageToOpponent,
+              opponentId: _userBattleModel!.id,
+            ))
+                .then((value) async {
+              if (value) {
+                final currentUserModel = PreferenceUtils.getCurrentUserModel();
+                if (_keyScaffold.currentState != null &&
+                    _keyScaffold.currentState!.isEndDrawerOpen) {
+                  Navigator.of(context).pop();
+                }
+                battleCreated(
+                  context: context,
+                  height: height,
+                  width: width,
+                  currentUserName: currentUserModel.nickName ?? 'NickName',
+                  currentUserPhoto: currentUserModel.photoLink,
+                  opponentUserName: _userBattleModel?.nickName ?? 'NickName',
+                  opponentUserPhoto: _userBattleModel?.photoLink,
+                );
+
+                Timer(const Duration(seconds: 3), () {
+                  Navigator.of(context).pop();
+                });
+              } else {
+                await Fluttertoast.showToast(
+                    msg: 'Unexpected error happened',
+                    fontSize: 16.0,
+                    gravity: ToastGravity.CENTER);
+              }
+            });
+            _applyBattleController.reset();
           }
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
         },
@@ -139,6 +249,17 @@ class _HomePageState extends State<HomePage> {
           return Scaffold(
             key: _keyScaffold,
             backgroundColor: homeBackground,
+            onEndDrawerChanged: (value) {
+              if (!value && selectedDrawersType != DrawersType.FilterDrawer) {
+                _isNeedToOpenMessageDrawer = false;
+                _currentDistanceValue = 300;
+                _battleNameController.text = '';
+                Timer(const Duration(milliseconds: 300), () {
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(home_bloc.OpenFilterDrawer());
+                });
+              }
+            },
             appBar: AppBar(
               title: Text(
                 pageTitle,
@@ -191,16 +312,30 @@ class _HomePageState extends State<HomePage> {
                         )
                       : null,
             ),
-            drawer: _drawer(
+            drawer: _homeDrawer(
               context: context,
               width: width,
               height: height,
             ),
             endDrawer: selectedDrawerItem == DrawerItems.Connect
-                ? _filterDrawer(
+                ? ConditionalSwitch.single<DrawersType>(
                     context: context,
-                    width: width,
-                    height: height,
+                    valueBuilder: (context) => selectedDrawersType,
+                    caseBuilders: {
+                      DrawersType.FilterDrawer: (context) =>
+                          _connectFilterDrawer(
+                              context: context, width: width, height: height),
+                      DrawersType.BattleDrawer: (context) {
+                        return _createBattleDrawer(
+                          context: context,
+                          model: _userBattleModel,
+                          width: width,
+                          height: height,
+                        );
+                      },
+                    },
+                    fallbackBuilder: (context) => _connectFilterDrawer(
+                        context: context, width: width, height: height),
                   )
                 : null,
             body: SafeArea(
@@ -221,6 +356,11 @@ class _HomePageState extends State<HomePage> {
                               return snapshot.data!.isNotEmpty
                                   ? ConnectPage(
                                       users: snapshot.data!,
+                                      onBattleTap: (userModel) {
+                                        BlocProvider.of<HomeBloc>(context).add(
+                                            home_bloc.OpenBattleDrawer(
+                                                userModel));
+                                      },
                                     )
                                   : Container(
                                       height: height,
@@ -316,6 +456,70 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _connectFilterDrawer(
+      {required BuildContext context,
+      required double width,
+      required double height}) {
+    return filterDrawer(
+      context: context,
+      width: width,
+      height: height,
+      isNeedFilter: _isNeedFilter,
+      onSwitchFilter: (value) {
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: value));
+      },
+      valuePaceStart: _currentRangeValuesPace.start,
+      valuePaceEnd: _currentRangeValuesPace.end,
+      isKM: isKM,
+      currentRangeValuesPace: _currentRangeValuesPace,
+      onRangePaceChanged: (values) {
+        setState(() {
+          _currentRangeValuesPace = values;
+        });
+      },
+      valueWeeklyStart: _currentRangeValuesWeekly.start,
+      valueWeeklyEnd: _currentRangeValuesWeekly.end,
+      currentRangeValuesWeekly: _currentRangeValuesWeekly,
+      onRangeWeeklyChanged: (values) {
+        setState(() {
+          _currentRangeValuesWeekly = values;
+        });
+      },
+      onTapMinusRuns: () {
+        if (_countOfRuns > 1) {
+          BlocProvider.of<HomeBloc>(context)
+              .add(home_bloc.SelectTimesPerWeek(_countOfRuns -= 1));
+        }
+      },
+      countOfRuns: _countOfRuns,
+      onTapPlusRuns: () {
+        if (_countOfRuns < 7) {
+          BlocProvider.of<HomeBloc>(context)
+              .add(home_bloc.SelectTimesPerWeek(_countOfRuns += 1));
+        }
+      },
+      applyController: _applyController,
+      onTapApply: () {
+        BlocProvider.of<HomeBloc>(context).add(home_bloc.SelectConnectFilters(
+          _isNeedFilter,
+          _currentRangeValuesPace.start,
+          _currentRangeValuesPace.end,
+          _currentRangeValuesWeekly.start,
+          _currentRangeValuesWeekly.end,
+          _countOfRuns,
+        ));
+        _applyController.reset();
+      },
+      onTapCancel: () {
+        if (_keyScaffold.currentState != null &&
+            _keyScaffold.currentState!.isEndDrawerOpen) {
+          Navigator.of(context).pop();
+        }
+      },
+    );
+  }
+
   Future<void> navigateToEditProfile({required BuildContext context}) async {
     await homeApi.getUserModel().then((userModel) async {
       if (userModel != null) {
@@ -362,7 +566,8 @@ class _HomePageState extends State<HomePage> {
     ];
   }
 
-  Widget _drawer(
+////////////////////////////////////////////////////
+  Widget _homeDrawer(
       {required BuildContext context,
       required double height,
       required double width}) {
@@ -612,253 +817,85 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _filterDrawer(
+/////////////////////////////////
+  Widget _createBattleDrawer(
       {required BuildContext context,
+      required ConnectUsersModel? model,
       required double height,
       required double width}) {
     return Container(
       width: width,
       margin: EdgeInsets.only(left: width * 0.15),
       color: Colors.white,
-      child: Drawer(
-        child: Padding(
-          padding: EdgeInsets.only(top: height * 0.05),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                child: Text(
-                  'Filters',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.sp,
-                      fontFamily: 'roboto',
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
-              SizedBox(
-                height: 15.h,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${!_isNeedFilter ? 'Enable' : 'Disable'} filters',
-                      style: TextStyle(
-                          color: const Color(0xff838383),
-                          fontSize: 13.sp,
-                          fontFamily: 'roboto',
-                          fontWeight: FontWeight.w500),
-                    ),
-                    Switch(
-                      value: _isNeedFilter,
-                      activeColor: const Color(0xffc1ff9b),
-                      onChanged: (val) {
-                        BlocProvider.of<HomeBloc>(context).add(
-                            home_bloc.SwitchIsNeedFilter(isNeedFilter: val));
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Stack(
-                children: [
-                  Column(
-                    children: [
-                      rangeSeekBarPace(
-                        title: 'Pace',
-                        context: context,
-                        dialogTitle: 'Pace',
-                        dialogText: paceText,
-                        startTimePerKM: _currentRangeValuesPace.start,
-                        endTimePerKM: _currentRangeValuesPace.end,
-                        unit: isKM ? 'km' : 'mile',
-                        kmPerHour: (60 * 60) / _currentRangeValuesPace.end,
-                        minValue: (isKM ? 2 : 3) * 60,
-                        maxValue: (isKM ? 11 : 18) * 60,
-                        rangeValue: _currentRangeValuesPace,
-                        onRangeChanged: (value) {
-                          setState(() {
-                            _currentRangeValuesPace = value;
-                          });
-                        },
-                      ),
-                      rangeSeekBarWeekly(
-                        title: 'Weekly distance',
-                        context: context,
-                        dialogTitle: 'Weekly distance',
-                        dialogText: weeklyDistanceText,
-                        endTimePerKM: _currentRangeValuesWeekly.end,
-                        startTimePerKM: _currentRangeValuesWeekly.start,
-                        unit: isKM ? 'km' : 'mile',
-                        minValue: isKM ? 4 : 2.5,
-                        maxValue: isKM ? 150 : 94,
-                        rangeValue: _currentRangeValuesWeekly,
-                        onChanged: (value) {
-                          setState(() {
-                            _currentRangeValuesWeekly = value;
-                          });
-                        },
-                      ),
-                      SizedBox(
-                        height: 25.h,
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                        child: Text(
-                          'How often do you run?',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'roboto',
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            buttonNoIcon(
-                              title: '-',
-                              color: grayColor,
-                              textColor: Colors.black,
-                              width: width * 0.17,
-                              height: 30.h,
-                              onPressed: () async {
-                                if (_countOfRuns > 1) {
-                                  BlocProvider.of<HomeBloc>(context).add(
-                                      home_bloc.SelectTimesPerWeek(
-                                          _countOfRuns -= 1));
-                                }
-                              },
-                            ),
-                            Container(
-                              width: 80.w,
-                              height: 50.h,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    _countOfRuns.toString(),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'roboto',
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  const Divider(
-                                    height: 3,
-                                    thickness: 2,
-                                  ),
-                                  Text(
-                                    'times per week',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'roboto',
-                                        fontSize: 11.sp,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            buttonNoIcon(
-                              title: '+',
-                              color: redColor,
-                              width: width * 0.17,
-                              height: 30.h,
-                              onPressed: () async {
-                                if (_countOfRuns < 7) {
-                                  BlocProvider.of<HomeBloc>(context).add(
-                                      home_bloc.SelectTimesPerWeek(
-                                          _countOfRuns += 1));
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                        margin: EdgeInsets.only(top: height * 0.25),
-                        alignment: Alignment.bottomCenter,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: buildRoundedButton(
-                                label: 'Apply',
-                                width: width,
-                                height: 40.h,
-                                buttonTextSize: 14.0,
-                                controller: _applyController,
-                                textColor: Colors.white,
-                                backColor: redColor,
-                                onTap: () async {
-                                  BlocProvider.of<HomeBloc>(context)
-                                      .add(home_bloc.SelectConnectFilters(
-                                    _isNeedFilter,
-                                    _currentRangeValuesPace.start,
-                                    _currentRangeValuesPace.end,
-                                    _currentRangeValuesWeekly.start,
-                                    _currentRangeValuesWeekly.end,
-                                    _countOfRuns,
-                                  ));
-                                  _applyController.reset();
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15.h,
-                            ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: buttonNoIcon(
-                                title: 'Cancel',
-                                color: Colors.transparent,
-                                height: 40.h,
-                                textColor: Colors.black,
-                                buttonTextSize: 14.0,
-                                shadowColor: Colors.transparent,
-                                onPressed: () {
-                                  if (_keyScaffold.currentState != null &&
-                                      _keyScaffold
-                                          .currentState!.isEndDrawerOpen) {
-                                    Navigator.of(context).pop();
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Visibility(
-                    visible: !_isNeedFilter,
-                    child: Container(
-                      width: width,
-                      height: height - (height * 0.07),
-                      color: Colors.white.withOpacity(0.7),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+      child: !_isNeedToOpenMessageDrawer
+          ? battleDrawer(
+              height: height,
+              width: width,
+              model: model,
+              battleNameController: _battleNameController,
+              context: context,
+              currentDistanceValue: _currentDistanceValue,
+              isKM: isKM,
+              onSeekChanged: (value) {
+                setState(() {
+                  _currentDistanceValue = value;
+                });
+              },
+              onTapGetDatePicker: () {
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.GetDatePicker());
+              },
+              dateAndTimeForUser: dateAndTimeForUser,
+              onTapOpenCloseMessageDrawer: () {
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.OpenCloseMessageDrawer());
+              },
+              messageToOpponent: messageToOpponent,
+              applyBattleController: _applyBattleController,
+              onTapApplyBattle: () {
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.CreateBattle());
+              },
+              onTapCancelBattle: () {
+                if (_keyScaffold.currentState != null &&
+                    _keyScaffold.currentState!.isEndDrawerOpen) {
+                  Navigator.of(context).pop();
+                }
+              },
+            )
+          : messageToOpponentDrawer(
+              context: context,
+              width: width,
+              height: height,
+              onTapOpenCloseMessageDrawer: () {
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.OpenCloseMessageDrawer());
+              },
+              onTapSelectMessageToOpponent: (index) {
+                BlocProvider.of<HomeBloc>(context).add(
+                  home_bloc.SelectMessageToOpponent(index),
+                );
+              },
+              onTapApplyMessage: () async {
+                if (_messageController.text.isNotEmpty ||
+                    _selectedMessageIndex != 1000) {
+                  BlocProvider.of<HomeBloc>(context).add(
+                      home_bloc.SendMessageToOpponent(
+                          _messageController.text.isNotEmpty
+                              ? _messageController.text
+                              : messagesToOpponent[_selectedMessageIndex]));
+                } else {
+                  _applyMessageController.reset();
+                  await Fluttertoast.showToast(
+                      msg: 'No message selected!',
+                      fontSize: 16.0,
+                      gravity: ToastGravity.CENTER);
+                }
+              },
+              messageController: _messageController,
+              selectedMessageIndex: _selectedMessageIndex,
+              applyMessageController: _applyMessageController,
+            ),
     );
   }
 
@@ -888,9 +925,50 @@ class _HomePageState extends State<HomePage> {
         RangeValues((isKM ? 4 : 2.5), (isKM ? 150 : 94));
   }
 
+  Future<DateTime?> getDate({required BuildContext context}) {
+    return showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
+      confirmText: 'APPLY',
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.red,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                primary: Colors.red, // button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+  }
+
+  Future<TimeOfDay?> getTime({required BuildContext context}) {
+    return showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      confirmText: 'APPLY',
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
+    _battleNameController.dispose();
+    _messageController.dispose();
     super.dispose();
   }
 }

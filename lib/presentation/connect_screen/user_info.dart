@@ -7,9 +7,11 @@ import 'package:one2one_run/resources/images.dart';
 
 //NOte: '/userInfo'
 class UserInfo extends StatelessWidget {
-  UserInfo({Key? key, required this.userModel}) : super(key: key);
+  UserInfo({Key? key, required this.userModel, required this.onBattleTap})
+      : super(key: key);
 
   final ConnectUsersModel userModel;
+  final Function(ConnectUsersModel userModel) onBattleTap;
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +229,9 @@ class UserInfo extends StatelessWidget {
                   titleColor: Colors.white,
                   height: height * 0.06,
                   onPressed: () async {
-                    //TODO: action here back then open battle draw
+                    onBattleTap(
+                      userModel,
+                    );
                   },
                 ),
               ],

@@ -9,7 +9,6 @@ class Constants {
   static const homeRoute = '/home';
   static const passwordRoute = '/password';
   static const editProfileRoute = '/editProfile';
-  static const userInfoRoute = '/userInfo';
 
   //Api urls:
   static const registerUrl = '/api/Account/registration';
@@ -24,5 +23,7 @@ class Constants {
   static const editUserModelUrl = '/api/Account';
   static const updateUserPhotoUrl = '/api/Account/Photo';
   static const connectUrl = '/api/Battle/Users/';
+  static const createBattleUrl = '/api/Battle';
+  static const sendFireBaseTokenUrl = '/api/Account/FirebaseToken/';
 
 }

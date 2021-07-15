@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 extension EmailValidator on String {
   bool isValidEmailInput() {
     return RegExp(
@@ -9,3 +12,24 @@ extension EmailValidator on String {
     return RegExp(r'^(?=.*[a-z])').hasMatch(this);
   }
 }
+extension DateTimeExtension on void {
+
+  String getFormattedDate({
+    required DateTime date,
+    required TimeOfDay time,
+  }) {
+    return DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(
+        DateTime(date.year, date.month, date.day, time.hour, time.minute)
+            .toLocal());
+  }
+
+  String getFormattedDateForUser({
+    required DateTime date,
+    required TimeOfDay time,
+  }) {
+    return DateFormat('yyyy-MM-dd HH:mm').format(
+        DateTime(date.year, date.month, date.day, time.hour, time.minute)
+            .toLocal());
+  }
+}
+

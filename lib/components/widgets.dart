@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/resources/images.dart';
+import 'package:one2one_run/resources/strings.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 TextStyle get hintTextStyle => const TextStyle(
@@ -47,7 +50,6 @@ Widget inputTextField({
     obscureText: obscureText,
     cursorColor: const Color(0xffFF1744),
     maxLength: isCounterShown ? maxLength : null,
-    //  keyboardType: isNumbers ? TextInputType.number : TextInputType.multiline,
     keyboardType: keyboardType,
     maxLines: isMultiLine ? null : 1,
     readOnly: isReadOnly,
@@ -276,6 +278,7 @@ Widget seekBarPace({
                   icon: const Icon(
                     Icons.info_outline_rounded,
                     color: Colors.grey,
+                    size: 20.0,
                   ),
                   onPressed: () {
                     showDialog(
@@ -782,6 +785,756 @@ Widget progressIndicator() {
         strokeWidth: 2.0,
         backgroundColor: Colors.white,
         valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+      ),
+    ),
+  );
+}
+
+void battleCreated({
+  required BuildContext context,
+  required double height,
+  required double width,
+  required String currentUserName,
+  required String opponentUserName,
+  required String? currentUserPhoto,
+  required String? opponentUserPhoto,
+}) {
+  showDialog<bool>(
+      context: context,
+      useSafeArea: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            contentPadding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+            insetPadding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+            backgroundColor: Colors.white,
+            content: Container(
+              width: width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    battleCreatedBackground,
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: height * 0.24,
+                      left: width * 0.1,
+                    ),
+                    child: _userCreatedBattleInfo(
+                      context: context,
+                      width: width,
+                      height: height,
+                      userName: currentUserName,
+                      userPhoto: currentUserPhoto,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: height * 0.24,
+                      right: width * 0.04,
+                    ),
+                    child: _userCreatedBattleInfo(
+                      context: context,
+                      width: width,
+                      height: height,
+                      userName: opponentUserName,
+                      userPhoto: opponentUserPhoto,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      });
+}
+
+Widget _userCreatedBattleInfo({
+  required BuildContext context,
+  required double height,
+  required double width,
+  required String userName,
+  required String? userPhoto,
+}) {
+  return RotationTransition(
+    turns: const AlwaysStoppedAnimation(-5 / 360),
+    child: Container(
+      child: Column(
+        children: [
+          Container(
+            height: height * 0.07,
+            width: height * 0.07,
+            margin: EdgeInsets.only(bottom: height * 0.01),
+            child: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              radius: 80,
+              backgroundImage: userPhoto == null
+                  ? AssetImage(
+                      defaultProfileImage,
+                    ) as ImageProvider
+                  : NetworkImage(userPhoto),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            width: width * 0.25,
+            child: Text(
+              userName,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.sp,
+                  fontFamily: 'roboto',
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget messageToOpponentDrawer({
+  required BuildContext context,
+  required double height,
+  required double width,
+  required VoidCallback onTapOpenCloseMessageDrawer,
+  required Function(int index) onTapSelectMessageToOpponent,
+  required VoidCallback onTapApplyMessage,
+  required TextEditingController messageController,
+  required int selectedMessageIndex,
+  required RoundedLoadingButtonController applyMessageController,
+}) {
+  return Drawer(
+    child: Padding(
+      padding: EdgeInsets.only(top: height * 0.07),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: onTapOpenCloseMessageDrawer,
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.grey,
+                    size: 20.0,
+                  ),
+                ),
+                const SizedBox(
+                  width: 20.0,
+                ),
+                Text(
+                  'Message to opponent',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: height * 0.05,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: width * 0.04,
+            ),
+            child: inputTextField(
+              controller: messageController,
+              errorText: null,
+              hintText: 'My variant',
+            ),
+          ),
+          SizedBox(
+            height: height * 0.03,
+          ),
+          Container(
+            height: height * 0.7,
+            child: ListView.builder(
+                itemCount: messagesToOpponent.length,
+                itemBuilder: (BuildContext con, int index) {
+                  return Container(
+                    color: index == selectedMessageIndex
+                        ? const Color(0xfff8d2d2)
+                        : Colors.white,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: height * 0.015),
+                      child: InkWell(
+                        onTap: () {
+                          onTapSelectMessageToOpponent(index);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.04,
+                          ),
+                          child: Text(
+                            messagesToOpponent[index],
+                            style: TextStyle(
+                                color: index == selectedMessageIndex
+                                    ? Colors.red
+                                    : Colors.black,
+                                fontSize: 16.sp,
+                                fontFamily: 'roboto',
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+          ),
+          SizedBox(
+            height: height * 0.04,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: width * 0.04,
+            ),
+            child: buildRoundedButton(
+              label: 'APPLY',
+              width: width,
+              height: 40.h,
+              buttonTextSize: 14.0,
+              controller: applyMessageController,
+              textColor: Colors.white,
+              backColor: redColor,
+              onTap: onTapApplyMessage,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget battleDrawer({
+  required double height,
+  required double width,
+  required ConnectUsersModel? model,
+  required TextEditingController battleNameController,
+  required BuildContext context,
+  required double currentDistanceValue,
+  required bool isKM,
+  required Function(double value) onSeekChanged,
+  required VoidCallback onTapGetDatePicker,
+  required String dateAndTimeForUser,
+  required VoidCallback onTapOpenCloseMessageDrawer,
+  required String messageToOpponent,
+  required RoundedLoadingButtonController applyBattleController,
+  required VoidCallback onTapApplyBattle,
+  required VoidCallback onTapCancelBattle,
+}) {
+  return Drawer(
+    child: Padding(
+      padding: EdgeInsets.only(top: height * 0.07),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+            child: Row(
+              children: [
+                Image.asset(
+                  interactIcon,
+                  height: 12.0,
+                  width: 12.0,
+                  fit: BoxFit.contain,
+                  color: Colors.red,
+                ),
+                const SizedBox(
+                  width: 20.0,
+                ),
+                Text(
+                  'Battle',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 22.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: height * 0.03,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+            child: Text(
+              'Opponent',
+              style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13.sp,
+                  fontFamily: 'roboto',
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
+          Container(
+            height: height * 0.12,
+            margin: EdgeInsets.symmetric(
+                horizontal: width * 0.04, vertical: height * 0.01),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xffCDCDCD).withOpacity(0.3),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  height: height * 0.08,
+                  width: height * 0.08,
+                  margin: EdgeInsets.symmetric(horizontal: width * 0.05),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    radius: 80,
+                    backgroundImage: model?.photoLink == null
+                        ? AssetImage(
+                            defaultProfileImage,
+                          ) as ImageProvider
+                        : NetworkImage(model!.photoLink!),
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      model?.nickName ?? 'NickName',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18.sp,
+                          fontFamily: 'roboto',
+                          fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      height: height * 0.01,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          rankIcon,
+                          height: height * 0.015,
+                          width: height * 0.015,
+                          fit: BoxFit.fill,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(
+                          width: 7.0,
+                        ),
+                        Text(
+                          'Rank ${model?.rank}',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12.sp,
+                              fontFamily: 'roboto',
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: width * 0.04,
+            ),
+            child: inputTextField(
+              controller: battleNameController,
+              errorText: null,
+              maxLength: 25,
+              isCounterShown: true,
+              hintText: 'Battle vs ${model?.nickName ?? 'Name'}',
+            ),
+          ),
+          SizedBox(
+            height: height * 0.01,
+          ),
+          seekBarPace(
+            title: 'Distance',
+            context: context,
+            dialogTitle: 'Distance',
+            dialogText: distanceText,
+            timePerKM: currentDistanceValue,
+            unit: isKM ? 'km' : 'mile',
+            kmPerHour: (60 * 60) / currentDistanceValue,
+            minValue: (isKM ? 2 : 3) * 60,
+            maxValue: (isKM ? 11 : 18) * 60,
+            sliderValue: currentDistanceValue,
+            onChanged: onSeekChanged,
+          ),
+          SizedBox(
+            height: height * 0.03,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+            child: Text(
+              'Deadline date',
+              style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13.sp,
+                  fontFamily: 'roboto',
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: width * 0.02, right: width * 0.03),
+            child: TextButton(
+              onPressed: onTapGetDatePicker,
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      dateAndTimeForUser,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15.sp,
+                          fontFamily: 'roboto',
+                          fontWeight: FontWeight.w500),
+                    ),
+                    Image.asset(
+                      calendarIcon,
+                      height: height * 0.02,
+                      width: height * 0.02,
+                      fit: BoxFit.contain,
+                      color: Colors.red,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: width * 0.04, top: height * 0.02),
+            child: Text(
+              'Message to opponent',
+              style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13.sp,
+                  fontFamily: 'roboto',
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: width * 0.02, right: width * 0.03),
+            child: TextButton(
+              onPressed: onTapOpenCloseMessageDrawer,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: width * 0.68,
+                        child: Text(
+                          messageToOpponent,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15.sp,
+                            fontFamily: 'roboto',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.grey[400],
+                        size: 24.0,
+                      ),
+                    ],
+                  ),
+                  const Divider(
+                    height: 5,
+                    thickness: 2.0,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+            margin: EdgeInsets.only(top: height * 0.12),
+            alignment: Alignment.bottomCenter,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: buildRoundedButton(
+                    label: 'APPLY',
+                    width: width,
+                    height: 40.h,
+                    buttonTextSize: 14.0,
+                    controller: applyBattleController,
+                    textColor: Colors.white,
+                    backColor: redColor,
+                    onTap: onTapApplyBattle,
+                  ),
+                ),
+                SizedBox(
+                  height: 15.h,
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: buttonNoIcon(
+                    title: 'Cancel',
+                    color: Colors.transparent,
+                    height: 40.h,
+                    textColor: Colors.black,
+                    buttonTextSize: 14.0,
+                    shadowColor: Colors.transparent,
+                    onPressed: onTapCancelBattle,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget filterDrawer({
+  required BuildContext context,
+  required double height,
+  required double width,
+  required bool isNeedFilter,
+  required Function(bool value) onSwitchFilter,
+  required double valuePaceStart,
+  required double valuePaceEnd,
+  required bool isKM,
+  required RangeValues currentRangeValuesPace,
+  required Function(RangeValues values) onRangePaceChanged,
+  required double valueWeeklyStart,
+  required double valueWeeklyEnd,
+  required RangeValues currentRangeValuesWeekly,
+  required Function(RangeValues values) onRangeWeeklyChanged,
+  required VoidCallback onTapMinusRuns,
+  required int countOfRuns,
+  required VoidCallback onTapPlusRuns,
+  required RoundedLoadingButtonController applyController,
+  required VoidCallback onTapApply,
+  required VoidCallback onTapCancel,
+}) {
+  return Container(
+    width: width,
+    margin: EdgeInsets.only(left: width * 0.15),
+    color: Colors.white,
+    child: Drawer(
+      child: Padding(
+        padding: EdgeInsets.only(top: height * 0.05),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+              child: Text(
+                'Filters',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20.sp,
+                    fontFamily: 'roboto',
+                    fontWeight: FontWeight.w700),
+              ),
+            ),
+            SizedBox(
+              height: 15.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${!isNeedFilter ? 'Enable' : 'Disable'} filters',
+                    style: TextStyle(
+                        color: const Color(0xff838383),
+                        fontSize: 13.sp,
+                        fontFamily: 'roboto',
+                        fontWeight: FontWeight.w500),
+                  ),
+                  Switch(
+                    value: isNeedFilter,
+                    activeColor: const Color(0xffc1ff9b),
+                    onChanged: onSwitchFilter,
+                  ),
+                ],
+              ),
+            ),
+            Stack(
+              children: [
+                Column(
+                  children: [
+                    rangeSeekBarPace(
+                      title: 'Pace',
+                      context: context,
+                      dialogTitle: 'Pace',
+                      dialogText: paceText,
+                      startTimePerKM: valuePaceStart,
+                      endTimePerKM: valuePaceEnd,
+                      unit: isKM ? 'km' : 'mile',
+                      kmPerHour: (60 * 60) / valuePaceEnd,
+                      minValue: (isKM ? 2 : 3) * 60,
+                      maxValue: (isKM ? 11 : 18) * 60,
+                      rangeValue: currentRangeValuesPace,
+                      onRangeChanged: onRangePaceChanged,
+                    ),
+                    rangeSeekBarWeekly(
+                      title: 'Weekly distance',
+                      context: context,
+                      dialogTitle: 'Weekly distance',
+                      dialogText: weeklyDistanceText,
+                      startTimePerKM: valueWeeklyStart,
+                      endTimePerKM: valueWeeklyEnd,
+                      unit: isKM ? 'km' : 'mile',
+                      minValue: isKM ? 4 : 2.5,
+                      maxValue: isKM ? 150 : 94,
+                      rangeValue: currentRangeValuesWeekly,
+                      onChanged: onRangeWeeklyChanged,
+                    ),
+                    SizedBox(
+                      height: 25.h,
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+                      child: Text(
+                        'How often do you run?',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'roboto',
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15.h,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          buttonNoIcon(
+                            title: '-',
+                            color: grayColor,
+                            textColor: Colors.black,
+                            width: width * 0.17,
+                            height: 30.h,
+                            onPressed: onTapMinusRuns,
+                          ),
+                          Container(
+                            width: 80.w,
+                            height: 50.h,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  countOfRuns.toString(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'roboto',
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                const Divider(
+                                  height: 3,
+                                  thickness: 2,
+                                ),
+                                Text(
+                                  'times per week',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'roboto',
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            ),
+                          ),
+                          buttonNoIcon(
+                            title: '+',
+                            color: redColor,
+                            width: width * 0.17,
+                            height: 30.h,
+                            onPressed: onTapPlusRuns,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+                      margin: EdgeInsets.only(top: height * 0.25),
+                      alignment: Alignment.bottomCenter,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: buildRoundedButton(
+                              label: 'APPLY',
+                              width: width,
+                              height: 40.h,
+                              buttonTextSize: 14.0,
+                              controller: applyController,
+                              textColor: Colors.white,
+                              backColor: redColor,
+                              onTap: onTapApply,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15.h,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: buttonNoIcon(
+                              title: 'Cancel',
+                              color: Colors.transparent,
+                              height: 40.h,
+                              textColor: Colors.black,
+                              buttonTextSize: 14.0,
+                              shadowColor: Colors.transparent,
+                              onPressed: onTapCancel,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Visibility(
+                  visible: !isNeedFilter,
+                  child: Container(
+                    width: width,
+                    height: height - (height * 0.07),
+                    color: Colors.white.withOpacity(0.7),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     ),
   );
