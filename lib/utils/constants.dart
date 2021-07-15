@@ -9,7 +9,6 @@ class Constants {
   static const homeRoute = '/home';
   static const passwordRoute = '/password';
   static const editProfileRoute = '/editProfile';
-  static const userInfoRoute = '/userInfo';
 
   //Api urls:
   static const registerUrl = '/api/Account/registration';

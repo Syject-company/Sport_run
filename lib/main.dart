@@ -17,7 +17,7 @@ import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
-  print('background message ${message.notification.body}');
+  print('Main Background message ${message.notification.body}');
 }
 
 void main() {
@@ -48,7 +48,6 @@ class OneTwoOne extends StatelessWidget {
           Constants.runnersDataRoute: (context) => RunnerDataPage(),
           Constants.homeRoute: (context) => HomePage(),
           Constants.passwordRoute: (context) => PasswordPage(),
-          Constants.userInfoRoute: (context) => UserInfo(),
         },
         home: SplashScreen(),
         // home: RegisterPage(),

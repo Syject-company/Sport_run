@@ -91,6 +91,20 @@ class _HomePageState extends State<HomePage> {
       homeApi.sendFireBaseToken(tokenFireBase: token ?? '');
       print('Firebase token: $token');
     });
+
+    //NOte: when app is terminated
+    _messaging.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        var dd = message.data['title'];
+      }
+    });
+    //TODO: to get the user model when battle is created
+    //NOte: when app is in background state
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      var dd = event.data['title'];
+      print('onMessageOpenedApp: $dd');
+    });
+
     dateAndTimeForUser =
         getFormattedDateForUser(date: DateTime.now(), time: TimeOfDay.now());
     dateAndTime = getFormattedDate(date: DateTime.now(), time: TimeOfDay.now());
@@ -308,68 +322,9 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                     valueBuilder: (context) => selectedDrawersType,
                     caseBuilders: {
-                      DrawersType.FilterDrawer: (context) => filterDrawer(
-                            context: context,
-                            width: width,
-                            height: height,
-                            isNeedFilter: _isNeedFilter,
-                            onSwitchFilter: (value) {
-                              BlocProvider.of<HomeBloc>(context).add(
-                                  home_bloc.SwitchIsNeedFilter(
-                                      isNeedFilter: value));
-                            },
-                            valuePaceStart: _currentRangeValuesPace.start,
-                            valuePaceEnd: _currentRangeValuesPace.end,
-                            isKM: isKM,
-                            currentRangeValuesPace: _currentRangeValuesPace,
-                            onRangePaceChanged: (values) {
-                              setState(() {
-                                _currentRangeValuesPace = values;
-                              });
-                            },
-                            valueWeeklyStart: _currentRangeValuesWeekly.start,
-                            valueWeeklyEnd: _currentRangeValuesWeekly.end,
-                            currentRangeValuesWeekly: _currentRangeValuesWeekly,
-                            onRangeWeeklyChanged: (values) {
-                              setState(() {
-                                _currentRangeValuesWeekly = values;
-                              });
-                            },
-                            onTapMinusRuns: () {
-                              if (_countOfRuns > 1) {
-                                BlocProvider.of<HomeBloc>(context).add(
-                                    home_bloc.SelectTimesPerWeek(
-                                        _countOfRuns -= 1));
-                              }
-                            },
-                            countOfRuns: _countOfRuns,
-                            onTapPlusRuns: () {
-                              if (_countOfRuns < 7) {
-                                BlocProvider.of<HomeBloc>(context).add(
-                                    home_bloc.SelectTimesPerWeek(
-                                        _countOfRuns += 1));
-                              }
-                            },
-                            applyController: _applyController,
-                            onTapApply: () {
-                              BlocProvider.of<HomeBloc>(context)
-                                  .add(home_bloc.SelectConnectFilters(
-                                _isNeedFilter,
-                                _currentRangeValuesPace.start,
-                                _currentRangeValuesPace.end,
-                                _currentRangeValuesWeekly.start,
-                                _currentRangeValuesWeekly.end,
-                                _countOfRuns,
-                              ));
-                              _applyController.reset();
-                            },
-                            onTapCancel: () {
-                              if (_keyScaffold.currentState != null &&
-                                  _keyScaffold.currentState!.isEndDrawerOpen) {
-                                Navigator.of(context).pop();
-                              }
-                            },
-                          ),
+                      DrawersType.FilterDrawer: (context) =>
+                          _connectFilterDrawer(
+                              context: context, width: width, height: height),
                       DrawersType.BattleDrawer: (context) {
                         return _createBattleDrawer(
                           context: context,
@@ -379,65 +334,8 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                     },
-                    fallbackBuilder: (context) => filterDrawer(
-                      context: context,
-                      width: width,
-                      height: height,
-                      isNeedFilter: _isNeedFilter,
-                      onSwitchFilter: (value) {
-                        BlocProvider.of<HomeBloc>(context).add(
-                            home_bloc.SwitchIsNeedFilter(isNeedFilter: value));
-                      },
-                      valuePaceStart: _currentRangeValuesPace.start,
-                      valuePaceEnd: _currentRangeValuesPace.end,
-                      isKM: isKM,
-                      currentRangeValuesPace: _currentRangeValuesPace,
-                      onRangePaceChanged: (values) {
-                        setState(() {
-                          _currentRangeValuesPace = values;
-                        });
-                      },
-                      valueWeeklyStart: _currentRangeValuesWeekly.start,
-                      valueWeeklyEnd: _currentRangeValuesWeekly.end,
-                      currentRangeValuesWeekly: _currentRangeValuesWeekly,
-                      onRangeWeeklyChanged: (values) {
-                        setState(() {
-                          _currentRangeValuesWeekly = values;
-                        });
-                      },
-                      onTapMinusRuns: () {
-                        if (_countOfRuns > 1) {
-                          BlocProvider.of<HomeBloc>(context).add(
-                              home_bloc.SelectTimesPerWeek(_countOfRuns -= 1));
-                        }
-                      },
-                      countOfRuns: _countOfRuns,
-                      onTapPlusRuns: () {
-                        if (_countOfRuns < 7) {
-                          BlocProvider.of<HomeBloc>(context).add(
-                              home_bloc.SelectTimesPerWeek(_countOfRuns += 1));
-                        }
-                      },
-                      applyController: _applyController,
-                      onTapApply: () {
-                        BlocProvider.of<HomeBloc>(context)
-                            .add(home_bloc.SelectConnectFilters(
-                          _isNeedFilter,
-                          _currentRangeValuesPace.start,
-                          _currentRangeValuesPace.end,
-                          _currentRangeValuesWeekly.start,
-                          _currentRangeValuesWeekly.end,
-                          _countOfRuns,
-                        ));
-                        _applyController.reset();
-                      },
-                      onTapCancel: () {
-                        if (_keyScaffold.currentState != null &&
-                            _keyScaffold.currentState!.isEndDrawerOpen) {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                    ),
+                    fallbackBuilder: (context) => _connectFilterDrawer(
+                        context: context, width: width, height: height),
                   )
                 : null,
             body: SafeArea(
@@ -555,6 +453,70 @@ class _HomePageState extends State<HomePage> {
           );
         }),
       ),
+    );
+  }
+
+  Widget _connectFilterDrawer(
+      {required BuildContext context,
+      required double width,
+      required double height}) {
+    return filterDrawer(
+      context: context,
+      width: width,
+      height: height,
+      isNeedFilter: _isNeedFilter,
+      onSwitchFilter: (value) {
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: value));
+      },
+      valuePaceStart: _currentRangeValuesPace.start,
+      valuePaceEnd: _currentRangeValuesPace.end,
+      isKM: isKM,
+      currentRangeValuesPace: _currentRangeValuesPace,
+      onRangePaceChanged: (values) {
+        setState(() {
+          _currentRangeValuesPace = values;
+        });
+      },
+      valueWeeklyStart: _currentRangeValuesWeekly.start,
+      valueWeeklyEnd: _currentRangeValuesWeekly.end,
+      currentRangeValuesWeekly: _currentRangeValuesWeekly,
+      onRangeWeeklyChanged: (values) {
+        setState(() {
+          _currentRangeValuesWeekly = values;
+        });
+      },
+      onTapMinusRuns: () {
+        if (_countOfRuns > 1) {
+          BlocProvider.of<HomeBloc>(context)
+              .add(home_bloc.SelectTimesPerWeek(_countOfRuns -= 1));
+        }
+      },
+      countOfRuns: _countOfRuns,
+      onTapPlusRuns: () {
+        if (_countOfRuns < 7) {
+          BlocProvider.of<HomeBloc>(context)
+              .add(home_bloc.SelectTimesPerWeek(_countOfRuns += 1));
+        }
+      },
+      applyController: _applyController,
+      onTapApply: () {
+        BlocProvider.of<HomeBloc>(context).add(home_bloc.SelectConnectFilters(
+          _isNeedFilter,
+          _currentRangeValuesPace.start,
+          _currentRangeValuesPace.end,
+          _currentRangeValuesWeekly.start,
+          _currentRangeValuesWeekly.end,
+          _countOfRuns,
+        ));
+        _applyController.reset();
+      },
+      onTapCancel: () {
+        if (_keyScaffold.currentState != null &&
+            _keyScaffold.currentState!.isEndDrawerOpen) {
+          Navigator.of(context).pop();
+        }
+      },
     );
   }
 
