@@ -94,3 +94,12 @@ class SelectMessageToOpponent extends HomeEvent {
 }
 
 class CreateBattle extends HomeEvent {}
+
+class OpenChangeBattleDrawer extends HomeEvent {
+  OpenChangeBattleDrawer(this.userModel);
+
+  final ConnectUsersModel userModel;
+
+  @override
+  List<Object> get props => [userModel];
+}

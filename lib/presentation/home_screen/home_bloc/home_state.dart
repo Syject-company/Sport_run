@@ -97,3 +97,12 @@ class SelectedMessageToOpponent extends HomeState {
   List<Object> get props => [messageIndex];
 }
 class BattleCreated extends HomeState {}
+
+class ChangeBattleDrawerIsOpen extends HomeState {
+  ChangeBattleDrawerIsOpen(this.userModel);
+
+  final ConnectUsersModel userModel;
+
+  @override
+  List<Object> get props => [userModel];
+}
