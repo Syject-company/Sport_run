@@ -248,10 +248,10 @@ class _HomePageState extends State<HomePage> {
               }
             });
             _applyBattleController.reset();
-          }else if (state is ChangeBattleDrawerIsOpen) {
+          } else if (state is ChangeBattleDrawerIsOpen) {
             dateAndTimeForUser = getFormattedDateForUser(
                 date: DateTime.now(), time: TimeOfDay.now());
-          //  _userBattleModel = state.userModel;
+            //  _userBattleModel = state.userModel;
             selectedDrawersType = DrawersType.ChangeBattle;
             if (_keyScaffold.currentState != null &&
                 !_keyScaffold.currentState!.isEndDrawerOpen) {
@@ -262,7 +262,7 @@ class _HomePageState extends State<HomePage> {
         },
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (final context, final state) {
-       /*       FirebaseMessaging.onMessageOpenedApp.listen((event) {
+          /*       FirebaseMessaging.onMessageOpenedApp.listen((event) {
                 var dd = event.data['title'];
                 print('onMessageOpenedApp: $dd');
                 BlocProvider.of<HomeBloc>(context)
@@ -300,13 +300,14 @@ class _HomePageState extends State<HomePage> {
               }
             },
             appBar: AppBar(
+              shadowColor:Colors.transparent,
               title: Text(
                 pageTitle,
                 style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'roboto',
                     fontSize: 16.sp,
-                    fontWeight: FontWeight.w500),
+                    fontWeight: FontWeight.w600),
               ),
               backgroundColor: colorPrimary,
               actions: selectedDrawerItem == DrawerItems.Profile
@@ -376,7 +377,7 @@ class _HomePageState extends State<HomePage> {
                         //TODO: need to change after
                         return _changeBattle(
                           context: context,
-                         // model: _userBattleModel,
+                          // model: _userBattleModel,
                           model: ConnectUsersModel(
                             nickName: 'Issaaaaaa',
                             rank: 100,
@@ -502,7 +503,11 @@ class _HomePageState extends State<HomePage> {
                               );
                             }
                           }),
-                      InteractPage(),
+                      SizedBox(
+                        width: width,
+                        height: height,
+                        child: InteractPage(),
+                      ),
                       EnjoyPage(),
                       ProfilePage(
                         userDataListener: () {
@@ -882,12 +887,13 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
   //TODO: need to complete
   Widget _changeBattle(
       {required BuildContext context,
-        required ConnectUsersModel? model,
-        required double height,
-        required double width}){
+      required ConnectUsersModel? model,
+      required double height,
+      required double width}) {
     return changeBattleDrawer(
       height: height,
       width: width,
@@ -903,20 +909,16 @@ class _HomePageState extends State<HomePage> {
           _currentDistanceValue = value;
         });
       },
-      onTapApplyBattle: (){
-
+      onTapApplyBattle: () {},
+      onTapGetDatePicker: () {
+        BlocProvider.of<HomeBloc>(context).add(home_bloc.GetDatePicker());
       },
-      onTapGetDatePicker: (){
-        BlocProvider.of<HomeBloc>(context)
-            .add(home_bloc.GetDatePicker());
-      },
-      onTapCancelBattle: (){
+      onTapCancelBattle: () {
         if (_keyScaffold.currentState != null &&
             _keyScaffold.currentState!.isEndDrawerOpen) {
           Navigator.of(context).pop();
         }
       },
-
     );
   }
 
