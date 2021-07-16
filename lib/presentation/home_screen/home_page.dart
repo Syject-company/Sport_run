@@ -6,11 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_conditional_rendering/flutter_conditional_rendering.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:one2one_run/data/models/battle_request_model.dart';
-import 'package:one2one_run/utils/extension.dart' show DateTimeExtension;
 import 'package:one2one_run/components/widgets.dart';
+import 'package:one2one_run/components/widgets_drawers.dart';
 import 'package:one2one_run/data/apis/apis.dart';
+import 'package:one2one_run/data/models/battle_request_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_page.dart';
@@ -25,10 +26,10 @@ import 'package:one2one_run/presentation/profile_screen/profile_page.dart';
 import 'package:one2one_run/presentation/settings_screen/settings_page.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
+import 'package:one2one_run/utils/extension.dart' show DateTimeExtension;
 import 'package:one2one_run/utils/no_glow_scroll_behavior.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -49,6 +50,7 @@ class _HomePageState extends State<HomePage> {
   final _refreshController = RoundedLoadingButtonController();
   final _applyMessageController = RoundedLoadingButtonController();
   final _applyBattleController = RoundedLoadingButtonController();
+  final _applyChangeBattleController = RoundedLoadingButtonController();
   final _battleNameController = TextEditingController();
   final _messageController = TextEditingController();
 
@@ -59,6 +61,7 @@ class _HomePageState extends State<HomePage> {
   ConnectApi connectApi = ConnectApi();
 
   String pageTitle = 'Connect';
+  String changeBattleDrawerTitle = 'Offer new conditions';
   String messageToOpponent = 'Come as you are, join the run!';
   String dateAndTime = '';
   late String dateAndTimeForUser;
@@ -91,20 +94,6 @@ class _HomePageState extends State<HomePage> {
       homeApi.sendFireBaseToken(tokenFireBase: token ?? '');
       print('Firebase token: $token');
     });
-
-    //NOte: when app is terminated
-    _messaging.getInitialMessage().then((RemoteMessage? message) {
-      if (message != null) {
-        var dd = message.data['title'];
-      }
-    });
-    //TODO: to get the user model when battle is created
-    //NOte: when app is in background state
-    FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      var dd = event.data['title'];
-      print('onMessageOpenedApp: $dd');
-    });
-
     dateAndTimeForUser =
         getFormattedDateForUser(date: DateTime.now(), time: TimeOfDay.now());
     dateAndTime = getFormattedDate(date: DateTime.now(), time: TimeOfDay.now());
@@ -116,6 +105,24 @@ class _HomePageState extends State<HomePage> {
       }
     });
     _users = getUsers(isFilterIncluded: _isNeedFilter);
+
+    //NOte: when app is terminated
+    _messaging.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        var dd = message.data['title'];
+      }
+    });
+/*    //TODO: to get the user model when battle is created
+    //NOte: when app is in background state
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      var dd = event.data['title'];
+      print('onMessageOpenedApp: $dd');
+      selectedDrawersType = DrawersType.BattleDrawer;
+      if (_keyScaffold.currentState != null &&
+          !_keyScaffold.currentState!.isEndDrawerOpen) {
+        _keyScaffold.currentState!.openEndDrawer();
+      }
+    });*/
   }
 
   @override
@@ -241,11 +248,43 @@ class _HomePageState extends State<HomePage> {
               }
             });
             _applyBattleController.reset();
+          }else if (state is ChangeBattleDrawerIsOpen) {
+            dateAndTimeForUser = getFormattedDateForUser(
+                date: DateTime.now(), time: TimeOfDay.now());
+          //  _userBattleModel = state.userModel;
+            selectedDrawersType = DrawersType.ChangeBattle;
+            if (_keyScaffold.currentState != null &&
+                !_keyScaffold.currentState!.isEndDrawerOpen) {
+              _keyScaffold.currentState!.openEndDrawer();
+            }
           }
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
         },
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (final context, final state) {
+       /*       FirebaseMessaging.onMessageOpenedApp.listen((event) {
+                var dd = event.data['title'];
+                print('onMessageOpenedApp: $dd');
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.OpenChangeBattleDrawer(ConnectUsersModel(
+                  nickName: 'Issaaaaaa',
+                  rank: 100,
+                  workoutsPerWeek: 5,
+                  email: 'adasd@hotmail.com',
+                  description: '',
+                  isMetric: true,
+                  weeklyDistance: 10,
+                  pace: 5,
+                  moto: 'ada',
+                  discarded: 5,
+                  draws: 4,
+                  id: 'ddddd',
+                  loses: 5,
+                  photoLink: null,
+                  score: 7,
+                  wins: 88,
+                )));
+              });*/
           return Scaffold(
             key: _keyScaffold,
             backgroundColor: homeBackground,
@@ -329,6 +368,33 @@ class _HomePageState extends State<HomePage> {
                         return _createBattleDrawer(
                           context: context,
                           model: _userBattleModel,
+                          width: width,
+                          height: height,
+                        );
+                      },
+                      DrawersType.ChangeBattle: (context) {
+                        //TODO: need to change after
+                        return _changeBattle(
+                          context: context,
+                         // model: _userBattleModel,
+                          model: ConnectUsersModel(
+                            nickName: 'Issaaaaaa',
+                            rank: 100,
+                            workoutsPerWeek: 5,
+                            email: 'adasd@hotmail.com',
+                            description: '',
+                            isMetric: true,
+                            weeklyDistance: 10,
+                            pace: 5,
+                            moto: 'ada',
+                            discarded: 5,
+                            draws: 4,
+                            id: 'ddddd',
+                            loses: 5,
+                            photoLink: null,
+                            score: 7,
+                            wins: 88,
+                          ),
                           width: width,
                           height: height,
                         );
@@ -816,8 +882,44 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+  //TODO: need to complete
+  Widget _changeBattle(
+      {required BuildContext context,
+        required ConnectUsersModel? model,
+        required double height,
+        required double width}){
+    return changeBattleDrawer(
+      height: height,
+      width: width,
+      context: context,
+      model: model,
+      titleDrawer: changeBattleDrawerTitle,
+      applyChangeBattleController: _applyChangeBattleController,
+      dateAndTimeForUser: dateAndTimeForUser,
+      isKM: isKM,
+      currentDistanceValue: _currentDistanceValue,
+      onSeekChanged: (value) {
+        setState(() {
+          _currentDistanceValue = value;
+        });
+      },
+      onTapApplyBattle: (){
 
-/////////////////////////////////
+      },
+      onTapGetDatePicker: (){
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.GetDatePicker());
+      },
+      onTapCancelBattle: (){
+        if (_keyScaffold.currentState != null &&
+            _keyScaffold.currentState!.isEndDrawerOpen) {
+          Navigator.of(context).pop();
+        }
+      },
+
+    );
+  }
+
   Widget _createBattleDrawer(
       {required BuildContext context,
       required ConnectUsersModel? model,
