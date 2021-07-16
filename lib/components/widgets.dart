@@ -900,3 +900,18 @@ Widget _userCreatedBattleInfo({
     ),
   );
 }
+
+Widget interactTab({required String title}){
+  return  SizedBox(
+    height: 32,
+    child: Center(
+      child: Text(
+        title.toUpperCase(),
+        style: TextStyle(
+            fontFamily: 'roboto',
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w700),
+      ),
+    ),
+  );
+}
