@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:one2one_run/data/models/battle_request_model.dart';
+import 'package:one2one_run/data/models/battle_respond_model.dart';
+import 'package:one2one_run/data/models/change_battle_conditions_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/data/models/user_profile_request_model.dart';
 import 'package:one2one_run/utils/constants.dart';
@@ -19,6 +22,9 @@ class HomeApi {
 
   final String _urlSendFirebaseToken =
       '${Constants.domain}${Constants.sendFireBaseTokenUrl}';
+
+  final String _urlGetBattleById =
+      '${Constants.domain}${Constants.createBattleUrl}';
 
   //@get
   Future<UserModel?> getUserModel() async {
@@ -67,6 +73,57 @@ class HomeApi {
       'Content-Type': 'application/json',
       'authorization': token,
     });
+
+    return res.statusCode == 200;
+  }
+
+  //@get
+  Future<BattleRespondModel?> getBattleById({
+    required String battleId,
+  }) async {
+    final token = PreferenceUtils.getUserToken();
+    final queryParameters = {'id': battleId};
+
+    final uri =
+        Uri.parse(_urlGetBattleById).replace(queryParameters: queryParameters);
+
+    final res = await get(
+      uri,
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: token,
+      },
+    );
+
+    if (res.statusCode == 200) {
+      return BattleRespondModel.fromJson(json.decode(res.body));
+    }
+    return null;
+  }
+
+  //@post
+  Future<bool> acceptBattle({required String battleId}) async {
+    final token = PreferenceUtils.getUserToken();
+    final res =
+        await post(Uri.parse('$_urlGetBattleById/$battleId/Accept'), headers: {
+      'Content-Type': 'application/json',
+      'authorization': token,
+    });
+
+    return res.statusCode == 200;
+  }
+
+  //@post
+  Future<bool> applyBattleChanges(
+      {required ChangeBattleConditionsModel model,
+      required String battleId}) async {
+    final token = PreferenceUtils.getUserToken();
+    final res = await patch(Uri.parse('$_urlGetBattleById/$battleId'),
+        body: json.encode(model),
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': token,
+        });
 
     return res.statusCode == 200;
   }

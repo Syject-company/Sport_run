@@ -9,5 +9,5 @@ enum DrawerItems {
 enum DrawersType {
   FilterDrawer,
   BattleDrawer,
-  ChangeBattle,
+  BattleOnNotificationDrawer,
 }

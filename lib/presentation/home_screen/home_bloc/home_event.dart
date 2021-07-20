@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/utils/enums.dart';
 
@@ -95,11 +96,31 @@ class SelectMessageToOpponent extends HomeEvent {
 
 class CreateBattle extends HomeEvent {}
 
-class OpenChangeBattleDrawer extends HomeEvent {
-  OpenChangeBattleDrawer(this.userModel);
+class OpenBattleOnNotificationDrawer extends HomeEvent {
+  OpenBattleOnNotificationDrawer(this.model);
 
-  final ConnectUsersModel userModel;
+  final BattleRespondModel model;
 
   @override
-  List<Object> get props => [userModel];
+  List<Object> get props => [model];
+}
+
+class OpenCloseChangeBattleDrawer extends HomeEvent {}
+
+class AcceptBattleOnNotification extends HomeEvent {
+  AcceptBattleOnNotification(this.battleId);
+
+  final String battleId;
+
+  @override
+  List<Object> get props => [battleId];
+}
+
+class ApplyBattleChanges extends HomeEvent {
+  ApplyBattleChanges(this.battleId);
+
+  final String battleId;
+
+  @override
+  List<Object> get props => [battleId];
 }

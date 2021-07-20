@@ -12,6 +12,8 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/components/widgets_drawers.dart';
 import 'package:one2one_run/data/apis/apis.dart';
 import 'package:one2one_run/data/models/battle_request_model.dart';
+import 'package:one2one_run/data/models/battle_respond_model.dart';
+import 'package:one2one_run/data/models/change_battle_conditions_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_page.dart';
@@ -51,6 +53,7 @@ class _HomePageState extends State<HomePage> {
   final _applyMessageController = RoundedLoadingButtonController();
   final _applyBattleController = RoundedLoadingButtonController();
   final _applyChangeBattleController = RoundedLoadingButtonController();
+  final _acceptBattleController = RoundedLoadingButtonController();
   final _battleNameController = TextEditingController();
   final _messageController = TextEditingController();
 
@@ -64,7 +67,9 @@ class _HomePageState extends State<HomePage> {
   String changeBattleDrawerTitle = 'Offer new conditions';
   String messageToOpponent = 'Come as you are, join the run!';
   String dateAndTime = '';
+  String battleId = '';
   late String dateAndTimeForUser;
+  late String currentUserId;
 
   late Future<UserModel?> _userModel;
   late Future<List<ConnectUsersModel>?> _users;
@@ -72,9 +77,11 @@ class _HomePageState extends State<HomePage> {
   late FirebaseMessaging _messaging;
   late RangeValues _currentRangeValuesPace;
   late RangeValues _currentRangeValuesWeekly;
+  late BattleRespondModel _battleRespondModel;
 
   bool _isNeedFilter = false;
   bool _isNeedToOpenMessageDrawer = false;
+  bool _isNeedToOpenChangeBattleDrawer = false;
   late bool isKM;
 
   int _countOfRuns = 1;
@@ -102,27 +109,10 @@ class _HomePageState extends State<HomePage> {
     _userModel.then((value) {
       if (value != null) {
         PreferenceUtils.setCurrentUserModel(value);
+        currentUserId = value.id;
       }
     });
     _users = getUsers(isFilterIncluded: _isNeedFilter);
-
-    //NOte: when app is terminated
-    _messaging.getInitialMessage().then((RemoteMessage? message) {
-      if (message != null) {
-        var dd = message.data['title'];
-      }
-    });
-/*    //TODO: to get the user model when battle is created
-    //NOte: when app is in background state
-    FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      var dd = event.data['title'];
-      print('onMessageOpenedApp: $dd');
-      selectedDrawersType = DrawersType.BattleDrawer;
-      if (_keyScaffold.currentState != null &&
-          !_keyScaffold.currentState!.isEndDrawerOpen) {
-        _keyScaffold.currentState!.openEndDrawer();
-      }
-    });*/
   }
 
   @override
@@ -248,49 +238,68 @@ class _HomePageState extends State<HomePage> {
               }
             });
             _applyBattleController.reset();
-          } else if (state is ChangeBattleDrawerIsOpen) {
-            dateAndTimeForUser = getFormattedDateForUser(
-                date: DateTime.now(), time: TimeOfDay.now());
-            //  _userBattleModel = state.userModel;
-            selectedDrawersType = DrawersType.ChangeBattle;
+          } else if (state is BattleOnNotificationDrawerIsOpen) {
+            _battleRespondModel = state.model;
             if (_keyScaffold.currentState != null &&
                 !_keyScaffold.currentState!.isEndDrawerOpen) {
               _keyScaffold.currentState!.openEndDrawer();
             }
+          } else if (state is ChangeBattleDrawerIsOpenClose) {
+            _isNeedToOpenChangeBattleDrawer = !_isNeedToOpenChangeBattleDrawer;
+          } else if (state is BattleOnNotificationIsAccepted) {
+            _acceptBattleController.success();
+            await homeApi
+                .acceptBattle(battleId: state.battleId)
+                .then((value) async {
+              if (value) {
+                if (_keyScaffold.currentState != null &&
+                    _keyScaffold.currentState!.isEndDrawerOpen) {
+                  Navigator.of(context).pop();
+                }
+              } else {
+                await Fluttertoast.showToast(
+                    msg: 'Unexpected error happened',
+                    fontSize: 16.0,
+                    gravity: ToastGravity.CENTER);
+              }
+            });
+            _acceptBattleController.reset();
+          } else if (state is ApplyBattleIsChanged) {
+          //  _applyChangeBattleController.success();
+            _isNeedToOpenChangeBattleDrawer = false;
+            await homeApi
+                .applyBattleChanges(model: ChangeBattleConditionsModel(
+              dateTime: dateAndTime,
+              distance: _currentDistanceValue / 60,
+            ),battleId: state.battleId,)
+                .then((value) async {
+              if (value) {
+                if (_keyScaffold.currentState != null &&
+                    _keyScaffold.currentState!.isEndDrawerOpen) {
+                  Navigator.of(context).pop();
+                }
+              } else {
+                await Fluttertoast.showToast(
+                    msg: 'Unexpected error happened',
+                    fontSize: 16.0,
+                    gravity: ToastGravity.CENTER);
+              }
+            });
+         //   _applyChangeBattleController.reset();
           }
+
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
         },
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (final context, final state) {
-          /*       FirebaseMessaging.onMessageOpenedApp.listen((event) {
-                var dd = event.data['title'];
-                print('onMessageOpenedApp: $dd');
-                BlocProvider.of<HomeBloc>(context)
-                    .add(home_bloc.OpenChangeBattleDrawer(ConnectUsersModel(
-                  nickName: 'Issaaaaaa',
-                  rank: 100,
-                  workoutsPerWeek: 5,
-                  email: 'adasd@hotmail.com',
-                  description: '',
-                  isMetric: true,
-                  weeklyDistance: 10,
-                  pace: 5,
-                  moto: 'ada',
-                  discarded: 5,
-                  draws: 4,
-                  id: 'ddddd',
-                  loses: 5,
-                  photoLink: null,
-                  score: 7,
-                  wins: 88,
-                )));
-              });*/
+          getBattleDataFromFirebaseMessaging(context: context);
           return Scaffold(
             key: _keyScaffold,
             backgroundColor: homeBackground,
             onEndDrawerChanged: (value) {
               if (!value && selectedDrawersType != DrawersType.FilterDrawer) {
                 _isNeedToOpenMessageDrawer = false;
+                _isNeedToOpenChangeBattleDrawer = false;
                 _currentDistanceValue = 300;
                 _battleNameController.text = '';
                 Timer(const Duration(milliseconds: 300), () {
@@ -300,7 +309,7 @@ class _HomePageState extends State<HomePage> {
               }
             },
             appBar: AppBar(
-              shadowColor:Colors.transparent,
+              shadowColor: Colors.transparent,
               title: Text(
                 pageTitle,
                 style: TextStyle(
@@ -373,29 +382,10 @@ class _HomePageState extends State<HomePage> {
                           height: height,
                         );
                       },
-                      DrawersType.ChangeBattle: (context) {
-                        //TODO: need to change after
-                        return _changeBattle(
+                      DrawersType.BattleOnNotificationDrawer: (context) {
+                        return _battleOfferOnNotification(
                           context: context,
-                          // model: _userBattleModel,
-                          model: ConnectUsersModel(
-                            nickName: 'Issaaaaaa',
-                            rank: 100,
-                            workoutsPerWeek: 5,
-                            email: 'adasd@hotmail.com',
-                            description: '',
-                            isMetric: true,
-                            weeklyDistance: 10,
-                            pace: 5,
-                            moto: 'ada',
-                            discarded: 5,
-                            draws: 4,
-                            id: 'ddddd',
-                            loses: 5,
-                            photoLink: null,
-                            score: 7,
-                            wins: 88,
-                          ),
+                          model: _battleRespondModel,
                           width: width,
                           height: height,
                         );
@@ -889,16 +879,74 @@ class _HomePageState extends State<HomePage> {
   }
 
   //TODO: need to complete
+
+  Widget _battleOfferOnNotification(
+      {required BuildContext context,
+      required BattleRespondModel model,
+      required double height,
+      required double width}) {
+    return _isNeedToOpenChangeBattleDrawer
+        ? _changeBattle(
+            context: context,
+            width: width,
+            height: height,
+            userName: model.battleUsers[0].applicationUser.id != currentUserId
+                ? model.battleUsers[0].applicationUser.nickName
+                : model.battleUsers[1].applicationUser.nickName,
+            userPhoto: model.battleUsers[0].applicationUser.id != currentUserId
+                ? model.battleUsers[0].applicationUser.photoLink
+                : model.battleUsers[1].applicationUser.photoLink,
+            userRank: model.battleUsers[0].applicationUser.id != currentUserId
+                ? model.battleUsers[0].applicationUser.rank.toString()
+                : model.battleUsers[1].applicationUser.rank.toString(),
+          )
+        : battleOfferOnNotificationDrawer(
+            height: height,
+            width: width,
+            context: context,
+            distance: model.distance,
+            deadLineDate: model.deadlineTime.replaceFirst(RegExp('T'), '  '),
+            battleMessage: model.message,
+            currentUserModel:
+                model.battleUsers[0].applicationUser.id == currentUserId
+                    ? model.battleUsers[0].applicationUser
+                    : model.battleUsers[1].applicationUser,
+            secondUserModel:
+                model.battleUsers[0].applicationUser.id != currentUserId
+                    ? model.battleUsers[0].applicationUser
+                    : model.battleUsers[1].applicationUser,
+            acceptBattleController: _acceptBattleController,
+            onTapAcceptBattle: () {
+              BlocProvider.of<HomeBloc>(context)
+                  .add(home_bloc.AcceptBattleOnNotification(battleId));
+            },
+            onTapChangeConditions: () {
+              BlocProvider.of<HomeBloc>(context)
+                  .add(home_bloc.OpenCloseChangeBattleDrawer());
+            },
+            onTapCancelBattle: () {
+              if (_keyScaffold.currentState != null &&
+                  _keyScaffold.currentState!.isEndDrawerOpen) {
+                Navigator.of(context).pop();
+              }
+            },
+          );
+  }
+
   Widget _changeBattle(
       {required BuildContext context,
-      required ConnectUsersModel? model,
+      required String? userPhoto,
+      required String userName,
+      required String userRank,
       required double height,
       required double width}) {
     return changeBattleDrawer(
       height: height,
       width: width,
       context: context,
-      model: model,
+      userName: userName,
+      userPhoto: userPhoto,
+      userRank: userRank,
       titleDrawer: changeBattleDrawerTitle,
       applyChangeBattleController: _applyChangeBattleController,
       dateAndTimeForUser: dateAndTimeForUser,
@@ -909,15 +957,16 @@ class _HomePageState extends State<HomePage> {
           _currentDistanceValue = value;
         });
       },
-      onTapApplyBattle: () {},
+      onTapApplyBattle: () {
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.ApplyBattleChanges(battleId));
+      },
       onTapGetDatePicker: () {
         BlocProvider.of<HomeBloc>(context).add(home_bloc.GetDatePicker());
       },
       onTapCancelBattle: () {
-        if (_keyScaffold.currentState != null &&
-            _keyScaffold.currentState!.isEndDrawerOpen) {
-          Navigator.of(context).pop();
-        }
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.OpenCloseChangeBattleDrawer());
       },
     );
   }
@@ -1061,11 +1110,50 @@ class _HomePageState extends State<HomePage> {
       confirmText: 'APPLY',
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          data: MediaQuery.of(context).copyWith(
+            alwaysUse24HourFormat: true,
+          ),
           child: child!,
         );
       },
     );
+  }
+
+  void getBattleDataFromFirebaseMessaging({required BuildContext context}) {
+    //NOte: when app is terminated
+    _messaging.getInitialMessage().then((RemoteMessage? message) async {
+      if (message != null) {
+        final id = message.data['battleId'];
+        battleId = id;
+        await getBattleById(context: context, battleId: id);
+      }
+    });
+
+    //NOte: when app is in background state
+    FirebaseMessaging.onMessageOpenedApp.listen((event) async {
+      if (selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
+        final id = event.data['battleId'];
+        battleId = id;
+        print('onMessageOpenedAppId: $id');
+        await getBattleById(context: context, battleId: id);
+      }
+    });
+  }
+
+  Future<void> getBattleById(
+      {required BuildContext context, required String battleId}) async {
+    await homeApi.getBattleById(battleId: battleId).then((model) {
+      if (model != null) {
+        selectedDrawersType = DrawersType.BattleOnNotificationDrawer;
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.OpenBattleOnNotificationDrawer(model));
+      } else {
+        Fluttertoast.showToast(
+            msg: 'Unexpected error happened',
+            fontSize: 16.0,
+            gravity: ToastGravity.CENTER);
+      }
+    });
   }
 
   @override

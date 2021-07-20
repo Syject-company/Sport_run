@@ -171,6 +171,8 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
               controller: _nickNameController,
               errorText: _nickNameError,
               hintText: 'Nick Name',
+              maxLength: 18,
+              isCounterShown: true,
             ),
           ),
           Container(
