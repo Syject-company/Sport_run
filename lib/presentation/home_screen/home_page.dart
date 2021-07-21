@@ -265,8 +265,7 @@ class _HomePageState extends State<HomePage> {
             });
             _acceptBattleController.reset();
           } else if (state is ApplyBattleIsChanged) {
-          //  _applyChangeBattleController.success();
-            _isNeedToOpenChangeBattleDrawer = false;
+           // _isNeedToOpenChangeBattleDrawer = false;
             await homeApi
                 .applyBattleChanges(model: ChangeBattleConditionsModel(
               dateTime: dateAndTime,
@@ -285,7 +284,7 @@ class _HomePageState extends State<HomePage> {
                     gravity: ToastGravity.CENTER);
               }
             });
-         //   _applyChangeBattleController.reset();
+            _isNeedToOpenChangeBattleDrawer = false;
           }
 
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
