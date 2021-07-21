@@ -53,3 +53,19 @@ String get runsIcon => 'assets/icons/runs.png';
 String get battleIcon => 'assets/icons/battle.png';
 
 String get calendarIcon => 'assets/icons/calendar.png';
+
+String get acceptedIcon => 'assets/icons/accepted.png';
+
+String get finishedIcon => 'assets/icons/finished.png';
+
+String get negotiateIcon => 'assets/icons/negotiate.png';
+
+String get proposedIcon => 'assets/icons/proposed.png';
+
+String get deadlineIcon => 'assets/icons/deadline.png';
+
+String get discardedIcon => 'assets/icons/discarded.png';
+
+String get declinedIcon => 'assets/icons/declined.png';
+
+String get distanceIcon => 'assets/icons/distance.png';

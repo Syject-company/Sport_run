@@ -10,7 +10,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/components/widgets_drawers.dart';
-import 'package:one2one_run/data/apis/apis.dart';
+import 'package:one2one_run/data/apis/connect_api.dart';
+import 'package:one2one_run/data/apis/home_api.dart';
 import 'package:one2one_run/data/models/battle_request_model.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/change_battle_conditions_model.dart';
@@ -265,12 +266,15 @@ class _HomePageState extends State<HomePage> {
             });
             _acceptBattleController.reset();
           } else if (state is ApplyBattleIsChanged) {
-           // _isNeedToOpenChangeBattleDrawer = false;
+            // _isNeedToOpenChangeBattleDrawer = false;
             await homeApi
-                .applyBattleChanges(model: ChangeBattleConditionsModel(
-              dateTime: dateAndTime,
-              distance: _currentDistanceValue / 60,
-            ),battleId: state.battleId,)
+                .applyBattleChanges(
+              model: ChangeBattleConditionsModel(
+                dateTime: dateAndTime,
+                distance: _currentDistanceValue / 60,
+              ),
+              battleId: state.battleId,
+            )
                 .then((value) async {
               if (value) {
                 if (_keyScaffold.currentState != null &&
@@ -877,8 +881,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  //TODO: need to complete
-
   Widget _battleOfferOnNotification(
       {required BuildContext context,
       required BattleRespondModel model,
@@ -1121,7 +1123,8 @@ class _HomePageState extends State<HomePage> {
   void getBattleDataFromFirebaseMessaging({required BuildContext context}) {
     //NOte: when app is terminated
     _messaging.getInitialMessage().then((RemoteMessage? message) async {
-      if (message != null) {
+      if (message != null &&
+          selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
         final id = message.data['battleId'];
         battleId = id;
         await getBattleById(context: context, battleId: id);

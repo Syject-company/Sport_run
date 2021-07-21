@@ -162,7 +162,7 @@ class _ConnectPageState extends State<ConnectPage> {
                         SizedBox(
                           width: height * 0.03,
                         ),
-                        _cardItem(
+                        cardItem(
                           height: height,
                           width: width,
                           title: 'Pace',
@@ -173,7 +173,7 @@ class _ConnectPageState extends State<ConnectPage> {
                         SizedBox(
                           width: height * 0.02,
                         ),
-                        _cardItem(
+                        cardItem(
                           height: height,
                           width: width,
                           title: 'Runs',
@@ -188,7 +188,7 @@ class _ConnectPageState extends State<ConnectPage> {
                     Container(
                       margin: EdgeInsets.only(left: height * 0.03),
                       alignment: Alignment.centerLeft,
-                      child: _cardItem(
+                      child: cardItem(
                         height: height,
                         width: width + 120,
                         title: 'Weekly Distance',
@@ -294,57 +294,6 @@ class _ConnectPageState extends State<ConnectPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _cardItem(
-      {required double width,
-      required double height,
-      required String icon,
-      required String title,
-      required String value}) {
-    return Container(
-      width: width / 2.5,
-      height: height * 0.04,
-      decoration: BoxDecoration(
-          border: Border.all(
-            color: const Color(0xffCDCDCD).withOpacity(0.3),
-          ),
-          borderRadius: const BorderRadius.all(Radius.circular(6))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            icon,
-            height: height * 0.015,
-            width: height * 0.015,
-            fit: BoxFit.fill,
-            color: Colors.grey,
-          ),
-          const SizedBox(
-            width: 7.0,
-          ),
-          Text(
-            title,
-            style: TextStyle(
-                color: Colors.grey,
-                fontSize: 12.sp,
-                fontFamily: 'roboto',
-                fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(
-            width: 5.0,
-          ),
-          Text(
-            value,
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 12.sp,
-                fontFamily: 'roboto',
-                fontWeight: FontWeight.w700),
-          ),
-        ],
       ),
     );
   }

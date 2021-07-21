@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:one2one_run/components/widgets.dart';
+import 'package:one2one_run/data/apis/interact_api.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/bloc.dart'
     as interact_bloc;
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/interact_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/interact_state.dart';
+import 'package:one2one_run/presentation/interact_screen/pending_tab.dart';
 import 'package:one2one_run/resources/colors.dart';
 
 //NOte:'/interact'
@@ -18,6 +19,8 @@ class InteractPage extends StatefulWidget {
 }
 
 class _InteractPageState extends State<InteractPage> {
+  final _interActApi = InteractApi();
+
   @override
   void initState() {
     super.initState();
@@ -61,14 +64,7 @@ class _InteractPageState extends State<InteractPage> {
                       child: Text('Active Page'),
                     ),
                   ),
-                  Container(
-                    width: width,
-                    height: height,
-                    color: const Color(0xffF5F5F5),
-                    child: const Center(
-                      child: Text('Pending Page'),
-                    ),
-                  ),
+                  PendingTab(),
                   Container(
                     width: width,
                     height: height,

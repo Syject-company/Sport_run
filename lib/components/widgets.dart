@@ -901,17 +901,103 @@ Widget _userCreatedBattleInfo({
   );
 }
 
-Widget interactTab({required String title}){
-  return  SizedBox(
+Widget interactTab({required String title}) {
+  return SizedBox(
     height: 32,
     child: Center(
       child: Text(
         title.toUpperCase(),
         style: TextStyle(
-            fontFamily: 'roboto',
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w700),
+            fontFamily: 'roboto', fontSize: 14.sp, fontWeight: FontWeight.w700),
       ),
+    ),
+  );
+}
+
+Widget cardItem(
+    {required double width,
+    required double height,
+    required String icon,
+    required String title,
+    required String value}) {
+  return Container(
+    width: width / 2.5,
+    height: height * 0.04,
+    decoration: BoxDecoration(
+        border: Border.all(
+          color: const Color(0xffCDCDCD).withOpacity(0.3),
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(6))),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          icon,
+          height: height * 0.015,
+          width: height * 0.015,
+          fit: BoxFit.fill,
+          color: Colors.grey,
+        ),
+        const SizedBox(
+          width: 7.0,
+        ),
+        Text(
+          title,
+          style: TextStyle(
+              color: Colors.grey,
+              fontSize: 12.sp,
+              fontFamily: 'roboto',
+              fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(
+          width: 5.0,
+        ),
+        Text(
+          value,
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 12.sp,
+              fontFamily: 'roboto',
+              fontWeight: FontWeight.w700),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget statusLabel(
+    {required double width,
+    required String title,
+    required String icon,
+    required Color color}) {
+  return Container(
+    width: width * 0.28,
+    height: width * 0.075,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(6),
+      color: color,
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          icon,
+          height: width * 0.06,
+          width: width * 0.06,
+          fit: BoxFit.fill,
+        ),
+        const SizedBox(
+          width: 3.0,
+        ),
+        Text(
+          title,
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 12.sp,
+              fontFamily: 'roboto',
+              fontWeight: FontWeight.w700),
+        ),
+      ],
     ),
   );
 }
