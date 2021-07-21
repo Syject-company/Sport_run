@@ -39,8 +39,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield SelectedMessageToOpponent(event.messageIndex);
     }else if (event is CreateBattle) {
       yield BattleCreated();
-    }else if (event is OpenChangeBattleDrawer) {
-      yield ChangeBattleDrawerIsOpen(event.userModel);
+    }else if (event is OpenBattleOnNotificationDrawer) {
+      yield BattleOnNotificationDrawerIsOpen(event.model);
+    }else if (event is OpenCloseChangeBattleDrawer) {
+      yield ChangeBattleDrawerIsOpenClose();
+    }else if (event is AcceptBattleOnNotification) {
+      yield BattleOnNotificationIsAccepted(event.battleId);
+    }else if (event is ApplyBattleChanges) {
+      yield ApplyBattleIsChanged(event.battleId);
     }
   }
 }
