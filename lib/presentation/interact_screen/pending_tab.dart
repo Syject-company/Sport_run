@@ -2,10 +2,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/components/widgets.dart';
-import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/resources/images.dart';
+import 'package:one2one_run/utils/preference_utils.dart';
 
 class PendingTab extends StatelessWidget {
+  const PendingTab({
+    Key? key,
+    required this.pendingList,
+    required this.currentUserId,
+    required this.onTapAccept,
+    required this.onTapChange,
+    required this.onTapDecline,
+  }) : super(key: key);
+
+  final List<BattleRespondModel>? pendingList;
+  final String currentUserId;
+  final Function(String id) onTapAccept;
+  final Function(String id, BattleRespondModel model) onTapChange;
+  final Function(String id) onTapDecline;
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height -
@@ -15,13 +31,21 @@ class PendingTab extends StatelessWidget {
       width: width,
       height: height,
       color: const Color(0xffF5F5F5),
-      child: Center(
-        child: _listItem(
-          context: context,
-          width: width,
-          height: height,
-        ),
-      ),
+      child: ListView.builder(
+          itemCount: pendingList?.length,
+          itemBuilder: (BuildContext con, int index) {
+            return _listItem(
+              context: context,
+              width: width,
+              height: height,
+              model: pendingList![index],
+              opponentName: getOpponentName(model: pendingList![index]),
+              opponentPhoto: getOpponentPhoto(model: pendingList![index]),
+              onTapAccept: onTapAccept,
+              onTapChange: onTapChange,
+              onTapDecline: onTapDecline,
+            );
+          }),
     );
   }
 
@@ -29,6 +53,12 @@ class PendingTab extends StatelessWidget {
     required BuildContext context,
     required double width,
     required double height,
+    required BattleRespondModel model,
+    required String opponentName,
+    required String? opponentPhoto,
+    required Function(String id) onTapAccept,
+    required Function(String id, BattleRespondModel model) onTapChange,
+    required Function(String id) onTapDecline,
   }) {
     return Container(
       height: height * 0.41,
@@ -53,7 +83,7 @@ class PendingTab extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Battle name',
+            model.battleName,
             style: TextStyle(
                 color: Colors.red,
                 fontSize: 18.sp,
@@ -68,10 +98,11 @@ class PendingTab extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               statusLabel(
-                  width: width,
-                  title: 'Proposed',
-                  color: const Color(0xffEDEDED),
-                  icon: proposedIcon),
+                width: width,
+                title: model.status == 0 ? 'Proposed' : 'Negotiate',
+                color: const Color(0xffEDEDED),
+                icon: model.status == 0 ? proposedIcon : negotiateIcon,
+              ),
             ],
           ),
           SizedBox(
@@ -86,16 +117,14 @@ class PendingTab extends StatelessWidget {
                   right: width * 0.02,
                 ),
                 child: CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    radius: 80,
-                    backgroundImage:
-                        /*model?.photoLink == null
-                            ?*/
-                        AssetImage(
-                      defaultProfileImage,
-                    ) as ImageProvider
-                    /*    : NetworkImage(model!.photoLink!),*/
-                    ),
+                  backgroundColor: Colors.transparent,
+                  radius: 80,
+                  backgroundImage: opponentPhoto == null
+                      ? AssetImage(
+                          defaultProfileImage,
+                        ) as ImageProvider
+                      : NetworkImage(opponentPhoto),
+                ),
               ),
               Text(
                 'Opponent',
@@ -109,7 +138,7 @@ class PendingTab extends StatelessWidget {
                 width: 5.0,
               ),
               Text(
-                'Issa mirage',
+                opponentName,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 14.sp,
@@ -126,7 +155,7 @@ class PendingTab extends StatelessWidget {
               bottom: height * 0.02,
             ),
             child: Text(
-              'It will be a piece of cake!',
+              model.message ?? 'It will be a piece of cake!',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -143,6 +172,7 @@ class PendingTab extends StatelessWidget {
               width: width + width * 0.7,
               title: 'Time left',
               icon: weeklyDistanceIcon,
+              //TODO: need to do
               value: '0 days 8 hours 49 minutes',
             ),
           ),
@@ -153,10 +183,11 @@ class PendingTab extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: cardItem(
               height: height,
-              width: width,
+              width: width + 50,
               title: 'Distance',
               icon: distanceIcon,
-              value: '5.0 km',
+              value:
+                  '${model.distance} min/${PreferenceUtils.getIsUserUnitInKM() ? 'km' : 'mile'}',
             ),
           ),
           Padding(
@@ -177,30 +208,52 @@ class PendingTab extends StatelessWidget {
                 width: width * 0.25,
                 height: height * 0.055,
                 buttonTextSize: 14.sp,
-                onPressed: () async {},
+                onPressed: () {
+                  onTapAccept(model.id);
+                },
               ),
               buttonNoIcon(
                 title: 'Change',
                 color: const Color(0xffEDEDED),
-                textColor: Colors.black87,
+                textColor: Colors.grey,
                 width: width * 0.25,
                 height: height * 0.055,
                 buttonTextSize: 14.sp,
-                onPressed: () async {},
+                onPressed: () {
+                  onTapChange(model.id, model);
+                },
               ),
               buttonNoIcon(
                 title: 'Decline',
                 color: Colors.white,
-                textColor: Colors.black87,
+                textColor: Colors.grey,
                 width: width * 0.25,
                 height: height * 0.055,
                 buttonTextSize: 14.sp,
-                onPressed: () async {},
+                onPressed: () {
+                  onTapDecline(model.id);
+                },
               ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  String getOpponentName({required BattleRespondModel model}) {
+    if (model.battleUsers[0].applicationUser.id != currentUserId) {
+      return model.battleUsers[0].applicationUser.nickName;
+    }
+
+    return model.battleUsers[1].applicationUser.nickName;
+  }
+
+  String? getOpponentPhoto({required BattleRespondModel model}) {
+    if (model.battleUsers[0].applicationUser.id != currentUserId) {
+      return model.battleUsers[0].applicationUser.photoLink;
+    }
+
+    return model.battleUsers[1].applicationUser.photoLink;
   }
 }

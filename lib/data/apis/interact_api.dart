@@ -9,7 +9,8 @@ class InteractApi {
       '${Constants.domain}${Constants.createBattleUrl}';
 
   //@get
-  Future<BattleRespondModel?> applyBattleChanges({required int tabId}) async {
+  Future<List<BattleRespondModel>?> getInteractTabsDataById(
+      {required int tabId}) async {
     final token = PreferenceUtils.getUserToken();
     final res = await get(Uri.parse('$_urlGetTabById/$tabId'), headers: {
       'Content-Type': 'application/json',
@@ -17,7 +18,11 @@ class InteractApi {
     });
 
     if (res.statusCode == 200) {
-      return BattleRespondModel.fromJson(json.decode(res.body));
+      return json
+          .decode(res.body)
+          .map<BattleRespondModel>(
+              (model) => BattleRespondModel.fromJson(model))
+          .toList();
     }
     return null;
   }

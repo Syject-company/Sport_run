@@ -1,18 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:one2one_run/components/widgets.dart';
+import 'package:one2one_run/data/apis/home_api.dart';
 import 'package:one2one_run/data/apis/interact_api.dart';
+import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/bloc.dart'
     as interact_bloc;
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/interact_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/interact_state.dart';
 import 'package:one2one_run/presentation/interact_screen/pending_tab.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/utils/preference_utils.dart';
+import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 
 //NOte:'/interact'
 class InteractPage extends StatefulWidget {
-  InteractPage({Key? key}) : super(key: key);
+  InteractPage({Key? key, required this.onTapChange}) : super(key: key);
+
+  final Function(String id, BattleRespondModel model) onTapChange;
 
   @override
   _InteractPageState createState() => _InteractPageState();
@@ -20,6 +27,7 @@ class InteractPage extends StatefulWidget {
 
 class _InteractPageState extends State<InteractPage> {
   final _interActApi = InteractApi();
+  final _homeApi = HomeApi();
 
   @override
   void initState() {
@@ -36,7 +44,33 @@ class _InteractPageState extends State<InteractPage> {
       create: (final context) => InteractBloc(),
       child: BlocListener<InteractBloc, InteractState>(
         listener: (final context, final state) async {
-          if (state is StateUpdated) {}
+          if (state is BattleIsAccepted) {
+            await _homeApi.acceptBattle(battleId: state.id).then((value) async {
+              if (value) {
+                await Fluttertoast.showToast(
+                    msg: 'You have successfully accepted the battle!',
+                    fontSize: 16.0,
+                    textColor: Colors.green,
+                    gravity: ToastGravity.CENTER);
+              } else {
+                await toastUnexpectedError();
+              }
+            });
+          } else if (state is BattleIsDeclined) {
+            await _homeApi
+                .declineBattle(battleId: state.id)
+                .then((value) async {
+              if (value) {
+                await Fluttertoast.showToast(
+                    msg: 'You have successfully Declined the battle!',
+                    fontSize: 16.0,
+                    textColor: Colors.red,
+                    gravity: ToastGravity.CENTER);
+              } else {
+                await toastUnexpectedError();
+              }
+            });
+          }
           BlocProvider.of<InteractBloc>(context)
               .add(interact_bloc.UpdateState());
         },
@@ -64,7 +98,32 @@ class _InteractPageState extends State<InteractPage> {
                       child: Text('Active Page'),
                     ),
                   ),
-                  PendingTab(),
+                  FutureBuilder<List<BattleRespondModel>?>(
+                      future: _interActApi.getInteractTabsDataById(tabId: 1),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data != null) {
+                          return PendingTab(
+                            pendingList: snapshot.data,
+                            currentUserId:
+                                PreferenceUtils.getCurrentUserModel().id,
+                            onTapAccept: (id) {
+                              BlocProvider.of<InteractBloc>(context)
+                                  .add(interact_bloc.AcceptBattle(id: id));
+                            },
+                            onTapChange: widget.onTapChange,
+                            onTapDecline: (id) {
+                              BlocProvider.of<InteractBloc>(context)
+                                  .add(interact_bloc.DeclineBattle(id: id));
+                            },
+                          );
+                        }
+                        return Container(
+                          width: width,
+                          height: height,
+                          color: const Color(0xffF5F5F5),
+                          child: Center(child: progressIndicator()),
+                        );
+                      }),
                   Container(
                     width: width,
                     height: height,

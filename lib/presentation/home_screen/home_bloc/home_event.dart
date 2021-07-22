@@ -105,7 +105,7 @@ class OpenBattleOnNotificationDrawer extends HomeEvent {
   List<Object> get props => [model];
 }
 
-class OpenCloseChangeBattleDrawer extends HomeEvent {}
+class OpenCloseNewConditionsBattleDrawer extends HomeEvent {}
 
 class AcceptBattleOnNotification extends HomeEvent {
   AcceptBattleOnNotification(this.battleId);
@@ -123,4 +123,14 @@ class ApplyBattleChanges extends HomeEvent {
 
   @override
   List<Object> get props => [battleId];
+}
+
+class OpenChangeBattleDrawer extends HomeEvent {
+  OpenChangeBattleDrawer(this.battleId, this.model);
+
+  final String battleId;
+  final BattleRespondModel model;
+
+  @override
+  List<Object> get props => [battleId, model];
 }

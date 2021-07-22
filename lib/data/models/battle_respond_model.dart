@@ -128,7 +128,7 @@ class BattleUsers {
       resultIsConfirmed: map['resultIsConfirmed'] as bool,
       resultIsRejected: map['resultIsRejected'] as bool,
       isCreater: map['isCreater'] as bool,
-      photos: map['photos'] as List<String>,
+      photos: map['photos'] as List<dynamic>, //NOte: List<String>
       applicationUser: ApplicationUser.fromJson(map['applicationUser']),
     );
   }
@@ -139,7 +139,7 @@ class BattleUsers {
   bool resultIsConfirmed;
   bool resultIsRejected;
   bool isCreater;
-  List<String> photos;
+  List<dynamic> photos;
   ApplicationUser applicationUser;
 
   BattleUsers copyWith({
@@ -149,7 +149,7 @@ class BattleUsers {
     bool? resultIsConfirmed,
     bool? resultIsRejected,
     bool? isCreater,
-    List<String>? photos,
+    List<dynamic>? photos,
     ApplicationUser? applicationUser,
   }) {
     return BattleUsers(

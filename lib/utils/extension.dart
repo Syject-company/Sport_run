@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 extension EmailValidator on String {
@@ -12,8 +13,8 @@ extension EmailValidator on String {
     return RegExp(r'^(?=.*[a-z])').hasMatch(this);
   }
 }
-extension DateTimeExtension on void {
 
+extension DateTimeExtension on void {
   String getFormattedDate({
     required DateTime date,
     required TimeOfDay time,
@@ -33,3 +34,11 @@ extension DateTimeExtension on void {
   }
 }
 
+extension ToastExtension on void {
+  Future<void> toastUnexpectedError() {
+    return Fluttertoast.showToast(
+        msg: 'Unexpected error happened',
+        fontSize: 16.0,
+        gravity: ToastGravity.CENTER);
+  }
+}
