@@ -35,18 +35,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield MessageDrawerIsOpenOrClose();
     } else if (event is SendMessageToOpponent) {
       yield MessageToOpponentDrawerIsSent(event.message);
-    }else if (event is SelectMessageToOpponent) {
+    } else if (event is SelectMessageToOpponent) {
       yield SelectedMessageToOpponent(event.messageIndex);
-    }else if (event is CreateBattle) {
+    } else if (event is CreateBattle) {
       yield BattleCreated();
-    }else if (event is OpenBattleOnNotificationDrawer) {
+    } else if (event is OpenBattleOnNotificationDrawer) {
       yield BattleOnNotificationDrawerIsOpen(event.model);
-    }else if (event is OpenCloseChangeBattleDrawer) {
-      yield ChangeBattleDrawerIsOpenClose();
-    }else if (event is AcceptBattleOnNotification) {
+    } else if (event is OpenCloseNewConditionsBattleDrawer) {
+      yield NewConditionsBattleDrawerIsOpenClose();
+    } else if (event is AcceptBattleOnNotification) {
       yield BattleOnNotificationIsAccepted(event.battleId);
-    }else if (event is ApplyBattleChanges) {
+    } else if (event is ApplyBattleChanges) {
       yield ApplyBattleIsChanged(event.battleId);
+    } else if (event is OpenChangeBattleDrawer) {
+      yield ChangeBattleDrawerIsOpened(event.battleId, event.model);
     }
   }
 }

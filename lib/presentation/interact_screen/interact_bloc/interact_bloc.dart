@@ -10,6 +10,10 @@ class InteractBloc extends Bloc<InteractEvent, InteractState> {
   Stream<InteractState> mapEventToState(InteractEvent event) async* {
     if (event is UpdateState) {
       yield StateUpdated();
+    }else if (event is AcceptBattle) {
+      yield BattleIsAccepted(id: event.id);
+    }else if (event is DeclineBattle) {
+      yield BattleIsDeclined(id: event.id);
     }
   }
 }

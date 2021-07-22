@@ -10,7 +10,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/components/widgets_drawers.dart';
-import 'package:one2one_run/data/apis/apis.dart';
+import 'package:one2one_run/data/apis/connect_api.dart';
+import 'package:one2one_run/data/apis/home_api.dart';
 import 'package:one2one_run/data/models/battle_request_model.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/change_battle_conditions_model.dart';
@@ -31,7 +32,8 @@ import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
-import 'package:one2one_run/utils/extension.dart' show DateTimeExtension;
+import 'package:one2one_run/utils/extension.dart'
+    show DateTimeExtension, ToastExtension;
 import 'package:one2one_run/utils/no_glow_scroll_behavior.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -231,10 +233,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context).pop();
                 });
               } else {
-                await Fluttertoast.showToast(
-                    msg: 'Unexpected error happened',
-                    fontSize: 16.0,
-                    gravity: ToastGravity.CENTER);
+                await toastUnexpectedError();
               }
             });
             _applyBattleController.reset();
@@ -244,8 +243,9 @@ class _HomePageState extends State<HomePage> {
                 !_keyScaffold.currentState!.isEndDrawerOpen) {
               _keyScaffold.currentState!.openEndDrawer();
             }
-          } else if (state is ChangeBattleDrawerIsOpenClose) {
+          } else if (state is NewConditionsBattleDrawerIsOpenClose) {
             _isNeedToOpenChangeBattleDrawer = !_isNeedToOpenChangeBattleDrawer;
+            changeBattleDrawerTitle = 'Offer new conditions';
           } else if (state is BattleOnNotificationIsAccepted) {
             _acceptBattleController.success();
             await homeApi
@@ -257,20 +257,20 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context).pop();
                 }
               } else {
-                await Fluttertoast.showToast(
-                    msg: 'Unexpected error happened',
-                    fontSize: 16.0,
-                    gravity: ToastGravity.CENTER);
+                await toastUnexpectedError();
               }
             });
             _acceptBattleController.reset();
           } else if (state is ApplyBattleIsChanged) {
-           // _isNeedToOpenChangeBattleDrawer = false;
+            // _isNeedToOpenChangeBattleDrawer = false;
             await homeApi
-                .applyBattleChanges(model: ChangeBattleConditionsModel(
-              dateTime: dateAndTime,
-              distance: _currentDistanceValue / 60,
-            ),battleId: state.battleId,)
+                .applyBattleChanges(
+              model: ChangeBattleConditionsModel(
+                dateTime: dateAndTime,
+                distance: _currentDistanceValue / 60,
+              ),
+              battleId: state.battleId,
+            )
                 .then((value) async {
               if (value) {
                 if (_keyScaffold.currentState != null &&
@@ -278,13 +278,21 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context).pop();
                 }
               } else {
-                await Fluttertoast.showToast(
-                    msg: 'Unexpected error happened',
-                    fontSize: 16.0,
-                    gravity: ToastGravity.CENTER);
+                await toastUnexpectedError();
               }
             });
             _isNeedToOpenChangeBattleDrawer = false;
+          } else if (state is ChangeBattleDrawerIsOpened) {
+            battleId = state.battleId;
+            _battleRespondModel = state.model;
+            changeBattleDrawerTitle = 'Change battle';
+            dateAndTimeForUser = getFormattedDateForUser(
+                date: DateTime.now(), time: TimeOfDay.now());
+            selectedDrawersType = DrawersType.ChangeBattleDrawer;
+            if (_keyScaffold.currentState != null &&
+                !_keyScaffold.currentState!.isEndDrawerOpen) {
+              _keyScaffold.currentState!.openEndDrawer();
+            }
           }
 
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
@@ -358,14 +366,17 @@ class _HomePageState extends State<HomePage> {
                           secondButtonIcon: const Icon(Icons.search),
                           onTapSecondButton: () {},
                         )
-                      : null,
+                      : selectedDrawerItem == DrawerItems.Interact
+                          ? [Container()]
+                          : null,
             ),
             drawer: _homeDrawer(
               context: context,
               width: width,
               height: height,
             ),
-            endDrawer: selectedDrawerItem == DrawerItems.Connect
+            endDrawer: selectedDrawerItem == DrawerItems.Connect ||
+                    selectedDrawerItem == DrawerItems.Interact
                 ? ConditionalSwitch.single<DrawersType>(
                     context: context,
                     valueBuilder: (context) => selectedDrawersType,
@@ -387,6 +398,42 @@ class _HomePageState extends State<HomePage> {
                           model: _battleRespondModel,
                           width: width,
                           height: height,
+                        );
+                      },
+                      DrawersType.ChangeBattleDrawer: (context) {
+                        return _changeBattle(
+                          context: context,
+                          width: width,
+                          height: height,
+                          onTapCancelBattle: () {
+                            if (_keyScaffold.currentState != null &&
+                                _keyScaffold.currentState!.isEndDrawerOpen) {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          userName: _battleRespondModel
+                                      .battleUsers[0].applicationUser.id !=
+                                  currentUserId
+                              ? _battleRespondModel
+                                  .battleUsers[0].applicationUser.nickName
+                              : _battleRespondModel
+                                  .battleUsers[1].applicationUser.nickName,
+                          userPhoto: _battleRespondModel
+                                      .battleUsers[0].applicationUser.id !=
+                                  currentUserId
+                              ? _battleRespondModel
+                                  .battleUsers[0].applicationUser.photoLink
+                              : _battleRespondModel
+                                  .battleUsers[1].applicationUser.photoLink,
+                          userRank: _battleRespondModel
+                                      .battleUsers[0].applicationUser.id !=
+                                  currentUserId
+                              ? _battleRespondModel
+                                  .battleUsers[0].applicationUser.rank
+                                  .toString()
+                              : _battleRespondModel
+                                  .battleUsers[1].applicationUser.rank
+                                  .toString(),
                         );
                       },
                     },
@@ -495,7 +542,12 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(
                         width: width,
                         height: height,
-                        child: InteractPage(),
+                        child: InteractPage(
+                          onTapChange: (id, model) {
+                            BlocProvider.of<HomeBloc>(context).add(
+                                home_bloc.OpenChangeBattleDrawer(id, model));
+                          },
+                        ),
                       ),
                       EnjoyPage(),
                       ProfilePage(
@@ -595,10 +647,7 @@ class _HomePageState extends State<HomePage> {
                   )),
         );
       } else {
-        await Fluttertoast.showToast(
-            msg: 'Unexpected error happened',
-            fontSize: 16.0,
-            gravity: ToastGravity.CENTER);
+        await toastUnexpectedError();
       }
     });
   }
@@ -626,7 +675,6 @@ class _HomePageState extends State<HomePage> {
     ];
   }
 
-////////////////////////////////////////////////////
   Widget _homeDrawer(
       {required BuildContext context,
       required double height,
@@ -877,8 +925,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  //TODO: need to complete
-
   Widget _battleOfferOnNotification(
       {required BuildContext context,
       required BattleRespondModel model,
@@ -898,6 +944,10 @@ class _HomePageState extends State<HomePage> {
             userRank: model.battleUsers[0].applicationUser.id != currentUserId
                 ? model.battleUsers[0].applicationUser.rank.toString()
                 : model.battleUsers[1].applicationUser.rank.toString(),
+            onTapCancelBattle: () {
+              BlocProvider.of<HomeBloc>(context)
+                  .add(home_bloc.OpenCloseNewConditionsBattleDrawer());
+            },
           )
         : battleOfferOnNotificationDrawer(
             height: height,
@@ -921,7 +971,7 @@ class _HomePageState extends State<HomePage> {
             },
             onTapChangeConditions: () {
               BlocProvider.of<HomeBloc>(context)
-                  .add(home_bloc.OpenCloseChangeBattleDrawer());
+                  .add(home_bloc.OpenCloseNewConditionsBattleDrawer());
             },
             onTapCancelBattle: () {
               if (_keyScaffold.currentState != null &&
@@ -932,13 +982,15 @@ class _HomePageState extends State<HomePage> {
           );
   }
 
-  Widget _changeBattle(
-      {required BuildContext context,
-      required String? userPhoto,
-      required String userName,
-      required String userRank,
-      required double height,
-      required double width}) {
+  Widget _changeBattle({
+    required BuildContext context,
+    required String? userPhoto,
+    required String userName,
+    required String userRank,
+    required double height,
+    required double width,
+    required VoidCallback onTapCancelBattle,
+  }) {
     return changeBattleDrawer(
       height: height,
       width: width,
@@ -963,10 +1015,7 @@ class _HomePageState extends State<HomePage> {
       onTapGetDatePicker: () {
         BlocProvider.of<HomeBloc>(context).add(home_bloc.GetDatePicker());
       },
-      onTapCancelBattle: () {
-        BlocProvider.of<HomeBloc>(context)
-            .add(home_bloc.OpenCloseChangeBattleDrawer());
-      },
+      onTapCancelBattle: onTapCancelBattle,
     );
   }
 
@@ -1121,7 +1170,8 @@ class _HomePageState extends State<HomePage> {
   void getBattleDataFromFirebaseMessaging({required BuildContext context}) {
     //NOte: when app is terminated
     _messaging.getInitialMessage().then((RemoteMessage? message) async {
-      if (message != null) {
+      if (message != null &&
+          selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
         final id = message.data['battleId'];
         battleId = id;
         await getBattleById(context: context, battleId: id);

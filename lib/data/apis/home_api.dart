@@ -114,6 +114,18 @@ class HomeApi {
   }
 
   //@post
+  Future<bool> declineBattle({required String battleId}) async {
+    final token = PreferenceUtils.getUserToken();
+    final res =
+    await post(Uri.parse('$_urlGetBattleById/$battleId/Decline'), headers: {
+      'Content-Type': 'application/json',
+      'authorization': token,
+    });
+
+    return res.statusCode == 200;
+  }
+
+  //@post
   Future<bool> applyBattleChanges(
       {required ChangeBattleConditionsModel model,
       required String battleId}) async {

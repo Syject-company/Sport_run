@@ -14,6 +14,7 @@ import 'package:one2one_run/presentation/profile_screen/profile_bloc/bloc.dart'
 import 'package:one2one_run/presentation/profile_screen/profile_bloc/profile_bloc.dart';
 import 'package:one2one_run/presentation/profile_screen/profile_bloc/profile_state.dart';
 import 'package:one2one_run/resources/images.dart';
+import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 
 //NOte:'/profile'
 class ProfilePage extends StatefulWidget {
@@ -58,10 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 widget.userDataListener();
                 setState(() {});
               } else {
-                await Fluttertoast.showToast(
-                    msg: 'Unexpected error happened',
-                    fontSize: 16.0,
-                    gravity: ToastGravity.CENTER);
+                await toastUnexpectedError();
               }
             });
           }
@@ -219,7 +217,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       _userPaceDistance(
                                         title: 'Pace',
                                         value:
-                                            '${snapshot.data!.pace.floor()/*~/ 60*/}:00 min/${snapshot.data!.isMetric ? 'km' : 'mile'}',
+                                            '${snapshot.data!.pace.floor() /*~/ 60*/}:00 min/${snapshot.data!.isMetric ? 'km' : 'mile'}',
                                       ),
                                       SizedBox(
                                         width: width * 0.2,

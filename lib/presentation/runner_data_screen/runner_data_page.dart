@@ -18,6 +18,7 @@ import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 
 //NOte:'/runnersData'
 class RunnerDataPage extends StatefulWidget {
@@ -105,10 +106,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                       });
                     });
                   } else {
-                    await Fluttertoast.showToast(
-                        msg: 'Unexpected error happened',
-                        fontSize: 16.0,
-                        gravity: ToastGravity.CENTER);
+                    await toastUnexpectedError();
                   }
                   goController.reset();
                 });

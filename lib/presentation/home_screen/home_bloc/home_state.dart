@@ -108,7 +108,7 @@ class BattleOnNotificationDrawerIsOpen extends HomeState {
   List<Object> get props => [model];
 }
 
-class ChangeBattleDrawerIsOpenClose extends HomeState {}
+class NewConditionsBattleDrawerIsOpenClose extends HomeState {}
 
 class BattleOnNotificationIsAccepted extends HomeState {
   BattleOnNotificationIsAccepted(this.battleId);
@@ -126,4 +126,14 @@ class ApplyBattleIsChanged extends HomeState {
 
   @override
   List<Object> get props => [battleId];
+}
+
+class ChangeBattleDrawerIsOpened extends HomeState {
+  ChangeBattleDrawerIsOpened(this.battleId, this.model);
+
+  final String battleId;
+  final BattleRespondModel model;
+
+  @override
+  List<Object> get props => [battleId, model];
 }

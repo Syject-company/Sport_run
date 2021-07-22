@@ -10,4 +10,5 @@ enum DrawersType {
   FilterDrawer,
   BattleDrawer,
   BattleOnNotificationDrawer,
+  ChangeBattleDrawer,
 }
