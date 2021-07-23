@@ -144,16 +144,15 @@ Widget changeBattleDrawer({
             SizedBox(
               height: height * 0.01,
             ),
-            seekBarPace(
+            seekBarWeekly(
               title: 'Distance',
               context: context,
               dialogTitle: 'Distance',
               dialogText: distanceText,
               timePerKM: currentDistanceValue,
               unit: isKM ? 'km' : 'mile',
-              kmPerHour: (60 * 60) / currentDistanceValue,
-              minValue: (isKM ? 2 : 3) * 60,
-              maxValue: (isKM ? 11 : 18) * 60,
+              minValue: isKM ? 2 : 3,
+              maxValue: isKM ? 11 : 18,
               sliderValue: currentDistanceValue,
               onChanged: onSeekChanged,
             ),
@@ -325,13 +324,11 @@ Widget battleOfferOnNotificationDrawer({
                     child: CircleAvatar(
                       backgroundColor: Colors.transparent,
                       radius: 80,
-                      backgroundImage: secondUserModel.photoLink ==
-                              null
+                      backgroundImage: secondUserModel.photoLink == null
                           ? AssetImage(
                               defaultProfileImage,
                             ) as ImageProvider
-                          : NetworkImage(
-                          secondUserModel.photoLink!),
+                          : NetworkImage(secondUserModel.photoLink!),
                     ),
                   ),
                   Column(
@@ -448,22 +445,13 @@ Widget battleOfferOnNotificationDrawer({
                     ],
                   ),
                   Text(
-                    '$distance min/${currentUserModel.isMetric ? 'km' : 'mile'}',
+                    currentUserModel.isMetric
+                        ? '${distance.toStringAsFixed(0)} km'
+                        : '${distance.toStringAsFixed(1)} mile',
                     style: TextStyle(
                         color: Colors.red,
                         fontFamily: 'roboto',
                         fontSize: 16.sp,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(
-                    height: 5.0,
-                  ),
-                  Text(
-                    '${(((60 * 60) / (distance * 60)).toStringAsFixed(2))} ${currentUserModel.isMetric ? 'km' : 'mile'}/h',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontFamily: 'roboto',
-                        fontSize: 12.sp,
                         fontWeight: FontWeight.w700),
                   ),
                 ],
@@ -484,7 +472,8 @@ Widget battleOfferOnNotificationDrawer({
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
                 deadLineDate,
                 style: TextStyle(
@@ -509,7 +498,7 @@ Widget battleOfferOnNotificationDrawer({
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 16.0,top: 8.0),
+              padding: const EdgeInsets.only(left: 16.0, top: 8.0),
               child: Text(
                 battleMessage ?? 'It will be a piece of cake!',
                 style: TextStyle(
@@ -951,16 +940,15 @@ Widget battleDrawer({
           SizedBox(
             height: height * 0.01,
           ),
-          seekBarPace(
+          seekBarWeekly(
             title: 'Distance',
             context: context,
             dialogTitle: 'Distance',
             dialogText: distanceText,
             timePerKM: currentDistanceValue,
             unit: isKM ? 'km' : 'mile',
-            kmPerHour: (60 * 60) / currentDistanceValue,
-            minValue: (isKM ? 2 : 3) * 60,
-            maxValue: (isKM ? 11 : 18) * 60,
+            minValue: isKM ? 2 : 3,
+            maxValue: isKM ? 11 : 18,
             sliderValue: currentDistanceValue,
             onChanged: onSeekChanged,
           ),
