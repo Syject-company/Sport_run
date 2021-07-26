@@ -10,12 +10,14 @@ class BattleRespondModel {
     required this.status,
     required this.battleUsers,
     required this.message,
+    required this.timeLeft,
   });
 
   factory BattleRespondModel.fromJson(Map<String, dynamic> map) {
     return BattleRespondModel(
       id: map['id'] as String,
       message: map['message'] as String,
+      timeLeft: map['timeLeft'] as String,
       battleName: map['battleName'] as String,
       diff: map['diff'] as num,
       distance: map['distance'] as num,
@@ -34,7 +36,8 @@ class BattleRespondModel {
   String deadlineTime;
   num status;
   List<BattleUsers> battleUsers;
-  String message;
+  String? message;
+  String? timeLeft;
 
   BattleRespondModel copyWith({
     String? id,
@@ -54,13 +57,14 @@ class BattleRespondModel {
       deadlineTime: deadlineTime ?? this.deadlineTime,
       status: status ?? this.status,
       message: message ?? this.message,
+      timeLeft: timeLeft ?? this.timeLeft,
       battleUsers: battleUsers ?? this.battleUsers,
     );
   }
 
   @override
   String toString() {
-    return 'BattleRespondModel{id: $id, message: $message , battleName: $battleName, diff: $diff, distance: $distance, deadlineTime: $deadlineTime, status: $status, battleUsers: $battleUsers}';
+    return 'BattleRespondModel{id: $id, message: $message , timeLeft: $timeLeft, battleName: $battleName, diff: $diff, distance: $distance, deadlineTime: $deadlineTime, status: $status, battleUsers: $battleUsers}';
   }
 
   @override
@@ -70,6 +74,7 @@ class BattleRespondModel {
           runtimeType == other.runtimeType &&
           id == other.id &&
           message == other.message &&
+          timeLeft == other.timeLeft &&
           battleName == other.battleName &&
           diff == other.diff &&
           distance == other.distance &&
@@ -81,6 +86,7 @@ class BattleRespondModel {
   int get hashCode =>
       id.hashCode ^
       message.hashCode ^
+      timeLeft.hashCode ^
       battleName.hashCode ^
       diff.hashCode ^
       distance.hashCode ^
@@ -93,6 +99,7 @@ class BattleRespondModel {
     return {
       'id': id,
       'message': message,
+      'timeLeft': timeLeft,
       'battleName': battleName,
       'diff': diff,
       'distance': distance,

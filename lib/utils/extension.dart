@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:one2one_run/utils/preference_utils.dart';
 
 extension EmailValidator on String {
   bool isValidEmailInput() {
@@ -40,5 +41,27 @@ extension ToastExtension on void {
         msg: 'Unexpected error happened',
         fontSize: 16.0,
         gravity: ToastGravity.CENTER);
+  }
+}
+
+extension DistanceValue on void {
+  num getDistance({required num distance}) {
+    if (PreferenceUtils.getIsUserUnitInKM()) {
+      if (distance > 11) {
+        return 11.0;
+      }
+      if (distance < 2) {
+        return 2.0;
+      }
+    } else {
+      if (distance > 18) {
+        return 18.0;
+      }
+      if (distance < 3) {
+        return 3.0;
+      }
+    }
+
+    return distance;
   }
 }

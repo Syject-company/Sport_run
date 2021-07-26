@@ -54,6 +54,7 @@ String get battleIcon => 'assets/icons/battle.png';
 
 String get calendarIcon => 'assets/icons/calendar.png';
 
+
 String get acceptedIcon => 'assets/icons/accepted.png';
 
 String get finishedIcon => 'assets/icons/finished.png';

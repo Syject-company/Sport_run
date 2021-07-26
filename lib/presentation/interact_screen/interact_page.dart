@@ -10,7 +10,8 @@ import 'package:one2one_run/presentation/interact_screen/interact_bloc/bloc.dart
     as interact_bloc;
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/interact_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/interact_state.dart';
-import 'package:one2one_run/presentation/interact_screen/pending_tab.dart';
+import 'package:one2one_run/presentation/interact_screen/tabs/active_tab.dart';
+import 'package:one2one_run/presentation/interact_screen/tabs/pending_tab.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/extension.dart' show ToastExtension;
@@ -90,14 +91,23 @@ class _InteractPageState extends State<InteractPage> {
               ),
               body: TabBarView(
                 children: <Widget>[
-                  Container(
-                    width: width,
-                    height: height,
-                    color: const Color(0xffF5F5F5),
-                    child: const Center(
-                      child: Text('Active Page'),
-                    ),
-                  ),
+                  FutureBuilder<List<BattleRespondModel>?>(
+                      future: _interActApi.getInteractTabsDataById(tabId: 0),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data != null) {
+                          return ActiveTab(
+                            pendingList: snapshot.data,
+                            currentUserId:
+                            PreferenceUtils.getCurrentUserModel().id,
+                          );
+                        }
+                        return Container(
+                          width: width,
+                          height: height,
+                          color: const Color(0xffF5F5F5),
+                          child: Center(child: progressIndicator()),
+                        );
+                      }),
                   FutureBuilder<List<BattleRespondModel>?>(
                       future: _interActApi.getInteractTabsDataById(tabId: 1),
                       builder: (context, snapshot) {

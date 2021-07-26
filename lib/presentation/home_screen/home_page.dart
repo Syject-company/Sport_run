@@ -33,7 +33,7 @@ import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
-    show DateTimeExtension, ToastExtension;
+    show DateTimeExtension, ToastExtension, DistanceValue;
 import 'package:one2one_run/utils/no_glow_scroll_behavior.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -59,23 +59,23 @@ class _HomePageState extends State<HomePage> {
   final _battleNameController = TextEditingController();
   final _messageController = TextEditingController();
 
-  DrawerItems selectedDrawerItem = DrawerItems.Connect;
-  DrawersType selectedDrawersType = DrawersType.FilterDrawer;
+  DrawerItems _selectedDrawerItem = DrawerItems.Connect;
+  DrawersType _selectedDrawersType = DrawersType.FilterDrawer;
 
-  HomeApi homeApi = HomeApi();
-  ConnectApi connectApi = ConnectApi();
+  final _homeApi = HomeApi();
+  final _connectApi = ConnectApi();
 
-  String pageTitle = 'Connect';
-  String changeBattleDrawerTitle = 'Offer new conditions';
-  String messageToOpponent = 'Come as you are, join the run!';
-  String dateAndTime = '';
-  String battleId = '';
-  late String dateAndTimeForUser;
-  late String currentUserId;
+  String _pageTitle = 'Connect';
+  String _changeBattleDrawerTitle = 'Offer new conditions';
+  String _messageToOpponent = 'Come as you are, join the run!';
+  String _dateAndTime = '';
+  String _battleId = '';
+  late String _dateAndTimeForUser;
+  late String _currentUserId;
 
+  ConnectUsersModel? _userBattleModel;
   late Future<UserModel?> _userModel;
   late Future<List<ConnectUsersModel>?> _users;
-  ConnectUsersModel? _userBattleModel;
   late FirebaseMessaging _messaging;
   late RangeValues _currentRangeValuesPace;
   late RangeValues _currentRangeValuesWeekly;
@@ -84,12 +84,12 @@ class _HomePageState extends State<HomePage> {
   bool _isNeedFilter = false;
   bool _isNeedToOpenMessageDrawer = false;
   bool _isNeedToOpenChangeBattleDrawer = false;
-  late bool isKM;
+  late bool _isKM;
 
   int _countOfRuns = 1;
   int _selectedMessageIndex = 1000;
 
-  double _currentDistanceValue = 300;
+  double _currentDistanceValue = 5;
 
   @override
   void initState() {
@@ -100,18 +100,19 @@ class _HomePageState extends State<HomePage> {
   void prepareData() {
     _messaging = FirebaseMessaging.instance;
     _messaging.getToken().then((token) {
-      homeApi.sendFireBaseToken(tokenFireBase: token ?? '');
+      _homeApi.sendFireBaseToken(tokenFireBase: token ?? '');
       print('Firebase token: $token');
     });
-    dateAndTimeForUser =
+    _dateAndTimeForUser =
         getFormattedDateForUser(date: DateTime.now(), time: TimeOfDay.now());
-    dateAndTime = getFormattedDate(date: DateTime.now(), time: TimeOfDay.now());
+    _dateAndTime =
+        getFormattedDate(date: DateTime.now(), time: TimeOfDay.now());
     updateRangeValuesAndUnit();
-    _userModel = homeApi.getUserModel();
+    _userModel = _homeApi.getUserModel();
     _userModel.then((value) {
       if (value != null) {
         PreferenceUtils.setCurrentUserModel(value);
-        currentUserId = value.id;
+        _currentUserId = value.id;
       }
     });
     _users = getUsers(isFilterIncluded: _isNeedFilter);
@@ -141,17 +142,17 @@ class _HomePageState extends State<HomePage> {
                 );
           } else if (state is UserDataUpdated) {
             updateRangeValuesAndUnit();
-            _userModel = homeApi.getUserModel();
+            _userModel = _homeApi.getUserModel();
           } else if (state is SwitchedIsNeedFilter) {
             _isNeedFilter = state.isNeedFilter;
             if (!_isNeedFilter) {
               _users = getUsers(isFilterIncluded: _isNeedFilter);
             }
           } else if (state is BattleDrawerIsOpen) {
-            dateAndTimeForUser = getFormattedDateForUser(
+            _dateAndTimeForUser = getFormattedDateForUser(
                 date: DateTime.now(), time: TimeOfDay.now());
             _userBattleModel = state.userModel;
-            selectedDrawersType = DrawersType.BattleDrawer;
+            _selectedDrawersType = DrawersType.BattleDrawer;
             if (_keyScaffold.currentState != null &&
                 !_keyScaffold.currentState!.isEndDrawerOpen) {
               _keyScaffold.currentState!.openEndDrawer();
@@ -163,10 +164,10 @@ class _HomePageState extends State<HomePage> {
               isFilterIncluded: state.isFilterIncluded,
               paceFrom: state.paceFrom / 60,
               paceTo: state.paceTo / 60,
-              weeklyDistanceFrom: isKM
+              weeklyDistanceFrom: _isKM
                   ? double.parse(state.weeklyDistanceFrom.toStringAsFixed(0))
                   : double.parse(state.weeklyDistanceFrom.toStringAsFixed(1)),
-              weeklyDistanceTo: isKM
+              weeklyDistanceTo: _isKM
                   ? double.parse(state.weeklyDistanceTo.toStringAsFixed(0))
                   : double.parse(state.weeklyDistanceTo.toStringAsFixed(1)),
               workoutsPerWeek: state.workoutsPerWeek,
@@ -176,16 +177,16 @@ class _HomePageState extends State<HomePage> {
               Navigator.of(context).pop();
             }
           } else if (state is FilterDrawerIsOpen) {
-            selectedDrawersType = DrawersType.FilterDrawer;
+            _selectedDrawersType = DrawersType.FilterDrawer;
           } else if (state is GotDatePicker) {
             await getDate(context: context).then((date) async {
               if (date != null) {
                 final time = await getTime(context: context);
                 if (time != null) {
-                  dateAndTime = getFormattedDate(date: date, time: time);
-                  dateAndTimeForUser =
+                  _dateAndTime = getFormattedDate(date: date, time: time);
+                  _dateAndTimeForUser =
                       getFormattedDateForUser(date: date, time: time);
-                  print('Date: $dateAndTime');
+                  print('Date: $_dateAndTime');
                 }
               }
             });
@@ -195,21 +196,23 @@ class _HomePageState extends State<HomePage> {
             _messageController.text = '';
           } else if (state is MessageToOpponentDrawerIsSent) {
             _applyMessageController.reset();
-            messageToOpponent = state.message;
+            _messageToOpponent = state.message;
             BlocProvider.of<HomeBloc>(context)
                 .add(home_bloc.OpenCloseMessageDrawer());
           } else if (state is SelectedMessageToOpponent) {
             _selectedMessageIndex = state.messageIndex;
           } else if (state is BattleCreated) {
-            await homeApi
+            await _homeApi
                 .createBattle(
                     model: BattleRequestModel(
-              dateTime: dateAndTime,
+              dateTime: _dateAndTime,
               battleName: _battleNameController.text.isNotEmpty
                   ? _battleNameController.text
                   : null,
-              distance: _currentDistanceValue / 60,
-              message: messageToOpponent,
+              distance: _isKM
+                  ? double.parse(_currentDistanceValue.toStringAsFixed(0))
+                  : double.parse(_currentDistanceValue.toStringAsFixed(1)),
+              message: _messageToOpponent,
               opponentId: _userBattleModel!.id,
             ))
                 .then((value) async {
@@ -245,10 +248,10 @@ class _HomePageState extends State<HomePage> {
             }
           } else if (state is NewConditionsBattleDrawerIsOpenClose) {
             _isNeedToOpenChangeBattleDrawer = !_isNeedToOpenChangeBattleDrawer;
-            changeBattleDrawerTitle = 'Offer new conditions';
+            _changeBattleDrawerTitle = 'Offer new conditions';
           } else if (state is BattleOnNotificationIsAccepted) {
             _acceptBattleController.success();
-            await homeApi
+            await _homeApi
                 .acceptBattle(battleId: state.battleId)
                 .then((value) async {
               if (value) {
@@ -263,14 +266,17 @@ class _HomePageState extends State<HomePage> {
             _acceptBattleController.reset();
           } else if (state is ApplyBattleIsChanged) {
             // _isNeedToOpenChangeBattleDrawer = false;
-            await homeApi
+            await _homeApi
                 .applyBattleChanges(
-              model: ChangeBattleConditionsModel(
-                dateTime: dateAndTime,
-                distance: _currentDistanceValue / 60,
-              ),
-              battleId: state.battleId,
-            )
+                    model: ChangeBattleConditionsModel(
+                      dateTime: _dateAndTime,
+                      distance: _isKM
+                          ? double.parse(
+                              _currentDistanceValue.toStringAsFixed(0))
+                          : double.parse(
+                              _currentDistanceValue.toStringAsFixed(1)),
+                    ),
+                    battleId: state.battleId)
                 .then((value) async {
               if (value) {
                 if (_keyScaffold.currentState != null &&
@@ -283,12 +289,14 @@ class _HomePageState extends State<HomePage> {
             });
             _isNeedToOpenChangeBattleDrawer = false;
           } else if (state is ChangeBattleDrawerIsOpened) {
-            battleId = state.battleId;
+            _battleId = state.battleId;
             _battleRespondModel = state.model;
-            changeBattleDrawerTitle = 'Change battle';
-            dateAndTimeForUser = getFormattedDateForUser(
+            _currentDistanceValue =
+                getDistance(distance: state.model.distance).toDouble();
+            _changeBattleDrawerTitle = 'Change battle';
+            _dateAndTimeForUser = getFormattedDateForUser(
                 date: DateTime.now(), time: TimeOfDay.now());
-            selectedDrawersType = DrawersType.ChangeBattleDrawer;
+            _selectedDrawersType = DrawersType.ChangeBattleDrawer;
             if (_keyScaffold.currentState != null &&
                 !_keyScaffold.currentState!.isEndDrawerOpen) {
               _keyScaffold.currentState!.openEndDrawer();
@@ -304,10 +312,10 @@ class _HomePageState extends State<HomePage> {
             key: _keyScaffold,
             backgroundColor: homeBackground,
             onEndDrawerChanged: (value) {
-              if (!value && selectedDrawersType != DrawersType.FilterDrawer) {
+              if (!value && _selectedDrawersType != DrawersType.FilterDrawer) {
                 _isNeedToOpenMessageDrawer = false;
                 _isNeedToOpenChangeBattleDrawer = false;
-                _currentDistanceValue = 300;
+                _currentDistanceValue = 5;
                 _battleNameController.text = '';
                 Timer(const Duration(milliseconds: 300), () {
                   BlocProvider.of<HomeBloc>(context)
@@ -318,7 +326,7 @@ class _HomePageState extends State<HomePage> {
             appBar: AppBar(
               shadowColor: Colors.transparent,
               title: Text(
-                pageTitle,
+                _pageTitle,
                 style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'roboto',
@@ -326,7 +334,7 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.w600),
               ),
               backgroundColor: colorPrimary,
-              actions: selectedDrawerItem == DrawerItems.Profile
+              actions: _selectedDrawerItem == DrawerItems.Profile
                   ? appBarButtons(
                       isNeedSecondButton: true,
                       firstButtonIcon: const Icon(Icons.edit),
@@ -352,7 +360,7 @@ class _HomePageState extends State<HomePage> {
                             });
                       },
                     )
-                  : selectedDrawerItem == DrawerItems.Connect
+                  : _selectedDrawerItem == DrawerItems.Connect
                       ? appBarButtons(
                           isNeedSecondButton: false,
                           firstButtonIcon:
@@ -366,7 +374,7 @@ class _HomePageState extends State<HomePage> {
                           secondButtonIcon: const Icon(Icons.search),
                           onTapSecondButton: () {},
                         )
-                      : selectedDrawerItem == DrawerItems.Interact
+                      : _selectedDrawerItem == DrawerItems.Interact
                           ? [Container()]
                           : null,
             ),
@@ -375,11 +383,11 @@ class _HomePageState extends State<HomePage> {
               width: width,
               height: height,
             ),
-            endDrawer: selectedDrawerItem == DrawerItems.Connect ||
-                    selectedDrawerItem == DrawerItems.Interact
+            endDrawer: _selectedDrawerItem == DrawerItems.Connect ||
+                    _selectedDrawerItem == DrawerItems.Interact
                 ? ConditionalSwitch.single<DrawersType>(
                     context: context,
-                    valueBuilder: (context) => selectedDrawersType,
+                    valueBuilder: (context) => _selectedDrawersType,
                     caseBuilders: {
                       DrawersType.FilterDrawer: (context) =>
                           _connectFilterDrawer(
@@ -413,21 +421,21 @@ class _HomePageState extends State<HomePage> {
                           },
                           userName: _battleRespondModel
                                       .battleUsers[0].applicationUser.id !=
-                                  currentUserId
+                                  _currentUserId
                               ? _battleRespondModel
                                   .battleUsers[0].applicationUser.nickName
                               : _battleRespondModel
                                   .battleUsers[1].applicationUser.nickName,
                           userPhoto: _battleRespondModel
                                       .battleUsers[0].applicationUser.id !=
-                                  currentUserId
+                                  _currentUserId
                               ? _battleRespondModel
                                   .battleUsers[0].applicationUser.photoLink
                               : _battleRespondModel
                                   .battleUsers[1].applicationUser.photoLink,
                           userRank: _battleRespondModel
                                       .battleUsers[0].applicationUser.id !=
-                                  currentUserId
+                                  _currentUserId
                               ? _battleRespondModel
                                   .battleUsers[0].applicationUser.rank
                                   .toString()
@@ -583,7 +591,7 @@ class _HomePageState extends State<HomePage> {
       },
       valuePaceStart: _currentRangeValuesPace.start,
       valuePaceEnd: _currentRangeValuesPace.end,
-      isKM: isKM,
+      isKM: _isKM,
       currentRangeValuesPace: _currentRangeValuesPace,
       onRangePaceChanged: (values) {
         setState(() {
@@ -633,7 +641,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> navigateToEditProfile({required BuildContext context}) async {
-    await homeApi.getUserModel().then((userModel) async {
+    await _homeApi.getUserModel().then((userModel) async {
       if (userModel != null) {
         await Navigator.push(
           context,
@@ -780,16 +788,16 @@ class _HomePageState extends State<HomePage> {
                       _drawerItem(
                         label: 'Connect',
                         icon: connectIcon,
-                        iconColor: selectedDrawerItem == DrawerItems.Connect
+                        iconColor: _selectedDrawerItem == DrawerItems.Connect
                             ? Colors.red
                             : const Color(0xff9F9F9F),
                         selectedItemColor:
-                            selectedDrawerItem == DrawerItems.Connect
+                            _selectedDrawerItem == DrawerItems.Connect
                                 ? const Color(0xfffef0f0)
                                 : Colors.transparent,
                         onPressed: () {
-                          selectedDrawerItem = DrawerItems.Connect;
-                          pageTitle = 'Connect';
+                          _selectedDrawerItem = DrawerItems.Connect;
+                          _pageTitle = 'Connect';
                           BlocProvider.of<HomeBloc>(context)
                               .add(home_bloc.NavigateToPage(pageIndex: 0));
                         },
@@ -797,16 +805,16 @@ class _HomePageState extends State<HomePage> {
                       _drawerItem(
                         label: 'Interact',
                         icon: interactIcon,
-                        iconColor: selectedDrawerItem == DrawerItems.Interact
+                        iconColor: _selectedDrawerItem == DrawerItems.Interact
                             ? Colors.red
                             : const Color(0xff9F9F9F),
                         selectedItemColor:
-                            selectedDrawerItem == DrawerItems.Interact
+                            _selectedDrawerItem == DrawerItems.Interact
                                 ? const Color(0xfffef0f0)
                                 : Colors.transparent,
                         onPressed: () {
-                          selectedDrawerItem = DrawerItems.Interact;
-                          pageTitle = 'Interact';
+                          _selectedDrawerItem = DrawerItems.Interact;
+                          _pageTitle = 'Interact';
                           BlocProvider.of<HomeBloc>(context)
                               .add(home_bloc.NavigateToPage(pageIndex: 1));
                         },
@@ -816,16 +824,16 @@ class _HomePageState extends State<HomePage> {
                         icon: enjoyIcon,
                         width: 24.0,
                         height: 24.0,
-                        iconColor: selectedDrawerItem == DrawerItems.Enjoy
+                        iconColor: _selectedDrawerItem == DrawerItems.Enjoy
                             ? Colors.red
                             : const Color(0xff9F9F9F),
                         selectedItemColor:
-                            selectedDrawerItem == DrawerItems.Enjoy
+                            _selectedDrawerItem == DrawerItems.Enjoy
                                 ? const Color(0xfffef0f0)
                                 : Colors.transparent,
                         onPressed: () {
-                          selectedDrawerItem = DrawerItems.Enjoy;
-                          pageTitle = 'Enjoy';
+                          _selectedDrawerItem = DrawerItems.Enjoy;
+                          _pageTitle = 'Enjoy';
                           BlocProvider.of<HomeBloc>(context)
                               .add(home_bloc.NavigateToPage(pageIndex: 2));
                         },
@@ -833,16 +841,16 @@ class _HomePageState extends State<HomePage> {
                       _drawerItem(
                         label: 'Profile',
                         icon: profileIcon,
-                        iconColor: selectedDrawerItem == DrawerItems.Profile
+                        iconColor: _selectedDrawerItem == DrawerItems.Profile
                             ? Colors.red
                             : const Color(0xff9F9F9F),
                         selectedItemColor:
-                            selectedDrawerItem == DrawerItems.Profile
+                            _selectedDrawerItem == DrawerItems.Profile
                                 ? const Color(0xfffef0f0)
                                 : Colors.transparent,
                         onPressed: () {
-                          pageTitle = 'Profile';
-                          selectedDrawerItem = DrawerItems.Profile;
+                          _pageTitle = 'Profile';
+                          _selectedDrawerItem = DrawerItems.Profile;
                           BlocProvider.of<HomeBloc>(context)
                               .add(home_bloc.NavigateToPage(pageIndex: 3));
                         },
@@ -850,16 +858,16 @@ class _HomePageState extends State<HomePage> {
                       _drawerItem(
                         label: 'Settings',
                         icon: settingsIcon,
-                        iconColor: selectedDrawerItem == DrawerItems.Settings
+                        iconColor: _selectedDrawerItem == DrawerItems.Settings
                             ? Colors.red
                             : const Color(0xff9F9F9F),
                         selectedItemColor:
-                            selectedDrawerItem == DrawerItems.Settings
+                            _selectedDrawerItem == DrawerItems.Settings
                                 ? const Color(0xfffef0f0)
                                 : Colors.transparent,
                         onPressed: () {
-                          selectedDrawerItem = DrawerItems.Settings;
-                          pageTitle = 'Settings';
+                          _selectedDrawerItem = DrawerItems.Settings;
+                          _pageTitle = 'Settings';
                           BlocProvider.of<HomeBloc>(context)
                               .add(home_bloc.NavigateToPage(pageIndex: 4));
                         },
@@ -935,13 +943,13 @@ class _HomePageState extends State<HomePage> {
             context: context,
             width: width,
             height: height,
-            userName: model.battleUsers[0].applicationUser.id != currentUserId
+            userName: model.battleUsers[0].applicationUser.id != _currentUserId
                 ? model.battleUsers[0].applicationUser.nickName
                 : model.battleUsers[1].applicationUser.nickName,
-            userPhoto: model.battleUsers[0].applicationUser.id != currentUserId
+            userPhoto: model.battleUsers[0].applicationUser.id != _currentUserId
                 ? model.battleUsers[0].applicationUser.photoLink
                 : model.battleUsers[1].applicationUser.photoLink,
-            userRank: model.battleUsers[0].applicationUser.id != currentUserId
+            userRank: model.battleUsers[0].applicationUser.id != _currentUserId
                 ? model.battleUsers[0].applicationUser.rank.toString()
                 : model.battleUsers[1].applicationUser.rank.toString(),
             onTapCancelBattle: () {
@@ -957,19 +965,21 @@ class _HomePageState extends State<HomePage> {
             deadLineDate: model.deadlineTime.replaceFirst(RegExp('T'), '  '),
             battleMessage: model.message,
             currentUserModel:
-                model.battleUsers[0].applicationUser.id == currentUserId
+                model.battleUsers[0].applicationUser.id == _currentUserId
                     ? model.battleUsers[0].applicationUser
                     : model.battleUsers[1].applicationUser,
             secondUserModel:
-                model.battleUsers[0].applicationUser.id != currentUserId
+                model.battleUsers[0].applicationUser.id != _currentUserId
                     ? model.battleUsers[0].applicationUser
                     : model.battleUsers[1].applicationUser,
             acceptBattleController: _acceptBattleController,
             onTapAcceptBattle: () {
               BlocProvider.of<HomeBloc>(context)
-                  .add(home_bloc.AcceptBattleOnNotification(battleId));
+                  .add(home_bloc.AcceptBattleOnNotification(_battleId));
             },
             onTapChangeConditions: () {
+              _currentDistanceValue =
+                  getDistance(distance: model.distance).toDouble();
               BlocProvider.of<HomeBloc>(context)
                   .add(home_bloc.OpenCloseNewConditionsBattleDrawer());
             },
@@ -998,10 +1008,10 @@ class _HomePageState extends State<HomePage> {
       userName: userName,
       userPhoto: userPhoto,
       userRank: userRank,
-      titleDrawer: changeBattleDrawerTitle,
+      titleDrawer: _changeBattleDrawerTitle,
       applyChangeBattleController: _applyChangeBattleController,
-      dateAndTimeForUser: dateAndTimeForUser,
-      isKM: isKM,
+      dateAndTimeForUser: _dateAndTimeForUser,
+      isKM: _isKM,
       currentDistanceValue: _currentDistanceValue,
       onSeekChanged: (value) {
         setState(() {
@@ -1010,7 +1020,7 @@ class _HomePageState extends State<HomePage> {
       },
       onTapApplyBattle: () {
         BlocProvider.of<HomeBloc>(context)
-            .add(home_bloc.ApplyBattleChanges(battleId));
+            .add(home_bloc.ApplyBattleChanges(_battleId));
       },
       onTapGetDatePicker: () {
         BlocProvider.of<HomeBloc>(context).add(home_bloc.GetDatePicker());
@@ -1036,7 +1046,7 @@ class _HomePageState extends State<HomePage> {
               battleNameController: _battleNameController,
               context: context,
               currentDistanceValue: _currentDistanceValue,
-              isKM: isKM,
+              isKM: _isKM,
               onSeekChanged: (value) {
                 setState(() {
                   _currentDistanceValue = value;
@@ -1046,12 +1056,12 @@ class _HomePageState extends State<HomePage> {
                 BlocProvider.of<HomeBloc>(context)
                     .add(home_bloc.GetDatePicker());
               },
-              dateAndTimeForUser: dateAndTimeForUser,
+              dateAndTimeForUser: _dateAndTimeForUser,
               onTapOpenCloseMessageDrawer: () {
                 BlocProvider.of<HomeBloc>(context)
                     .add(home_bloc.OpenCloseMessageDrawer());
               },
-              messageToOpponent: messageToOpponent,
+              messageToOpponent: _messageToOpponent,
               applyBattleController: _applyBattleController,
               onTapApplyBattle: () {
                 BlocProvider.of<HomeBloc>(context)
@@ -1108,7 +1118,7 @@ class _HomePageState extends State<HomePage> {
     double? weeklyDistanceTo,
     int? workoutsPerWeek,
   }) async {
-    return await connectApi.getUsersConnect(
+    return await _connectApi.getUsersConnect(
       isFilterIncluded: isFilterIncluded,
       paceFrom: paceFrom,
       paceTo: paceTo,
@@ -1119,11 +1129,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void updateRangeValuesAndUnit() {
-    isKM = PreferenceUtils.getIsUserUnitInKM();
+    _isKM = PreferenceUtils.getIsUserUnitInKM();
     _currentRangeValuesPace =
-        RangeValues((isKM ? 2 : 3) * 60, (isKM ? 11 : 18) * 60);
+        RangeValues((_isKM ? 2 : 3) * 60, (_isKM ? 11 : 18) * 60);
     _currentRangeValuesWeekly =
-        RangeValues((isKM ? 4 : 2.5), (isKM ? 150 : 94));
+        RangeValues((_isKM ? 4 : 2.5), (_isKM ? 150 : 94));
   }
 
   Future<DateTime?> getDate({required BuildContext context}) {
@@ -1171,18 +1181,18 @@ class _HomePageState extends State<HomePage> {
     //NOte: when app is terminated
     _messaging.getInitialMessage().then((RemoteMessage? message) async {
       if (message != null &&
-          selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
+          _selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
         final id = message.data['battleId'];
-        battleId = id;
+        _battleId = id;
         await getBattleById(context: context, battleId: id);
       }
     });
 
     //NOte: when app is in background state
     FirebaseMessaging.onMessageOpenedApp.listen((event) async {
-      if (selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
+      if (_selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
         final id = event.data['battleId'];
-        battleId = id;
+        _battleId = id;
         print('onMessageOpenedAppId: $id');
         await getBattleById(context: context, battleId: id);
       }
@@ -1191,9 +1201,9 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> getBattleById(
       {required BuildContext context, required String battleId}) async {
-    await homeApi.getBattleById(battleId: battleId).then((model) {
+    await _homeApi.getBattleById(battleId: battleId).then((model) {
       if (model != null) {
-        selectedDrawersType = DrawersType.BattleOnNotificationDrawer;
+        _selectedDrawersType = DrawersType.BattleOnNotificationDrawer;
         BlocProvider.of<HomeBloc>(context)
             .add(home_bloc.OpenBattleOnNotificationDrawer(model));
       } else {
