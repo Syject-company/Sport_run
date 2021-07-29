@@ -4,7 +4,7 @@ abstract class PasswordState extends Equatable {
   const PasswordState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class PasswordInitial extends PasswordState {}

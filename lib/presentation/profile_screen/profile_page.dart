@@ -18,7 +18,7 @@ import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 
 //NOte:'/profile'
 class ProfilePage extends StatefulWidget {
-  ProfilePage({Key? key, required this.userDataListener}) : super(key: key);
+  const ProfilePage({Key? key, required this.userDataListener}) : super(key: key);
 
   final VoidCallback userDataListener;
 
@@ -27,14 +27,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final _imagePicker = ImagePicker();
+  final ImagePicker _imagePicker = ImagePicker();
   File? _imageFile;
 
   HomeApi homeApi = HomeApi();
   ProfileApi profileApi = ProfileApi();
 
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   void initState() {
@@ -43,18 +43,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
 
     return BlocProvider<ProfileBloc>(
-      create: (final context) => ProfileBloc(),
+      create: (final BuildContext context) => ProfileBloc(),
       child: BlocListener<ProfileBloc, ProfileState>(
-        listener: (final context, final state) async {
+        listener: (final BuildContext context, final ProfileState state) async {
           if (state is GalleryIsOpened) {
             Navigator.pop(context);
             await _pickImage(context: context);
           } else if (state is UserPhotoUploaded) {
-            await profileApi.uploadImageProfile(_imageFile).then((value) async {
+            await profileApi.uploadImageProfile(_imageFile).then((bool value) async {
               if (value) {
                 widget.userDataListener();
                 setState(() {});
@@ -66,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
           BlocProvider.of<ProfileBloc>(context).add(profile_bloc.UpdateState());
         },
         child: BlocBuilder<ProfileBloc, ProfileState>(
-            builder: (final context, final state) {
+            builder: (final BuildContext context, final ProfileState state) {
           return Container(
             height: height,
             width: width,
@@ -75,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
               physics: const BouncingScrollPhysics(),
               child: FutureBuilder<UserModel?>(
                   future: homeApi.getUserModel(),
-                  builder: (ctx, snapshot) {
+                  builder: (BuildContext ctx, AsyncSnapshot<UserModel?> snapshot) {
                     if (snapshot.hasData && snapshot.data != null) {
                       _nameController.text =
                           snapshot.data!.nickName ?? 'NickName';
@@ -88,14 +88,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           bottom: 8.0,
                         ),
                         child: Column(
-                          children: [
+                          children: <Widget>[
                             SizedBox(
                               height: 10.h,
                             ),
                             SizedBox(
                               width: width,
                               child: Stack(
-                                children: [
+                                children: <Widget>[
                                   Container(
                                     height: height * 0.09,
                                     width: width - 20,
@@ -103,13 +103,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                     alignment: Alignment.center,
                                     margin: EdgeInsets.only(
                                       top: (height * 0.12) / 7,
-                                      left: (height * 0.12 / 2),
+                                      left: height * 0.12 / 2,
                                     ),
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                           left: (height * 0.12) / 2),
                                       child: Text(
-                                        '${snapshot.data!.moto ?? 'Here will be your Motto.'}',
+                                        snapshot.data!.moto ?? 'Here will be your Motto.',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                             color: Colors.black,
@@ -123,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     onTap: () {
                                       dialog(
                                           context: context,
-                                          Title: 'Profile picture',
+                                          title: 'Profile picture',
                                           text: 'Profile picture',
                                           applyButtonText: 'Change',
                                           cancelButtonText: 'Cancel',
@@ -159,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         left: height * 0.08),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(100),
-                                      boxShadow: [
+                                      boxShadow: <BoxShadow>[
                                         BoxShadow(
                                           color: Colors.grey.withOpacity(0.2),
                                           spreadRadius: 3,
@@ -183,7 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               margin: EdgeInsets.only(top: height * 0.03),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                                children: <Widget>[
                                   inputTextField(
                                       controller: _nameController,
                                       errorText: null,
@@ -213,7 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     height: height * 0.02,
                                   ),
                                   Row(
-                                    children: [
+                                    children: <Widget>[
                                       _userPaceDistance(
                                         title: 'Pace',
                                         value:
@@ -251,7 +251,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                    children: [
+                                    children: <Widget>[
                                       _userWonLoss(
                                           title: 'Won',
                                           value: '${snapshot.data!.wins}',
@@ -298,7 +298,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   _userBio(
                                       value:
-                                          '${snapshot.data!.description ?? 'Here will be your Biography.'}'),
+                                          snapshot.data!.description ?? 'Here will be your Biography.'),
                                 ],
                               ),
                             ),
@@ -327,7 +327,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _userPaceDistance({required String title, required String value}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           title,
           textAlign: TextAlign.start,
@@ -358,7 +358,7 @@ class _ProfilePageState extends State<ProfilePage> {
       required String value,
       Color colorValue = Colors.black}) {
     return Row(
-      children: [
+      children: <Widget>[
         Text(
           title,
           textAlign: TextAlign.start,
@@ -387,7 +387,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _userBio({required String value}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           'Bio',
           textAlign: TextAlign.start,
@@ -417,8 +417,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _pickImage({required BuildContext context}) async {
     await _imagePicker
-        .getImage(source: ImageSource.gallery)
-        .then((value) async {
+        .pickImage(source: ImageSource.gallery)
+        .then((XFile? value) async {
       if (value != null) {
         _imageFile = File(value.path);
         BlocProvider.of<ProfileBloc>(context)

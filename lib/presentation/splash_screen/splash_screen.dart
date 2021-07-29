@@ -8,6 +8,8 @@ import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -41,10 +43,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
         case 'NewRunner':
           {
-            Navigator.pushReplacement(
+            Navigator.pushReplacement<dynamic, dynamic>(
                 context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => RunnerDataPage(
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => const RunnerDataPage(
                           pageIndex: 1,
                         )));
             break;

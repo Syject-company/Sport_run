@@ -28,22 +28,23 @@ class HomeApi {
 
   //@get
   Future<UserModel?> getUserModel() async {
-    final token = PreferenceUtils.getUserToken();
+    final String token = PreferenceUtils.getUserToken();
     print('User token: $token');
-    final res = await get(Uri.parse(_urlUserModel), headers: {
+    final Response res =
+        await get(Uri.parse(_urlUserModel), headers: <String, String>{
       'Content-Type': 'application/json',
       'authorization': token,
     });
 
-    return UserModel.fromJson(json.decode(res.body));
+    return UserModel.fromJson(json.decode(res.body) as Map<String, dynamic>);
   }
 
   //@put
   Future<bool> saveUserModel({required UserProfileRequestModel model}) async {
-    final token = PreferenceUtils.getUserToken();
-    final res = await put(Uri.parse(_urlUserModelUpdate),
+    final String token = PreferenceUtils.getUserToken();
+    final Response res = await put(Uri.parse(_urlUserModelUpdate),
         body: json.encode(model),
-        headers: {
+        headers: <String, String>{
           'Content-Type': 'application/json',
           'authorization': token,
         });
@@ -53,10 +54,10 @@ class HomeApi {
 
   //@post
   Future<bool> createBattle({required BattleRequestModel model}) async {
-    final token = PreferenceUtils.getUserToken();
-    final res = await post(Uri.parse(_urlCreateBattle),
+    final String token = PreferenceUtils.getUserToken();
+    final Response res = await post(Uri.parse(_urlCreateBattle),
         body: json.encode(model),
-        headers: {
+        headers: <String, String>{
           'Content-Type': 'application/json',
           'authorization': token,
           'accept': '*/*',
@@ -67,12 +68,13 @@ class HomeApi {
 
   //@post
   Future<bool> sendFireBaseToken({required String tokenFireBase}) async {
-    final token = PreferenceUtils.getUserToken();
-    final res =
-        await post(Uri.parse('$_urlSendFirebaseToken$tokenFireBase'), headers: {
-      'Content-Type': 'application/json',
-      'authorization': token,
-    });
+    final String token = PreferenceUtils.getUserToken();
+    final Response res = await post(
+        Uri.parse('$_urlSendFirebaseToken$tokenFireBase'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'authorization': token,
+        });
 
     return res.statusCode == 200;
   }
@@ -81,46 +83,51 @@ class HomeApi {
   Future<BattleRespondModel?> getBattleById({
     required String battleId,
   }) async {
-    final token = PreferenceUtils.getUserToken();
-    final queryParameters = {'id': battleId};
+    final String token = PreferenceUtils.getUserToken();
+    final Map<String, String> queryParameters = <String, String>{
+      'id': battleId
+    };
 
-    final uri =
+    final Uri uri =
         Uri.parse(_urlGetBattleById).replace(queryParameters: queryParameters);
 
-    final res = await get(
+    final Response res = await get(
       uri,
-      headers: {
+      headers: <String, String>{
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: token,
       },
     );
 
     if (res.statusCode == 200) {
-      return BattleRespondModel.fromJson(json.decode(res.body));
+      return BattleRespondModel.fromJson(
+          json.decode(res.body) as Map<String, dynamic>);
     }
     return null;
   }
 
   //@post
   Future<bool> acceptBattle({required String battleId}) async {
-    final token = PreferenceUtils.getUserToken();
-    final res =
-        await post(Uri.parse('$_urlGetBattleById/$battleId/Accept'), headers: {
-      'Content-Type': 'application/json',
-      'authorization': token,
-    });
+    final String token = PreferenceUtils.getUserToken();
+    final Response res = await post(
+        Uri.parse('$_urlGetBattleById/$battleId/Accept'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'authorization': token,
+        });
 
     return res.statusCode == 200;
   }
 
   //@post
   Future<bool> declineBattle({required String battleId}) async {
-    final token = PreferenceUtils.getUserToken();
-    final res =
-    await post(Uri.parse('$_urlGetBattleById/$battleId/Decline'), headers: {
-      'Content-Type': 'application/json',
-      'authorization': token,
-    });
+    final String token = PreferenceUtils.getUserToken();
+    final Response res = await post(
+        Uri.parse('$_urlGetBattleById/$battleId/Decline'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'authorization': token,
+        });
 
     return res.statusCode == 200;
   }
@@ -129,10 +136,10 @@ class HomeApi {
   Future<bool> applyBattleChanges(
       {required ChangeBattleConditionsModel model,
       required String battleId}) async {
-    final token = PreferenceUtils.getUserToken();
-    final res = await patch(Uri.parse('$_urlGetBattleById/$battleId'),
+    final String token = PreferenceUtils.getUserToken();
+    final Response res = await patch(Uri.parse('$_urlGetBattleById/$battleId'),
         body: json.encode(model),
-        headers: {
+        headers: <String, String>{
           'Content-Type': 'application/json',
           'authorization': token,
         });

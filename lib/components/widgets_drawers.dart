@@ -33,11 +33,11 @@ Widget changeBattleDrawer({
         padding: EdgeInsets.only(top: height * 0.07),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.04),
               child: Row(
-                children: [
+                children: <Widget>[
                   Image.asset(
                     interactIcon,
                     height: 12.0,
@@ -84,7 +84,7 @@ Widget changeBattleDrawer({
                 ),
               ),
               child: Row(
-                children: [
+                children: <Widget>[
                   Container(
                     height: height * 0.08,
                     width: height * 0.08,
@@ -101,7 +101,7 @@ Widget changeBattleDrawer({
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       Text(
                         userName,
                         style: TextStyle(
@@ -115,7 +115,7 @@ Widget changeBattleDrawer({
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           Image.asset(
                             rankIcon,
                             height: height * 0.015,
@@ -174,10 +174,10 @@ Widget changeBattleDrawer({
               padding: EdgeInsets.only(left: width * 0.02, right: width * 0.03),
               child: TextButton(
                 onPressed: onTapGetDatePicker,
-                child: Container(
+                child: SizedBox(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: <Widget>[
                       Text(
                         dateAndTimeForUser,
                         style: TextStyle(
@@ -204,7 +204,7 @@ Widget changeBattleDrawer({
               alignment: Alignment.bottomCenter,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: <Widget>[
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: buildRoundedButton(
@@ -265,11 +265,11 @@ Widget battleOfferOnNotificationDrawer({
         padding: EdgeInsets.only(top: height * 0.07),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.04),
               child: Row(
-                children: [
+                children: <Widget>[
                   Image.asset(
                     interactIcon,
                     height: 12.0,
@@ -316,7 +316,7 @@ Widget battleOfferOnNotificationDrawer({
                 ),
               ),
               child: Row(
-                children: [
+                children: <Widget>[
                   Container(
                     height: height * 0.08,
                     width: height * 0.08,
@@ -333,7 +333,7 @@ Widget battleOfferOnNotificationDrawer({
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       Text(
                         secondUserModel.nickName.toString(),
                         style: TextStyle(
@@ -347,7 +347,7 @@ Widget battleOfferOnNotificationDrawer({
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           Image.asset(
                             rankIcon,
                             height: height * 0.015,
@@ -380,9 +380,9 @@ Widget battleOfferOnNotificationDrawer({
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Row(
-                    children: [
+                    children: <Widget>[
                       Text(
                         'Distance',
                         style: TextStyle(
@@ -398,7 +398,7 @@ Widget battleOfferOnNotificationDrawer({
                           size: 20.0,
                         ),
                         onPressed: () {
-                          showDialog(
+                          showDialog<dynamic>(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
@@ -419,7 +419,7 @@ Widget battleOfferOnNotificationDrawer({
                                       fontSize: 13.sp,
                                       fontWeight: FontWeight.normal),
                                 ),
-                                actions: [
+                                actions: <Widget>[
                                   Center(
                                     child: Container(
                                       width: 80.0,
@@ -514,7 +514,7 @@ Widget battleOfferOnNotificationDrawer({
               alignment: Alignment.bottomCenter,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: <Widget>[
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: buildRoundedButton(
@@ -599,7 +599,7 @@ Widget filterDrawer({
         padding: EdgeInsets.only(top: height * 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.03),
               child: Text(
@@ -618,7 +618,7 @@ Widget filterDrawer({
               padding: EdgeInsets.symmetric(horizontal: width * 0.03),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Text(
                     '${!isNeedFilter ? 'Enable' : 'Disable'} filters',
                     style: TextStyle(
@@ -636,9 +636,9 @@ Widget filterDrawer({
               ),
             ),
             Stack(
-              children: [
+              children: <Widget>[
                 Column(
-                  children: [
+                  children: <Widget>[
                     rangeSeekBarPace(
                       title: 'Pace',
                       context: context,
@@ -688,7 +688,7 @@ Widget filterDrawer({
                       padding: EdgeInsets.symmetric(horizontal: width * 0.03),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                        children: <Widget>[
                           buttonNoIcon(
                             title: '-',
                             color: grayColor,
@@ -697,12 +697,12 @@ Widget filterDrawer({
                             height: 30.h,
                             onPressed: onTapMinusRuns,
                           ),
-                          Container(
+                          SizedBox(
                             width: 80.w,
                             height: 50.h,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
+                              children: <Widget>[
                                 Text(
                                   countOfRuns.toString(),
                                   textAlign: TextAlign.center,
@@ -744,7 +744,7 @@ Widget filterDrawer({
                       alignment: Alignment.bottomCenter,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
+                        children: <Widget>[
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: buildRoundedButton(
@@ -817,11 +817,11 @@ Widget battleDrawer({
       padding: EdgeInsets.only(top: height * 0.07),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.04),
             child: Row(
-              children: [
+              children: <Widget>[
                 Image.asset(
                   interactIcon,
                   height: 12.0,
@@ -868,7 +868,7 @@ Widget battleDrawer({
               ),
             ),
             child: Row(
-              children: [
+              children: <Widget>[
                 Container(
                   height: height * 0.08,
                   width: height * 0.08,
@@ -885,7 +885,7 @@ Widget battleDrawer({
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     Text(
                       model?.nickName ?? 'NickName',
                       style: TextStyle(
@@ -899,7 +899,7 @@ Widget battleDrawer({
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         Image.asset(
                           rankIcon,
                           height: height * 0.015,
@@ -970,10 +970,10 @@ Widget battleDrawer({
             padding: EdgeInsets.only(left: width * 0.02, right: width * 0.03),
             child: TextButton(
               onPressed: onTapGetDatePicker,
-              child: Container(
+              child: SizedBox(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: <Widget>[
                     Text(
                       dateAndTimeForUser,
                       style: TextStyle(
@@ -1010,10 +1010,10 @@ Widget battleDrawer({
             child: TextButton(
               onPressed: onTapOpenCloseMessageDrawer,
               child: Column(
-                children: [
+                children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: <Widget>[
                       SizedBox(
                         width: width * 0.68,
                         child: Text(
@@ -1048,7 +1048,7 @@ Widget battleDrawer({
             alignment: Alignment.bottomCenter,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: [
+              children: <Widget>[
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: buildRoundedButton(
@@ -1102,11 +1102,11 @@ Widget messageToOpponentDrawer({
       padding: EdgeInsets.only(top: height * 0.07),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.04),
             child: Row(
-              children: [
+              children: <Widget>[
                 GestureDetector(
                   onTap: onTapOpenCloseMessageDrawer,
                   child: const Icon(
@@ -1145,7 +1145,7 @@ Widget messageToOpponentDrawer({
           SizedBox(
             height: height * 0.03,
           ),
-          Container(
+          SizedBox(
             height: height * 0.7,
             child: ListView.builder(
                 itemCount: messagesToOpponent.length,

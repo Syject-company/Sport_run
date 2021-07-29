@@ -3,27 +3,27 @@ class Constants {
   static const String domain = 'https://one2onerunapi.azurewebsites.net';
 
   //pager routs:
-  static const loginRoute = '/login';
-  static const registerRoute = '/register';
-  static const runnersDataRoute = '/runnersData';
-  static const homeRoute = '/home';
-  static const passwordRoute = '/password';
-  static const editProfileRoute = '/editProfile';
+  static const String loginRoute = '/login';
+  static const String registerRoute = '/register';
+  static const String runnersDataRoute = '/runnersData';
+  static const String homeRoute = '/home';
+  static const String passwordRoute = '/password';
+  static const String editProfileRoute = '/editProfile';
 
   //Api urls:
-  static const registerUrl = '/api/Account/registration';
-  static const logInUrl = '/api/Account/login';
-  static const registerGoogleUrl = '/api/Account/Login/Google';
-  static const registerAppleUrl = '/api/Account/Login/Apple';
-  static const runnersDataUrl = '/api/Account/PrimayData';
-  static const changePasswordUrl = '/api/Account/ForgotPassword';
-  static const codeVerificationUrl = '/api/Account/CodeVerification';
-  static const updatePasswordUrl = '/api/Account/ChangePassword';
-  static const getUserModelUrl = '/api/Account';
-  static const editUserModelUrl = '/api/Account';
-  static const updateUserPhotoUrl = '/api/Account/Photo';
-  static const connectUrl = '/api/Battle/Users/';
-  static const createBattleUrl = '/api/Battle';
-  static const sendFireBaseTokenUrl = '/api/Account/FirebaseToken/';
+  static const String registerUrl = '/api/Account/registration';
+  static const String logInUrl = '/api/Account/login';
+  static const String registerGoogleUrl = '/api/Account/Login/Google';
+  static const String registerAppleUrl = '/api/Account/Login/Apple';
+  static const String runnersDataUrl = '/api/Account/PrimayData';
+  static const String changePasswordUrl = '/api/Account/ForgotPassword';
+  static const String codeVerificationUrl = '/api/Account/CodeVerification';
+  static const String updatePasswordUrl = '/api/Account/ChangePassword';
+  static const String getUserModelUrl = '/api/Account';
+  static const String editUserModelUrl = '/api/Account';
+  static const String updateUserPhotoUrl = '/api/Account/Photo';
+  static const String connectUrl = '/api/Battle/Users/';
+  static const String createBattleUrl = '/api/Battle';
+  static const String sendFireBaseTokenUrl = '/api/Account/FirebaseToken/';
 
 }

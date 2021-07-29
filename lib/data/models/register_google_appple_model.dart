@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class RegisterGoogleAppleModel {
-  RegisterGoogleAppleModel({
+  const RegisterGoogleAppleModel({
     required this.accessToken,
   });
 
@@ -9,7 +12,7 @@ class RegisterGoogleAppleModel {
     );
   }
 
-  String accessToken;
+  final String accessToken;
 
   RegisterGoogleAppleModel copyWith({
     String? accessToken,
@@ -36,7 +39,7 @@ class RegisterGoogleAppleModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'accessToken': accessToken,
     } as Map<String, dynamic>;
   }

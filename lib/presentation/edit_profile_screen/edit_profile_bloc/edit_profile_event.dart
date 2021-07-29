@@ -2,9 +2,8 @@ import 'package:equatable/equatable.dart';
 
 abstract class EditProfileEvent extends Equatable {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
-
 
 class UpdateState extends EditProfileEvent {}
 
@@ -14,7 +13,7 @@ class SelectKmOrMile extends EditProfileEvent {
   final bool isKM;
 
   @override
-  List<Object> get props => [isKM];
+  List<Object> get props => <Object>[isKM];
 }
 
 class SelectTimesPerWeek extends EditProfileEvent {
@@ -23,7 +22,7 @@ class SelectTimesPerWeek extends EditProfileEvent {
   final int timesPerWeek;
 
   @override
-  List<Object> get props => [timesPerWeek];
+  List<Object> get props => <Object>[timesPerWeek];
 }
 
 class SaveUserData extends EditProfileEvent {}

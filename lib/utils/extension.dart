@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 
 extension EmailValidator on String {
@@ -44,7 +45,7 @@ extension ToastExtension on void {
   }
 }
 
-extension DistanceValue on void {
+extension UserData on void {
   num getDistance({required num distance}) {
     if (PreferenceUtils.getIsUserUnitInKM()) {
       if (distance > 11) {
@@ -63,5 +64,44 @@ extension DistanceValue on void {
     }
 
     return distance;
+  }
+
+  String distance({required num distance}) {
+    return PreferenceUtils.getIsUserUnitInKM()
+        ? '${getDistance(distance: distance).toStringAsFixed(0)} km'
+        : '${getDistance(distance: distance).toStringAsFixed(1)} mile';
+  }
+
+  String getOpponentName({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id != currentUserId) {
+      return model.battleUsers[0].applicationUser.nickName;
+    }
+
+    return model.battleUsers[1].applicationUser.nickName;
+  }
+
+  String? getOpponentPhoto({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id != currentUserId) {
+      return model.battleUsers[0].applicationUser.photoLink;
+    }
+
+    return model.battleUsers[1].applicationUser.photoLink;
+  }
+
+  int? getMyBattleStatus({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id == currentUserId) {
+      return model.battleUsers[0].batlleStatus?.toInt();
+    }
+
+    return model.battleUsers[1].batlleStatus?.toInt();
   }
 }

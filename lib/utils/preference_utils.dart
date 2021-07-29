@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PreferenceUtils {
+mixin PreferenceUtils {
   static SharedPreferences? _prefsInstance;
 
   static Future<void> init() async {
@@ -53,7 +53,8 @@ class PreferenceUtils {
 
   static UserModel getCurrentUserModel() {
     return UserModel.fromJson(
-        json.decode(_prefsInstance?.getString(userModel) ?? ''));
+        json.decode(_prefsInstance?.getString(userModel) ?? '')
+            as Map<String, dynamic>);
   }
 
   static Future<void> setCurrentUserModel(UserModel value) async {

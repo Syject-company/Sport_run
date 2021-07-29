@@ -1,5 +1,5 @@
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/resources/colors.dart';
@@ -7,7 +7,7 @@ import 'package:one2one_run/resources/images.dart';
 
 //NOte: '/userInfo'
 class UserInfo extends StatelessWidget {
-  UserInfo({Key? key, required this.userModel, required this.onBattleTap})
+  const UserInfo({Key? key, required this.userModel, required this.onBattleTap})
       : super(key: key);
 
   final ConnectUsersModel userModel;
@@ -15,15 +15,15 @@ class UserInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height -
+    final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
-    final width = MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffF5F5F5),
       appBar: AppBar(
         leading: const BackButton(color: Colors.white),
         title: Text(
-          '${userModel.nickName ?? 'NickName'}',
+          userModel.nickName ?? 'NickName',
           style: TextStyle(
               color: Colors.white,
               fontFamily: 'roboto',
@@ -32,7 +32,7 @@ class UserInfo extends StatelessWidget {
         ),
         backgroundColor: colorPrimary,
       ),
-      body: Container(
+      body: SizedBox(
         width: width,
         height: height,
         child: SingleChildScrollView(
@@ -40,9 +40,9 @@ class UserInfo extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: Column(
-              children: [
+              children: <Widget>[
                 Row(
-                  children: [
+                  children: <Widget>[
                     SizedBox(
                       height: height * 0.12,
                       width: height * 0.12,
@@ -60,15 +60,15 @@ class UserInfo extends StatelessWidget {
                       width: width * 0.04,
                     ),
                     Column(
-                      children: [
-                        Container(
+                      children: <Widget>[
+                        SizedBox(
                           width: width * 0.65,
                           child: Row(
-                            children: [
+                            children: <Widget>[
                               Container(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  '${userModel.nickName ?? 'NickName'}',
+                                  userModel.nickName ?? 'NickName',
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 18.sp,
@@ -124,7 +124,7 @@ class UserInfo extends StatelessWidget {
                   height: height * 0.04,
                 ),
                 Row(
-                  children: [
+                  children: <Widget>[
                     _cardItem(
                       height: height,
                       width: width + 10,
@@ -170,7 +170,7 @@ class UserInfo extends StatelessWidget {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: <Widget>[
                     _userWonLoss(
                         title: 'Won',
                         value: '${userModel.wins}',
@@ -217,8 +217,8 @@ class UserInfo extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   height: height * 0.5,
                   child: _userBio(
-                      value:
-                          '${userModel.description ?? 'Here will be your Biography.'}'),
+                      value: userModel.description ??
+                          'Here will be your Biography.'),
                 ),
                 buttonWithIcon(
                   title: 'BATTLE',
@@ -247,7 +247,7 @@ class UserInfo extends StatelessWidget {
       required String value,
       Color colorValue = Colors.black}) {
     return Row(
-      children: [
+      children: <Widget>[
         Text(
           title,
           textAlign: TextAlign.start,
@@ -276,7 +276,7 @@ class UserInfo extends StatelessWidget {
   Widget _userBio({required String value}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           'Bio',
           textAlign: TextAlign.start,
@@ -321,7 +321,7 @@ class UserInfo extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(6))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Image.asset(
             icon,
             height: height * 0.015,

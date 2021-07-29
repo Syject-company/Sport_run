@@ -3,45 +3,42 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/runner_data_api.dart';
 import 'package:one2one_run/data/models/runner_data_model.dart';
 import 'package:one2one_run/presentation/runner_data_screen/runner_data_bloc/bloc.dart'
     as runner_data_bloc;
-import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/presentation/runner_data_screen/runner_data_bloc/runner_data_bloc.dart';
 import 'package:one2one_run/presentation/runner_data_screen/runner_data_bloc/runner_data_state.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 
 //NOte:'/runnersData'
 class RunnerDataPage extends StatefulWidget {
-  RunnerDataPage({Key? key, this.pageIndex = 0}) : super(key: key);
+  const RunnerDataPage({Key? key, this.pageIndex = 0}) : super(key: key);
 
   final int pageIndex;
 
   @override
-  _RunnerDataPageState createState() =>
-      _RunnerDataPageState(pageIndex: pageIndex);
+  _RunnerDataPageState createState() => _RunnerDataPageState();
 }
 
 class _RunnerDataPageState extends State<RunnerDataPage> {
-  _RunnerDataPageState({this.pageIndex = 0});
 
-  var pageIndex;
-
-  final _runnerDataApi = RunnerDataApi();
+  final RunnerDataApi _runnerDataApi = RunnerDataApi();
 
   late PageController _pageController;
-  final _nickNameController = TextEditingController();
-  final continueController = RoundedLoadingButtonController();
-  final goController = RoundedLoadingButtonController();
+  final TextEditingController _nickNameController = TextEditingController();
+  final RoundedLoadingButtonController continueController =
+      RoundedLoadingButtonController();
+  final RoundedLoadingButtonController goController =
+      RoundedLoadingButtonController();
 
   String? _nickNameError;
 
@@ -55,21 +52,22 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: pageIndex);
+    _pageController = PageController(initialPage: widget.pageIndex);
   }
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.transparent,
         body: BlocProvider<RunnerDataBloc>(
-          create: (final context) => RunnerDataBloc(),
+          create: (final BuildContext context) => RunnerDataBloc(),
           child: BlocListener<RunnerDataBloc, RunnerDataState>(
-            listener: (final context, final state) async {
+            listener: (final BuildContext context,
+                final RunnerDataState state) async {
               if (state is FieldsChecked) {
                 if (isFieldsChecked()) {
                   await PreferenceUtils.setUserNickName(
@@ -92,7 +90,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
               } else if (state is ToHomeIsNavigated) {
                 await _runnerDataApi
                     .sendRunnerData(state.runnerDataModel)
-                    .then((value) async {
+                    .then((bool value) async {
                   if (value) {
                     await _pageController
                         .animateToPage(3,
@@ -115,8 +113,8 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
               BlocProvider.of<RunnerDataBloc>(context)
                   .add(runner_data_bloc.UpdateState());
             },
-            child: BlocBuilder<RunnerDataBloc, RunnerDataState>(
-                builder: (final context, final state) {
+            child: BlocBuilder<RunnerDataBloc, RunnerDataState>(builder:
+                (final BuildContext context, final RunnerDataState state) {
               return Container(
                 width: width,
                 height: height,
@@ -124,7 +122,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                 child: PageView(
                   controller: _pageController,
                   physics: const NeverScrollableScrollPhysics(),
-                  children: [
+                  children: <Widget>[
                     _nickNameInput(context: context, width: width),
                     _newRunning(context: context),
                     _additionalInformation(
@@ -150,7 +148,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
       padding: EdgeInsets.symmetric(vertical: 30.h),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children: <Widget>[
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -210,7 +208,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
       padding: EdgeInsets.symmetric(vertical: 30.h),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children: <Widget>[
           Container(
             height: 400.h,
             decoration: BoxDecoration(
@@ -233,14 +231,14 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                   fontWeight: FontWeight.w900),
             ),
           ),
-          Container(
+          SizedBox(
             width: MediaQuery.of(context).size.width,
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
+                children: <Widget>[
                   buttonSquareNoIcon(
                     onPressed: () async {
                       await PreferenceUtils.setIsUserUnitInKM(isKM);
@@ -302,7 +300,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
-          children: [
+          children: <Widget>[
             const SizedBox(
               height: 15.0,
             ),
@@ -332,7 +330,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
               minValue: (isKM ? 2 : 3) * 60,
               maxValue: (isKM ? 11 : 18) * 60,
               sliderValue: _currentPaceValue,
-              onChanged: (value) {
+              onChanged: (double value) {
                 setState(() {
                   _currentPaceValue = value;
                 });
@@ -348,7 +346,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
               minValue: isKM ? 4 : 2.5,
               maxValue: isKM ? 150 : 94,
               sliderValue: _currentWeeklyDistanceValue,
-              onChanged: (value) {
+              onChanged: (double value) {
                 setState(() {
                   _currentWeeklyDistanceValue = value;
                 });
@@ -376,7 +374,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   buttonNoIcon(
                     title: 'KM',
                     color: isKM ? redColor : grayColor,
@@ -424,7 +422,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   buttonNoIcon(
                     title: '-',
                     color: grayColor,
@@ -439,12 +437,12 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                       }
                     },
                   ),
-                  Container(
+                  SizedBox(
                     width: 80.w,
                     height: 50.h,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: <Widget>[
                         Text(
                           _countOfRuns.toString(),
                           textAlign: TextAlign.center,
@@ -490,11 +488,11 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               margin: EdgeInsets.only(top: height * 0.18),
               child: Column(
-                children: [
+                children: <Widget>[
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: buildRoundedButton(
-                      label: 'Let\'s go!',
+                      label: "Let's go!",
                       width: width,
                       height: 40.h,
                       controller: goController,

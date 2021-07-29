@@ -1,7 +1,10 @@
 import 'dart:core';
 
+import 'package:flutter/material.dart';
+
+@immutable
 class UserProfileRequestModel {
-  UserProfileRequestModel({
+  const UserProfileRequestModel({
     required this.nickName,
     required this.isMetric,
     required this.pace,
@@ -23,13 +26,13 @@ class UserProfileRequestModel {
     );
   }
 
-  String nickName;
-  bool isMetric;
-  num pace;
-  num weeklyDistance;
-  int workoutsPerWeek;
-  String moto;
-  String description;
+  final String nickName;
+  final bool isMetric;
+  final num pace;
+  final num weeklyDistance;
+  final int workoutsPerWeek;
+  final String moto;
+  final String description;
 
   UserProfileRequestModel copyWith({
     String? nickName,
@@ -81,7 +84,7 @@ class UserProfileRequestModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'nickName': nickName,
       'isMetric': isMetric,
       'pace': pace,

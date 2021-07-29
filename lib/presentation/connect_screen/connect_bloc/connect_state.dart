@@ -5,7 +5,7 @@ abstract class ConnectState extends Equatable {
   const ConnectState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ConnectInitial extends ConnectState {}
@@ -13,10 +13,10 @@ class ConnectInitial extends ConnectState {}
 class StateUpdated extends ConnectState {}
 
 class NavigatedToUserInfo extends ConnectState {
-  NavigatedToUserInfo(this.userModel);
+  const NavigatedToUserInfo(this.userModel);
 
   final ConnectUsersModel userModel;
 
   @override
-  List<Object> get props => [userModel];
+  List<Object> get props => <Object>[userModel];
 }

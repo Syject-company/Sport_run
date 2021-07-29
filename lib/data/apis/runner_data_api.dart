@@ -11,11 +11,11 @@ class RunnerDataApi {
 
   //@patch
   Future<bool> sendRunnerData(RunnerDataModel model) async {
-    final token = PreferenceUtils.getUserToken();
+    final String token = PreferenceUtils.getUserToken();
     print('User token: $token');
-    final res = await patch(Uri.parse(_urlRunnerData),
+    final Response res = await patch(Uri.parse(_urlRunnerData),
         body: json.encode(model),
-        headers: {
+        headers: <String, String>{
           'Content-Type': 'application/json',
           'authorization': token,
         });

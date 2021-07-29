@@ -33,6 +33,7 @@ dependencies:
   firebase_messaging: ^10.0.4
   firebase_core: ^1.4.0
   intl: ^0.17.0
+  signalr_client: ^0.1.6
 
 dev_dependencies:
   flutter_test:

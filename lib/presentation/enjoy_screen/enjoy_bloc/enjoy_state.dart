@@ -4,7 +4,7 @@ abstract class EnjoyState extends Equatable {
   const EnjoyState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class EnjoyInitial extends EnjoyState {}

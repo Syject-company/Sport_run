@@ -4,8 +4,8 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 
-class ActiveTab extends StatelessWidget {
-  const ActiveTab({
+class FinishedTab extends StatelessWidget {
+  const FinishedTab({
     Key? key,
     required this.pendingList,
     required this.currentUserId,
@@ -33,7 +33,7 @@ class ActiveTab extends StatelessWidget {
                       context: context,
                       width: width,
                       height: height,
-                      heightPercentage: 0.34,
+                      heightPercentage: 0.245,
                       model: pendingList[index],
                       distance: distance(distance: pendingList[index].distance),
                       opponentName: getOpponentName(
@@ -45,7 +45,12 @@ class ActiveTab extends StatelessWidget {
                         currentUserId: currentUserId,
                       ),
                       isNeedButtons: false,
+                      isFinishedTab: true,
                       statusCodeNum: pendingList[index].status.toInt(),
+                      myStatusCodeNum: getMyBattleStatus(
+                        model: pendingList[index],
+                        currentUserId: currentUserId,
+                      ),
                     );
                   }),
             )

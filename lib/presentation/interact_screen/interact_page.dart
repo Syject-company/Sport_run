@@ -11,14 +11,15 @@ import 'package:one2one_run/presentation/interact_screen/interact_bloc/bloc.dart
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/interact_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_bloc/interact_state.dart';
 import 'package:one2one_run/presentation/interact_screen/tabs/active_tab.dart';
+import 'package:one2one_run/presentation/interact_screen/tabs/finished_tab.dart';
 import 'package:one2one_run/presentation/interact_screen/tabs/pending_tab.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/extension.dart' show ToastExtension;
+import 'package:one2one_run/utils/preference_utils.dart';
 
 //NOte:'/interact'
 class InteractPage extends StatefulWidget {
-  InteractPage({Key? key, required this.onTapChange}) : super(key: key);
+  const InteractPage({Key? key, required this.onTapChange}) : super(key: key);
 
   final Function(String id, BattleRespondModel model) onTapChange;
 
@@ -27,8 +28,8 @@ class InteractPage extends StatefulWidget {
 }
 
 class _InteractPageState extends State<InteractPage> {
-  final _interActApi = InteractApi();
-  final _homeApi = HomeApi();
+  final InteractApi _interActApi = InteractApi();
+  final HomeApi _homeApi = HomeApi();
 
   @override
   void initState() {
@@ -37,16 +38,19 @@ class _InteractPageState extends State<InteractPage> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height -
+    final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
-    final width = MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
 
     return BlocProvider<InteractBloc>(
-      create: (final context) => InteractBloc(),
+      create: (final BuildContext context) => InteractBloc(),
       child: BlocListener<InteractBloc, InteractState>(
-        listener: (final context, final state) async {
+        listener:
+            (final BuildContext context, final InteractState state) async {
           if (state is BattleIsAccepted) {
-            await _homeApi.acceptBattle(battleId: state.id).then((value) async {
+            await _homeApi
+                .acceptBattle(battleId: state.id)
+                .then((bool value) async {
               if (value) {
                 await Fluttertoast.showToast(
                     msg: 'You have successfully accepted the battle!',
@@ -60,7 +64,7 @@ class _InteractPageState extends State<InteractPage> {
           } else if (state is BattleIsDeclined) {
             await _homeApi
                 .declineBattle(battleId: state.id)
-                .then((value) async {
+                .then((bool value) async {
               if (value) {
                 await Fluttertoast.showToast(
                     msg: 'You have successfully Declined the battle!',
@@ -76,14 +80,14 @@ class _InteractPageState extends State<InteractPage> {
               .add(interact_bloc.UpdateState());
         },
         child: BlocBuilder<InteractBloc, InteractState>(
-            builder: (final context, final state) {
+            builder: (final BuildContext context, final InteractState state) {
           return DefaultTabController(
             length: 3,
             child: Scaffold(
               backgroundColor: colorPrimary,
               appBar: TabBar(
                 indicatorColor: Colors.red,
-                tabs: [
+                tabs: <Widget>[
                   interactTab(title: 'Active'),
                   interactTab(title: 'Pending'),
                   interactTab(title: 'Finished'),
@@ -93,12 +97,14 @@ class _InteractPageState extends State<InteractPage> {
                 children: <Widget>[
                   FutureBuilder<List<BattleRespondModel>?>(
                       future: _interActApi.getInteractTabsDataById(tabId: 0),
-                      builder: (context, snapshot) {
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<BattleRespondModel>?> snapshot) {
                         if (snapshot.hasData && snapshot.data != null) {
                           return ActiveTab(
-                            pendingList: snapshot.data,
+                            pendingList:
+                                snapshot.data ?? <BattleRespondModel>[],
                             currentUserId:
-                            PreferenceUtils.getCurrentUserModel().id,
+                                PreferenceUtils.getCurrentUserModel().id,
                           );
                         }
                         return Container(
@@ -110,18 +116,20 @@ class _InteractPageState extends State<InteractPage> {
                       }),
                   FutureBuilder<List<BattleRespondModel>?>(
                       future: _interActApi.getInteractTabsDataById(tabId: 1),
-                      builder: (context, snapshot) {
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<BattleRespondModel>?> snapshot) {
                         if (snapshot.hasData && snapshot.data != null) {
                           return PendingTab(
-                            pendingList: snapshot.data,
+                            pendingList:
+                                snapshot.data ?? <BattleRespondModel>[],
                             currentUserId:
                                 PreferenceUtils.getCurrentUserModel().id,
-                            onTapAccept: (id) {
+                            onTapAccept: (String id) {
                               BlocProvider.of<InteractBloc>(context)
                                   .add(interact_bloc.AcceptBattle(id: id));
                             },
                             onTapChange: widget.onTapChange,
-                            onTapDecline: (id) {
+                            onTapDecline: (String id) {
                               BlocProvider.of<InteractBloc>(context)
                                   .add(interact_bloc.DeclineBattle(id: id));
                             },
@@ -134,14 +142,25 @@ class _InteractPageState extends State<InteractPage> {
                           child: Center(child: progressIndicator()),
                         );
                       }),
-                  Container(
-                    width: width,
-                    height: height,
-                    color: const Color(0xffF5F5F5),
-                    child: const Center(
-                      child: Text('Finished Page'),
-                    ),
-                  ),
+                  FutureBuilder<List<BattleRespondModel>?>(
+                      future: _interActApi.getInteractTabsDataById(tabId: 2),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<BattleRespondModel>?> snapshot) {
+                        if (snapshot.hasData && snapshot.data != null) {
+                          return FinishedTab(
+                            pendingList:
+                                snapshot.data ?? <BattleRespondModel>[],
+                            currentUserId:
+                                PreferenceUtils.getCurrentUserModel().id,
+                          );
+                        }
+                        return Container(
+                          width: width,
+                          height: height,
+                          color: const Color(0xffF5F5F5),
+                          child: Center(child: progressIndicator()),
+                        );
+                      }),
                 ],
               ),
             ),

@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 abstract class InteractEvent extends Equatable {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class UpdateState extends InteractEvent {}
@@ -13,7 +13,7 @@ class AcceptBattle extends InteractEvent {
   final String id;
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => <Object>[id];
 }
 
 class DeclineBattle extends InteractEvent {
@@ -22,5 +22,5 @@ class DeclineBattle extends InteractEvent {
   final String id;
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => <Object>[id];
 }

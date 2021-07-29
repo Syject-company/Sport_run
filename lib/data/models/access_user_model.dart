@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class AccessUserModel {
-  AccessUserModel({
+  const AccessUserModel({
     required this.email,
     required this.password,
   });
@@ -11,8 +14,8 @@ class AccessUserModel {
     );
   }
 
-  String email;
-  String password;
+  final String email;
+  final String password;
 
   AccessUserModel copyWith({
     String? email,
@@ -42,7 +45,7 @@ class AccessUserModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'email': email,
       'password': password,
     } as Map<String, dynamic>;

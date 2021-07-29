@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class ChangePassEmailModel {
-  ChangePassEmailModel({
+  const ChangePassEmailModel({
     required this.email,
   });
 
@@ -9,7 +12,7 @@ class ChangePassEmailModel {
     );
   }
 
-  String email;
+  final String email;
 
   ChangePassEmailModel copyWith({
     String? email,
@@ -36,7 +39,7 @@ class ChangePassEmailModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'email': email,
     } as Map<String, dynamic>;
   }

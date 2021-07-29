@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class UpdatePasswordModel {
-  UpdatePasswordModel({
+  const UpdatePasswordModel({
     required this.email,
     required this.confirmationCode,
     required this.newPassword,
@@ -13,9 +16,9 @@ class UpdatePasswordModel {
     );
   }
 
-  String email;
-  String confirmationCode;
-  String newPassword;
+  final String email;
+  final String confirmationCode;
+  final String newPassword;
 
   UpdatePasswordModel copyWith({
     String? email,
@@ -49,7 +52,7 @@ class UpdatePasswordModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'email': email,
       'confirmationCode': confirmationCode,
       'newPassword': newPassword,

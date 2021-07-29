@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:one2one_run/resources/strings.dart';
+import 'package:one2one_run/utils/data_values.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 TextStyle get hintTextStyle => const TextStyle(
@@ -116,7 +116,7 @@ Widget buttonWithIcon(
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Image.asset(
             icon,
             height: iconSize,
@@ -206,7 +206,7 @@ Widget buttonSquareNoIcon(
     required Color textColor,
     required VoidCallback onPressed}) {
   return Column(
-    children: [
+    children: <Widget>[
       Center(
         child: ElevatedButton(
           onPressed: onPressed,
@@ -258,14 +258,14 @@ Widget seekBarPace({
   required Function(double value) onChanged,
 }) {
   return Column(
-    children: [
+    children: <Widget>[
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+          children: <Widget>[
             Row(
-              children: [
+              children: <Widget>[
                 Text(
                   title,
                   style: TextStyle(
@@ -281,7 +281,7 @@ Widget seekBarPace({
                     size: 20.0,
                   ),
                   onPressed: () {
-                    showDialog(
+                    showDialog<dynamic>(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
@@ -302,7 +302,7 @@ Widget seekBarPace({
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.normal),
                           ),
-                          actions: [
+                          actions: <Widget>[
                             Center(
                               child: Container(
                                 width: 80.0,
@@ -329,7 +329,7 @@ Widget seekBarPace({
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
+              children: <Widget>[
                 Text(
                   '${timePerKM ~/ 60} min/$unit',
                   style: TextStyle(
@@ -339,7 +339,7 @@ Widget seekBarPace({
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  '${(kmPerHour.toStringAsFixed(2))} $unit/h',
+                  '${kmPerHour.toStringAsFixed(2)} $unit/h',
                   style: TextStyle(
                       color: Colors.grey,
                       fontFamily: 'roboto',
@@ -379,14 +379,14 @@ Widget rangeSeekBarPace({
   required RangeValues rangeValue,
 }) {
   return Column(
-    children: [
+    children: <Widget>[
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 13.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+          children: <Widget>[
             Row(
-              children: [
+              children: <Widget>[
                 Text(
                   title,
                   style: TextStyle(
@@ -401,7 +401,7 @@ Widget rangeSeekBarPace({
                     color: Colors.grey,
                   ),
                   onPressed: () {
-                    showDialog(
+                    showDialog<dynamic>(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
@@ -422,7 +422,7 @@ Widget rangeSeekBarPace({
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.normal),
                           ),
-                          actions: [
+                          actions: <Widget>[
                             Center(
                               child: Container(
                                 width: 80.0,
@@ -449,7 +449,7 @@ Widget rangeSeekBarPace({
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
+              children: <Widget>[
                 Text(
                   '${startTimePerKM ~/ 60} - ${endTimePerKM ~/ 60} min/$unit',
                   style: TextStyle(
@@ -459,7 +459,7 @@ Widget rangeSeekBarPace({
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  '${(kmPerHour.toStringAsFixed(2))} $unit/h',
+                  '${kmPerHour.toStringAsFixed(2)} $unit/h',
                   style: TextStyle(
                       color: Colors.grey,
                       fontFamily: 'roboto',
@@ -486,13 +486,13 @@ Widget rangeSeekBarPace({
 
 void dialog({
   required BuildContext context,
-  required String Title,
+  required String title,
   required String text,
   required String cancelButtonText,
   required String applyButtonText,
   required VoidCallback onApplyPressed,
 }) {
-  showDialog(
+  showDialog<dynamic>(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
@@ -504,12 +504,12 @@ void dialog({
               fontSize: 13.sp,
               fontWeight: FontWeight.normal),
         ),
-        actions: [
+        actions: <Widget>[
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
+            children: <Widget>[
+              SizedBox(
                 width: 100.0,
                 height: 50.0,
                 child: buttonNoIcon(
@@ -524,7 +524,7 @@ void dialog({
                   },
                 ),
               ),
-              Container(
+              SizedBox(
                 width: 100.0,
                 height: 50.0,
                 child: buttonNoIcon(
@@ -558,14 +558,14 @@ Widget seekBarWeekly({
   required Function(double value) onChanged,
 }) {
   return Column(
-    children: [
+    children: <Widget>[
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+          children: <Widget>[
             Row(
-              children: [
+              children: <Widget>[
                 Text(
                   title,
                   style: TextStyle(
@@ -580,7 +580,7 @@ Widget seekBarWeekly({
                     color: Colors.grey,
                   ),
                   onPressed: () {
-                    showDialog(
+                    showDialog<dynamic>(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
@@ -601,7 +601,7 @@ Widget seekBarWeekly({
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.normal),
                           ),
-                          actions: [
+                          actions: <Widget>[
                             Center(
                               child: Container(
                                 width: 80.0,
@@ -666,14 +666,14 @@ Widget rangeSeekBarWeekly({
   required RangeValues rangeValue,
 }) {
   return Column(
-    children: [
+    children: <Widget>[
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+          children: <Widget>[
             Row(
-              children: [
+              children: <Widget>[
                 Text(
                   title,
                   style: TextStyle(
@@ -688,7 +688,7 @@ Widget rangeSeekBarWeekly({
                     color: Colors.grey,
                   ),
                   onPressed: () {
-                    showDialog(
+                    showDialog<dynamic>(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
@@ -709,7 +709,7 @@ Widget rangeSeekBarWeekly({
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.normal),
                           ),
-                          actions: [
+                          actions: <Widget>[
                             Center(
                               child: Container(
                                 width: 80.0,
@@ -764,7 +764,7 @@ BoxDecoration get codeDecoration {
   return BoxDecoration(
     border: Border.all(color: Colors.grey.withAlpha(80), width: 0.5),
     color: Colors.white,
-    boxShadow: [
+    boxShadow: <BoxShadow>[
       BoxShadow(
         color: Colors.grey.withOpacity(0.2),
         spreadRadius: 1,
@@ -806,8 +806,8 @@ void battleCreated({
         return WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
-            contentPadding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-            insetPadding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+            contentPadding: EdgeInsets.zero,
+            insetPadding: EdgeInsets.zero,
             backgroundColor: Colors.white,
             content: Container(
               width: width,
@@ -822,7 +822,7 @@ void battleCreated({
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Container(
                     margin: EdgeInsets.only(
                       top: height * 0.24,
@@ -865,10 +865,10 @@ Widget _userCreatedBattleInfo({
   required String? userPhoto,
 }) {
   return RotationTransition(
-    turns: const AlwaysStoppedAnimation(-5 / 360),
-    child: Container(
+    turns: const AlwaysStoppedAnimation<double>(-5 / 360),
+    child: SizedBox(
       child: Column(
-        children: [
+        children: <Widget>[
           Container(
             height: height * 0.07,
             width: height * 0.07,
@@ -922,7 +922,7 @@ Widget cardItem(
     required String icon,
     required String title,
     required String value}) {
-  return Container(
+  return SizedBox(
     width: width / 2.5,
     child: FittedBox(
       alignment: Alignment.centerLeft,
@@ -937,7 +937,7 @@ Widget cardItem(
             borderRadius: const BorderRadius.all(Radius.circular(6))),
         child: Row(
           // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Image.asset(
               icon,
               height: height * 0.015,
@@ -976,30 +976,36 @@ Widget cardItem(
 
 Widget statusLabel(
     {required double width,
-    required String title,
-    required String icon,
-    required Color color}) {
+    required int statusCode,
+    required bool isBattleMainStatus}) {
   return Container(
-    width: width * 0.28,
-    height: width * 0.075,
+    width: width * (isBattleMainStatus ? 0.26 : 0.2),
+    height: width * 0.071,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(6),
-      color: color,
+      color: isBattleMainStatus
+          ? DataValues.battleStatusLabels[statusCode]!['color'] as Color
+          : DataValues.battleUserStatusLabel[statusCode]!['color'] as Color,
     ),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: <Widget>[
         Image.asset(
-          icon,
-          height: width * 0.06,
-          width: width * 0.06,
+          isBattleMainStatus
+              ? DataValues.battleStatusLabels[statusCode]!['icon'] as String
+              : DataValues.battleUserStatusLabel[statusCode]!['icon'] as String,
+          height: width * 0.05,
+          width: width * 0.05,
           fit: BoxFit.fill,
         ),
         const SizedBox(
-          width: 3.0,
+          width: 4.0,
         ),
         Text(
-          title,
+          isBattleMainStatus
+              ? DataValues.battleStatusLabels[statusCode]!['title'] as String
+              : DataValues.battleUserStatusLabel[statusCode]!['title']
+                  as String,
           style: TextStyle(
               color: Colors.black,
               fontSize: 12.sp,
@@ -1017,16 +1023,19 @@ Widget interactListItem({
   required double height,
   required String distance,
   required BattleRespondModel model,
-  required String opponentName,
+  required String? opponentName,
   required String? opponentPhoto,
   Function(String id)? onTapAccept,
   Function(String id, BattleRespondModel model)? onTapChange,
   Function(String id)? onTapDecline,
   required bool isNeedButtons,
-  required int statusNum,
+  bool isFinishedTab = false,
+  required int statusCodeNum,
+  int? myStatusCodeNum,
+  required double heightPercentage,
 }) {
   return Container(
-    height: height * (isNeedButtons ? 0.43 : 0.34),
+    height: height * heightPercentage,
     width: width,
     padding: EdgeInsets.all(width * 0.035),
     margin: EdgeInsets.symmetric(
@@ -1036,7 +1045,7 @@ Widget interactListItem({
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
       color: Colors.white,
-      boxShadow: [
+      boxShadow: <BoxShadow>[
         BoxShadow(
           color: Colors.grey.withOpacity(0.5),
           spreadRadius: 3,
@@ -1046,7 +1055,7 @@ Widget interactListItem({
       ],
     ),
     child: Column(
-      children: [
+      children: <Widget>[
         Text(
           model.battleName,
           style: TextStyle(
@@ -1061,16 +1070,26 @@ Widget interactListItem({
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.end,
-          children: [
+          children: <Widget>[
             statusLabel(
               width: width,
-              title: model.status == statusNum
-                  ? battleStatusTitles[statusNum]
-                  : battleStatusTitles[statusNum + 1],
-              color: const Color(0xffEDEDED),
-              icon: model.status == statusNum
-                  ? battleStatusIcons[statusNum]
-                  : battleStatusIcons[statusNum + 1],
+              isBattleMainStatus: true,
+              statusCode: statusCodeNum,
+            ),
+            Visibility(
+              visible: myStatusCodeNum != null && isFinishedTab,
+              child: Row(
+                children: <Widget>[
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  statusLabel(
+                    width: width,
+                    isBattleMainStatus: false,
+                    statusCode: myStatusCodeNum ?? 0,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -1078,7 +1097,7 @@ Widget interactListItem({
           height: height * 0.008,
         ),
         Row(
-          children: [
+          children: <Widget>[
             Container(
               height: height * 0.05,
               width: height * 0.05,
@@ -1107,7 +1126,7 @@ Widget interactListItem({
               width: 5.0,
             ),
             Text(
-              opponentName,
+              opponentName ?? 'Nickname',
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 14.sp,
@@ -1116,36 +1135,42 @@ Widget interactListItem({
             ),
           ],
         ),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: width,
-          height: height * 0.038,
-          margin: EdgeInsets.only(
-            left: height * 0.062,
-            bottom: height * 0.02,
-          ),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Text(
-              model.message ?? 'It will be a piece of cake!',
-              maxLines: 1,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12.sp,
-                  fontFamily: 'roboto',
-                  fontWeight: FontWeight.w600),
+        Visibility(
+          visible: !isFinishedTab,
+          child: Container(
+            alignment: Alignment.centerLeft,
+            width: width,
+            height: height * 0.038,
+            margin: EdgeInsets.only(
+              left: height * 0.062,
+              bottom: height * 0.02,
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Text(
+                model.message ?? 'It will be a piece of cake!',
+                maxLines: 1,
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12.sp,
+                    fontFamily: 'roboto',
+                    fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: cardItem(
-            height: height,
-            width: width + width * 0.7,
-            title: 'Time left',
-            icon: weeklyDistanceIcon,
-            value: model.timeLeft.toString(),
+        Visibility(
+          visible: !isFinishedTab,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: cardItem(
+              height: height,
+              width: width + width * 0.7,
+              title: 'Time left',
+              icon: weeklyDistanceIcon,
+              value: model.timeLeft.toString(),
+            ),
           ),
         ),
         SizedBox(
@@ -1176,7 +1201,7 @@ Widget interactListItem({
           visible: isNeedButtons,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               buttonNoIcon(
                 title: 'Accept',
                 color: const Color(0xffCFFFB1),
@@ -1212,6 +1237,31 @@ Widget interactListItem({
               ),
             ],
           ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget showEmptyListText({required double height, required double width}) {
+  return SizedBox(
+    height: height,
+    width: width,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Image.asset(
+          logo,
+          width: 100.h,
+          height: 100.h,
+        ),
+        Text(
+          'List is empty!',
+          style: TextStyle(
+              color: Colors.grey,
+              fontFamily: 'roboto',
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w500),
         ),
       ],
     ),

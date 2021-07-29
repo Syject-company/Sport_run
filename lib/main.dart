@@ -4,8 +4,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:one2one_run/presentation/connect_screen/user_info.dart';
-import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_page.dart';
 import 'package:one2one_run/presentation/home_screen/home_page.dart';
 import 'package:one2one_run/presentation/login_screen/login_page.dart';
 import 'package:one2one_run/presentation/password_screen/password_page.dart';
@@ -22,7 +20,7 @@ Future<void> _messageHandler(RemoteMessage message) async {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
+  SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]).then((_) async {
@@ -31,26 +29,37 @@ void main() {
     await Firebase.initializeApp();
     FirebaseMessaging.onBackgroundMessage(_messageHandler);
     await PreferenceUtils.init();
-    runApp(OneTwoOne());
+    runApp(const OneTwoOne());
   });
 }
 
 class OneTwoOne extends StatelessWidget {
+  const OneTwoOne({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       builder: () => MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: ThemeData.light().copyWith(
+          scrollbarTheme: const ScrollbarThemeData().copyWith(
+            thumbColor: MaterialStateProperty.all(Colors.redAccent),
+            radius: const Radius.circular(50.0),
+            thickness: MaterialStateProperty.all(2.2),
+          ),
+        ),
         title: 'One2OneApp',
-        routes: {
-          Constants.loginRoute: (context) => LoginPage(),
-          Constants.registerRoute: (context) => RegisterPage(),
-          Constants.runnersDataRoute: (context) => RunnerDataPage(),
-          Constants.homeRoute: (context) => HomePage(),
-          Constants.passwordRoute: (context) => PasswordPage(),
+        routes: <String, WidgetBuilder>{
+          Constants.loginRoute: (BuildContext context) => const LoginPage(),
+          Constants.registerRoute: (BuildContext context) =>
+              const RegisterPage(),
+          Constants.runnersDataRoute: (BuildContext context) =>
+              const RunnerDataPage(),
+          Constants.homeRoute: (BuildContext context) => const HomePage(),
+          Constants.passwordRoute: (BuildContext context) =>
+              const PasswordPage(),
         },
-        home: SplashScreen(),
-        // home: RegisterPage(),
+        home: const SplashScreen(),
       ),
     );
   }

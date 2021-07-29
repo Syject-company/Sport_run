@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
-import 'package:one2one_run/utils/enums.dart';
 
 abstract class HomeEvent extends Equatable {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class UpdateState extends HomeEvent {}
@@ -16,7 +15,7 @@ class NavigateToPage extends HomeEvent {
   final int pageIndex;
 
   @override
-  List<Object> get props => [pageIndex];
+  List<Object> get props => <Object>[pageIndex];
 }
 
 class UpdateUserData extends HomeEvent {}
@@ -27,7 +26,7 @@ class SwitchIsNeedFilter extends HomeEvent {
   final bool isNeedFilter;
 
   @override
-  List<Object> get props => [isNeedFilter];
+  List<Object> get props => <Object>[isNeedFilter];
 }
 
 class SelectTimesPerWeek extends HomeEvent {
@@ -36,7 +35,7 @@ class SelectTimesPerWeek extends HomeEvent {
   final int timesPerWeek;
 
   @override
-  List<Object> get props => [timesPerWeek];
+  List<Object> get props => <Object>[timesPerWeek];
 }
 
 class SelectConnectFilters extends HomeEvent {
@@ -51,7 +50,7 @@ class SelectConnectFilters extends HomeEvent {
   final int workoutsPerWeek;
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
         isFilterIncluded,
         paceFrom,
         paceTo,
@@ -67,7 +66,7 @@ class OpenBattleDrawer extends HomeEvent {
   final ConnectUsersModel userModel;
 
   @override
-  List<Object> get props => [userModel];
+  List<Object> get props => <Object>[userModel];
 }
 
 class OpenFilterDrawer extends HomeEvent {}
@@ -82,7 +81,7 @@ class SendMessageToOpponent extends HomeEvent {
   final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class SelectMessageToOpponent extends HomeEvent {
@@ -91,7 +90,7 @@ class SelectMessageToOpponent extends HomeEvent {
   final int messageIndex;
 
   @override
-  List<Object> get props => [messageIndex];
+  List<Object> get props => <Object>[messageIndex];
 }
 
 class CreateBattle extends HomeEvent {}
@@ -102,7 +101,7 @@ class OpenBattleOnNotificationDrawer extends HomeEvent {
   final BattleRespondModel model;
 
   @override
-  List<Object> get props => [model];
+  List<Object> get props => <Object>[model];
 }
 
 class OpenCloseNewConditionsBattleDrawer extends HomeEvent {}
@@ -113,7 +112,7 @@ class AcceptBattleOnNotification extends HomeEvent {
   final String battleId;
 
   @override
-  List<Object> get props => [battleId];
+  List<Object> get props => <Object>[battleId];
 }
 
 class ApplyBattleChanges extends HomeEvent {
@@ -122,7 +121,7 @@ class ApplyBattleChanges extends HomeEvent {
   final String battleId;
 
   @override
-  List<Object> get props => [battleId];
+  List<Object> get props => <Object>[battleId];
 }
 
 class OpenChangeBattleDrawer extends HomeEvent {
@@ -132,5 +131,5 @@ class OpenChangeBattleDrawer extends HomeEvent {
   final BattleRespondModel model;
 
   @override
-  List<Object> get props => [battleId, model];
+  List<Object> get props => <Object>[battleId, model];
 }

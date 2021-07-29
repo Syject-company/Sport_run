@@ -3,7 +3,7 @@ import 'package:one2one_run/data/models/runner_data_model.dart';
 
 abstract class RunnerDataEvents extends Equatable {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class UpdateState extends RunnerDataEvents {}
@@ -11,12 +11,12 @@ class UpdateState extends RunnerDataEvents {}
 class CheckFields extends RunnerDataEvents {}
 
 class SelectKmOrMile extends RunnerDataEvents {
-  SelectKmOrMile(this.isKM);
+   SelectKmOrMile(this.isKM);
 
   final bool isKM;
 
   @override
-  List<Object> get props => [isKM];
+  List<Object> get props => <Object>[isKM];
 }
 
 class SelectTimesPerWeek extends RunnerDataEvents {
@@ -25,7 +25,7 @@ class SelectTimesPerWeek extends RunnerDataEvents {
   final int timesPerWeek;
 
   @override
-  List<Object> get props => [timesPerWeek];
+  List<Object> get props => <Object>[timesPerWeek];
 }
 
 class NavigateToHome extends RunnerDataEvents {
@@ -34,5 +34,5 @@ class NavigateToHome extends RunnerDataEvents {
   final RunnerDataModel runnerDataModel;
 
   @override
-  List<Object> get props => [runnerDataModel];
+  List<Object> get props => <Object>[runnerDataModel];
 }
