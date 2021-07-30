@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class ChangeBattleConditionsModel {
 //<editor-fold desc="Data Methods" defaultstate="collapsed">
 
-  ChangeBattleConditionsModel({
+  const ChangeBattleConditionsModel({
     required this.dateTime,
     required this.distance,
   });
@@ -13,8 +16,8 @@ class ChangeBattleConditionsModel {
     );
   }
 
-  String dateTime;
-  num distance;
+  final String dateTime;
+  final num distance;
 
   ChangeBattleConditionsModel copyWith({
     String? dateTime,
@@ -44,7 +47,7 @@ class ChangeBattleConditionsModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'dateTime': dateTime,
       'distance': distance,
     } as Map<String, dynamic>;

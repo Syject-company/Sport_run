@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class CodeVerificationModel {
-  CodeVerificationModel({
+  const CodeVerificationModel({
     required this.email,
     required this.confirmationCode,
   });
@@ -11,8 +14,8 @@ class CodeVerificationModel {
     );
   }
 
-  String email;
-  String confirmationCode;
+  final String email;
+  final String confirmationCode;
 
   CodeVerificationModel copyWith({
     String? email,
@@ -42,7 +45,7 @@ class CodeVerificationModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'email': email,
       'confirmationCode': confirmationCode,
     } as Map<String, dynamic>;

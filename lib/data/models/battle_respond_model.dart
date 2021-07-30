@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class BattleRespondModel {
 //<editor-fold desc="Data Methods" defaultstate="collapsed">
 
-  BattleRespondModel({
+  const BattleRespondModel({
     required this.id,
     required this.battleName,
     required this.diff,
@@ -23,21 +26,21 @@ class BattleRespondModel {
       distance: map['distance'] as num,
       deadlineTime: map['deadlineTime'] as String,
       status: map['status'] as num,
-      battleUsers: map['battleUsers']
-          .map<BattleUsers>((e) => BattleUsers.fromJson(e))
-          .toList(),
+      battleUsers: (map['battleUsers'] as List<dynamic>).map<BattleUsers>(
+              (dynamic e) =>
+                  BattleUsers.fromJson(e as Map<String, dynamic>)).toList(),
     );
   }
 
-  String id;
-  String battleName;
-  num diff;
-  num distance;
-  String deadlineTime;
-  num status;
-  List<BattleUsers> battleUsers;
-  String? message;
-  String? timeLeft;
+  final String id;
+  final String battleName;
+  final num diff;
+  final num distance;
+  final String deadlineTime;
+  final num status;
+  final List<BattleUsers> battleUsers;
+  final String? message;
+  final String? timeLeft;
 
   BattleRespondModel copyWith({
     String? id,
@@ -57,7 +60,7 @@ class BattleRespondModel {
       deadlineTime: deadlineTime ?? this.deadlineTime,
       status: status ?? this.status,
       message: message ?? this.message,
-      timeLeft: timeLeft ?? this.timeLeft,
+      timeLeft: timeLeft ?? timeLeft,
       battleUsers: battleUsers ?? this.battleUsers,
     );
   }
@@ -96,7 +99,7 @@ class BattleRespondModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'id': id,
       'message': message,
       'timeLeft': timeLeft,
@@ -113,10 +116,11 @@ class BattleRespondModel {
 
 }
 
+@immutable
 class BattleUsers {
 //<editor-fold desc="Data Methods" defaultstate="collapsed">
 
-  BattleUsers({
+  const BattleUsers({
     required this.id,
     required this.time,
     required this.batlleStatus,
@@ -131,23 +135,25 @@ class BattleUsers {
     return BattleUsers(
       id: map['id'] as String,
       time: map['time'] as num,
-      batlleStatus: map['batlleStatus'] as num,
+      batlleStatus: map['batlleStatus'] as num?,
       resultIsConfirmed: map['resultIsConfirmed'] as bool,
       resultIsRejected: map['resultIsRejected'] as bool,
       isCreater: map['isCreater'] as bool,
-      photos: map['photos'] as List<dynamic>, //NOte: List<String>
-      applicationUser: ApplicationUser.fromJson(map['applicationUser']),
+      //NOte: List<String>
+      photos: map['photos'] as List<dynamic>,
+      applicationUser: ApplicationUser.fromJson(
+          map['applicationUser'] as Map<String, dynamic>),
     );
   }
 
-  String id;
-  num time;
-  num batlleStatus;
-  bool resultIsConfirmed;
-  bool resultIsRejected;
-  bool isCreater;
-  List<dynamic> photos;
-  ApplicationUser applicationUser;
+  final String id;
+  final num time;
+  final num? batlleStatus;
+  final bool resultIsConfirmed;
+  final bool resultIsRejected;
+  final bool isCreater;
+  final List<dynamic> photos;
+  final ApplicationUser applicationUser;
 
   BattleUsers copyWith({
     String? id,
@@ -203,7 +209,7 @@ class BattleUsers {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'id': id,
       'time': time,
       'batlleStatus': batlleStatus,
@@ -219,10 +225,11 @@ class BattleUsers {
 
 }
 
+@immutable
 class ApplicationUser {
 //<editor-fold desc="Data Methods" defaultstate="collapsed">
 
-  ApplicationUser({
+  const ApplicationUser({
     required this.id,
     required this.email,
     required this.nickName,
@@ -262,22 +269,22 @@ class ApplicationUser {
     );
   }
 
-  String id;
-  String email;
-  String nickName;
-  String description;
-  String moto;
-  bool isMetric;
-  num pace;
-  num weeklyDistance;
-  num rank;
-  num workoutsPerWeek;
-  num wins;
-  num loses;
-  num draws;
-  num discarded;
-  num score;
-  String? photoLink;
+  final String id;
+  final String email;
+  final String nickName;
+  final String description;
+  final String moto;
+  final bool isMetric;
+  final num pace;
+  final num weeklyDistance;
+  final num rank;
+  final num workoutsPerWeek;
+  final num wins;
+  final num loses;
+  final num draws;
+  final num discarded;
+  final num score;
+  final String? photoLink;
 
   ApplicationUser copyWith({
     String? id,
@@ -365,7 +372,7 @@ class ApplicationUser {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'id': id,
       'email': email,
       'nickName': nickName,

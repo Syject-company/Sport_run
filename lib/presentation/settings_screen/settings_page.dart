@@ -1,17 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/presentation/settings_screen/settings_bloc/bloc.dart'
     as settings_bloc;
-
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/presentation/settings_screen/settings_bloc/settings_bloc.dart';
 import 'package:one2one_run/presentation/settings_screen/settings_bloc/settings_state.dart';
 
 //NOte:'/settings'
 class SettingsPage extends StatefulWidget {
-  SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({Key? key}) : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -25,20 +23,21 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height -
+    final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
-    final width = MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
 
     return BlocProvider<SettingsBloc>(
-      create: (final context) => SettingsBloc(),
+      create: (final BuildContext context) => SettingsBloc(),
       child: BlocListener<SettingsBloc, SettingsState>(
-        listener: (final context, final state) async {
+        listener:
+            (final BuildContext context, final SettingsState state) async {
           if (state is StateUpdated) {}
           BlocProvider.of<SettingsBloc>(context)
               .add(settings_bloc.UpdateState());
         },
         child: BlocBuilder<SettingsBloc, SettingsState>(
-            builder: (final context, final state) {
+            builder: (final BuildContext context, final SettingsState state) {
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Container(

@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class RegisterResponseGoogleAppleModel {
-  RegisterResponseGoogleAppleModel({
+  const RegisterResponseGoogleAppleModel({
     required this.token,
     required this.id,
     required this.isRegistration,
@@ -13,9 +16,9 @@ class RegisterResponseGoogleAppleModel {
     );
   }
 
-  String token;
-  String id;
-  bool isRegistration;
+  final String token;
+  final String id;
+  final bool isRegistration;
 
   RegisterResponseGoogleAppleModel copyWith({
     String? token,
@@ -48,7 +51,7 @@ class RegisterResponseGoogleAppleModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'token': token,
       'id': id,
       'isRegistration': isRegistration,

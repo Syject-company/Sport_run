@@ -3,24 +3,24 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' show Response;
+import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/register_api.dart';
-import 'package:one2one_run/data/models/error_model.dart';
-import 'package:one2one_run/data/models/register_google_appple_model.dart';
 import 'package:one2one_run/data/models/access_user_model.dart';
 import 'package:one2one_run/data/models/access_user_response_model.dart';
+import 'package:one2one_run/data/models/register_google_appple_model.dart';
+import 'package:one2one_run/data/models/register_response_google_appple_model.dart';
 import 'package:one2one_run/presentation/register_screen/register_bloc/bloc.dart'
     as register_bloc;
-import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/presentation/register_screen/register_bloc/register_bloc.dart';
 import 'package:one2one_run/presentation/register_screen/register_bloc/register_state.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
-import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show EmailValidator;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -28,16 +28,17 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 //NOte:'/register'
 class RegisterPage extends StatefulWidget {
-  RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final continueController = RoundedLoadingButtonController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final RoundedLoadingButtonController continueController =
+      RoundedLoadingButtonController();
 
   String? emailError;
   String? passwordError;
@@ -56,8 +57,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -70,9 +71,10 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: BlocProvider<RegisterBloc>(
-          create: (final context) => RegisterBloc(),
+          create: (final BuildContext context) => RegisterBloc(),
           child: BlocListener<RegisterBloc, RegisterState>(
-            listener: (final context, final state) async {
+            listener:
+                (final BuildContext context, final RegisterState state) async {
               if (state is PassIsShownOrHidden) {
                 isSecureText = !isSecureText;
               } else if (state is NavigatedToRunnersData) {
@@ -81,22 +83,22 @@ class _RegisterPageState extends State<RegisterPage> {
                   email: emailController.text,
                   password: passwordController.text,
                 ))
-                    .then((value) async {
+                    .then((Response value) async {
                   if (value.statusCode == 200) {
                     await PreferenceUtils.setUserToken(
-                            AccessUserResponseModel.fromJson(
-                                    json.decode(value.body))
+                            AccessUserResponseModel.fromJson(json
+                                    .decode(value.body) as Map<String, dynamic>)
                                 .token)
-                        .then((value) async {
-                      await PreferenceUtils.setPageRout('Nickname').then(
-                          (value) => Navigator.of(context).pushReplacementNamed(
+                        .then((_) async {
+                      await PreferenceUtils.setPageRout('Nickname').then((_) =>
+                          Navigator.of(context).pushReplacementNamed(
                               Constants.runnersDataRoute));
                     });
                     continueController.success();
                   } else {
                     continueController.reset();
                     await Fluttertoast.showToast(
-                     //   msg: ErrorModel.fromJson(json.decode(value.body)).title.toString(),
+                        //   msg: ErrorModel.fromJson(json.decode(value.body)).title.toString(),
                         msg: value.body.toString(),
                         fontSize: 16.0,
                         gravity: ToastGravity.CENTER);
@@ -126,8 +128,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 register_bloc.UpdateState(),
               );
             },
-            child: BlocBuilder<RegisterBloc, RegisterState>(
-                builder: (final context, final state) {
+            child: BlocBuilder<RegisterBloc, RegisterState>(builder:
+                (final BuildContext context, final RegisterState state) {
               return SafeArea(
                 child: Container(
                   height: height,
@@ -136,7 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Column(
-                      children: [
+                      children: <Widget>[
                         Image.asset(
                           logo,
                           width: 204.w,
@@ -177,10 +179,10 @@ class _RegisterPageState extends State<RegisterPage> {
                           height: 25.h,
                         ),
                         Row(
-                          children: [
+                          children: <Widget>[
                             Checkbox(
                               value: isTermsAccepted,
-                              onChanged: (value) {
+                              onChanged: (_) {
                                 BlocProvider.of<RegisterBloc>(context)
                                     .add(register_bloc.AcceptTerms());
                               },
@@ -190,7 +192,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 BlocProvider.of<RegisterBloc>(context)
                                     .add(register_bloc.ShowOrHideTerms());
                               },
-                              child: Container(
+                              child: SizedBox(
                                 width: 250.w,
                                 child: Text(
                                   termsButtonText,
@@ -288,7 +290,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> saveToken(
       {required String? value, required BuildContext context}) async {
     if (value != null) {
-      await PreferenceUtils.setUserToken(value).then((value) {
+      await PreferenceUtils.setUserToken(value).then((_) {
         PreferenceUtils.setPageRout('Nickname');
         Navigator.of(context).pushReplacementNamed(Constants.runnersDataRoute);
       });
@@ -319,10 +321,10 @@ class _RegisterPageState extends State<RegisterPage> {
     required BuildContext context,
     required double height,
   }) {
-    showModalBottomSheet(
+    showModalBottomSheet<dynamic>(
         context: context,
         enableDrag: false,
-        builder: (builder) {
+        builder: (BuildContext builder) {
           return Container(
             color: Colors.white,
             height: height / 2,
@@ -331,7 +333,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
-                children: [
+                children: <Widget>[
                   Text(
                     'One2One Run',
                     style: TextStyle(
@@ -367,8 +369,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (!passwordController.text.isValidPasswordInput() ||
         passwordController.text.length < 7) {
-      passwordError =
-          'Min 7 chars and at least one lower case letter!';
+      passwordError = 'Min 7 chars and at least one lower case letter!';
     }
 
     if (passwordController.text.isEmpty) {
@@ -385,24 +386,24 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> signInWithGoogle({required BuildContext context}) async {
-    await _googleSignIn.signIn().then((result) {
-      result?.authentication.then((googleKey) async {
+    await _googleSignIn.signIn().then((GoogleSignInAccount? result) {
+      result?.authentication.then((GoogleSignInAuthentication googleKey) async {
         print(googleKey.accessToken);
         print(_googleSignIn.currentUser?.displayName);
-        final token = googleKey.accessToken;
+        final String? token = googleKey.accessToken;
         if (token != null) {
-          final userToken =
+          final RegisterResponseGoogleAppleModel? userToken =
               await registerApi.registerGoogle(RegisterGoogleAppleModel(
             accessToken: token,
           ));
 
           BlocProvider.of<RegisterBloc>(context)
-              .add(register_bloc.SignInGoogle(token: userToken?.token));
+              .add(register_bloc.SignInGoogle(token: userToken!.token));
         }
-      }).catchError((err) {
+      }).catchError((Object err) {
         print('inner error');
       });
-    }).catchError((err) async {
+    }).catchError((Object err) async {
       print('error occurred');
       await Fluttertoast.showToast(
           msg: 'Registration error',
@@ -413,21 +414,22 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<String?> signInWithApple({required BuildContext context}) async {
     await SignInWithApple.getAppleIDCredential(
-      scopes: [AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,],
-
-    ).then((value) async {
-      final token = value.identityToken;
+      scopes: <AppleIDAuthorizationScopes>[
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    ).then((AuthorizationCredentialAppleID value) async {
+      final String? token = value.identityToken;
       if (token != null) {
-        final userToken =
+        final RegisterResponseGoogleAppleModel? userToken =
             await registerApi.registerApple(RegisterGoogleAppleModel(
           accessToken: token,
         ));
 
         BlocProvider.of<RegisterBloc>(context)
-            .add(register_bloc.SignInApple(token: userToken?.token));
+            .add(register_bloc.SignInApple(token: userToken!.token));
       }
-    }).catchError((err) async {
+    }).catchError((Object err) async {
       await Fluttertoast.showToast(
           msg: 'Registration error',
           fontSize: 16.0,

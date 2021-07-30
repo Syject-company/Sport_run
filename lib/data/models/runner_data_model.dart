@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class RunnerDataModel {
-  RunnerDataModel({
+  const RunnerDataModel({
     required this.nickName,
     required this.isMetric,
     required this.pace,
@@ -17,11 +20,11 @@ class RunnerDataModel {
     );
   }
 
-  String nickName;
-  bool isMetric;
-  double pace;
-  double weeklyDistance;
-  int workoutsPerWeek;
+  final String nickName;
+  final bool isMetric;
+  final double pace;
+  final double weeklyDistance;
+  final int workoutsPerWeek;
 
   RunnerDataModel copyWith({
     String? nickName,
@@ -65,7 +68,7 @@ class RunnerDataModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'nickName': nickName,
       'isMetric': isMetric,
       'pace': pace,

@@ -1,13 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
-import 'package:one2one_run/utils/enums.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class HomeInitial extends HomeState {}
@@ -15,37 +14,42 @@ class HomeInitial extends HomeState {}
 class StateUpdated extends HomeState {}
 
 class NavigatedToPage extends HomeState {
-  NavigatedToPage({required this.pageIndex});
+  const NavigatedToPage({required this.pageIndex});
 
   final int pageIndex;
 
   @override
-  List<Object> get props => [pageIndex];
+  List<Object> get props => <Object>[pageIndex];
 }
 
 class UserDataUpdated extends HomeState {}
 
 class SwitchedIsNeedFilter extends HomeState {
-  SwitchedIsNeedFilter({required this.isNeedFilter});
+  const SwitchedIsNeedFilter({required this.isNeedFilter});
 
   final bool isNeedFilter;
 
   @override
-  List<Object> get props => [isNeedFilter];
+  List<Object> get props => <Object>[isNeedFilter];
 }
 
 class TimesPerWeekIsSelected extends HomeState {
-  TimesPerWeekIsSelected(this.timesPerWeek);
+  const TimesPerWeekIsSelected(this.timesPerWeek);
 
   final int timesPerWeek;
 
   @override
-  List<Object> get props => [timesPerWeek];
+  List<Object> get props => <Object>[timesPerWeek];
 }
 
 class SelectedConnectFilters extends HomeState {
-  SelectedConnectFilters(this.isFilterIncluded, this.paceFrom, this.paceTo,
-      this.weeklyDistanceFrom, this.weeklyDistanceTo, this.workoutsPerWeek);
+  const SelectedConnectFilters(
+      this.isFilterIncluded,
+      this.paceFrom,
+      this.paceTo,
+      this.weeklyDistanceFrom,
+      this.weeklyDistanceTo,
+      this.workoutsPerWeek);
 
   final bool isFilterIncluded;
   final double paceFrom;
@@ -55,7 +59,7 @@ class SelectedConnectFilters extends HomeState {
   final int workoutsPerWeek;
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
         isFilterIncluded,
         paceFrom,
         paceTo,
@@ -66,12 +70,12 @@ class SelectedConnectFilters extends HomeState {
 }
 
 class BattleDrawerIsOpen extends HomeState {
-  BattleDrawerIsOpen(this.userModel);
+  const BattleDrawerIsOpen(this.userModel);
 
   final ConnectUsersModel userModel;
 
   @override
-  List<Object> get props => [userModel];
+  List<Object> get props => <Object>[userModel];
 }
 
 class FilterDrawerIsOpen extends HomeState {}
@@ -81,59 +85,60 @@ class GotDatePicker extends HomeState {}
 class MessageDrawerIsOpenOrClose extends HomeState {}
 
 class MessageToOpponentDrawerIsSent extends HomeState {
-  MessageToOpponentDrawerIsSent(this.message);
+  const MessageToOpponentDrawerIsSent(this.message);
 
   final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class SelectedMessageToOpponent extends HomeState {
-  SelectedMessageToOpponent(this.messageIndex);
+  const SelectedMessageToOpponent(this.messageIndex);
 
   final int messageIndex;
 
   @override
-  List<Object> get props => [messageIndex];
+  List<Object> get props => <Object>[messageIndex];
 }
+
 class BattleCreated extends HomeState {}
 
 class BattleOnNotificationDrawerIsOpen extends HomeState {
-  BattleOnNotificationDrawerIsOpen(this.model);
+  const BattleOnNotificationDrawerIsOpen(this.model);
 
   final BattleRespondModel model;
 
   @override
-  List<Object> get props => [model];
+  List<Object> get props => <Object>[model];
 }
 
 class NewConditionsBattleDrawerIsOpenClose extends HomeState {}
 
 class BattleOnNotificationIsAccepted extends HomeState {
-  BattleOnNotificationIsAccepted(this.battleId);
+  const BattleOnNotificationIsAccepted(this.battleId);
 
   final String battleId;
 
   @override
-  List<Object> get props => [battleId];
+  List<Object> get props => <Object>[battleId];
 }
 
 class ApplyBattleIsChanged extends HomeState {
-  ApplyBattleIsChanged(this.battleId);
+  const ApplyBattleIsChanged(this.battleId);
 
   final String battleId;
 
   @override
-  List<Object> get props => [battleId];
+  List<Object> get props => <Object>[battleId];
 }
 
 class ChangeBattleDrawerIsOpened extends HomeState {
-  ChangeBattleDrawerIsOpened(this.battleId, this.model);
+  const ChangeBattleDrawerIsOpened(this.battleId, this.model);
 
   final String battleId;
   final BattleRespondModel model;
 
   @override
-  List<Object> get props => [battleId, model];
+  List<Object> get props => <Object>[battleId, model];
 }

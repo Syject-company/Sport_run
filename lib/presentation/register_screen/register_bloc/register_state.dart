@@ -4,7 +4,7 @@ abstract class RegisterState extends Equatable {
   const RegisterState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class RegisterInitial extends RegisterState {}
@@ -20,19 +20,21 @@ class NavigatedToSignIn extends RegisterState {}
 class TermsIsAccepted extends RegisterState {}
 
 class SignInedGoogle extends RegisterState {
-  SignInedGoogle({required this.token});
-  final token;
+  const SignInedGoogle({required this.token});
+
+  final String token;
 
   @override
-  List<Object> get props => [token];
+  List<Object> get props => <Object>[token];
 }
 
 class SignInedApple extends RegisterState {
-  SignInedApple({required this.token});
-  final token;
+  const SignInedApple({required this.token});
+
+  final String token;
 
   @override
-  List<Object> get props => [token];
+  List<Object> get props => <Object>[token];
 }
 
 class TermsIsShownOrHidden extends RegisterState {}

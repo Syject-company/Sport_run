@@ -3,7 +3,7 @@ import 'package:one2one_run/data/models/connect_users_model.dart';
 
 abstract class ConnectEvent extends Equatable {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class UpdateState extends ConnectEvent {}
@@ -14,5 +14,5 @@ class NavigateToUserInfo extends ConnectEvent {
   final ConnectUsersModel userModel;
 
   @override
-  List<Object> get props => [userModel];
+  List<Object> get props => <Object>[userModel];
 }

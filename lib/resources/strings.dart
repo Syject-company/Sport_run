@@ -1,4 +1,4 @@
-import 'package:one2one_run/resources/images.dart';
+
 
 String get termsText =>
     'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown'
@@ -52,23 +52,3 @@ List<String> get messagesToOpponent => [
       'I’m going to make us so proud. Let’s share a run together!',
       'Positivity is a choice. Let’s share a run together!',
     ];
-
-List<String> get battleStatusTitles => [
-      'Proposed',
-      'Negotiate',
-      'Accepted',
-      'Deadline',
-      'Declined',
-      'Discarded',
-      'Finished',
-    ];
-
-List<String> get battleStatusIcons => [
-      proposedIcon,
-      negotiateIcon,
-      acceptedIcon,
-      deadlineIcon,
-      declinedIcon,
-      discardedIcon,
-      finishedIcon,
-];

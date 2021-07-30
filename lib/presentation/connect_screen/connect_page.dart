@@ -3,20 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/components/widgets.dart';
-import 'package:one2one_run/data/apis/connect_api.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/bloc.dart'
     as connect_bloc;
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_bloc.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_state.dart';
 import 'package:one2one_run/presentation/connect_screen/user_info.dart';
-import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:one2one_run/utils/constants.dart';
 
 //NOte:'/connect'
 class ConnectPage extends StatefulWidget {
-  ConnectPage({Key? key, required this.users, required this.onBattleTap})
+  const ConnectPage({Key? key, required this.users, required this.onBattleTap})
       : super(key: key);
 
   final List<ConnectUsersModel> users;
@@ -27,8 +24,6 @@ class ConnectPage extends StatefulWidget {
 }
 
 class _ConnectPageState extends State<ConnectPage> {
-  final _connectApi = ConnectApi();
-
   @override
   void initState() {
     super.initState();
@@ -36,21 +31,21 @@ class _ConnectPageState extends State<ConnectPage> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height -
+    final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
-    final width = MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
 
     return BlocProvider<ConnectBloc>(
-      create: (final context) => ConnectBloc(),
+      create: (final BuildContext context) => ConnectBloc(),
       child: BlocListener<ConnectBloc, ConnectState>(
-        listener: (final context, final state) async {
+        listener: (final BuildContext context, final ConnectState state) async {
           if (state is NavigatedToUserInfo) {
-            await Navigator.push(
+            await Navigator.push<dynamic>(
               context,
-              MaterialPageRoute(
+              MaterialPageRoute<dynamic>(
                   builder: (_) => UserInfo(
                         userModel: state.userModel,
-                        onBattleTap: (userModel) {
+                        onBattleTap: (ConnectUsersModel userModel) {
                           Navigator.of(context).pop();
                           widget.onBattleTap(
                             userModel,
@@ -62,21 +57,24 @@ class _ConnectPageState extends State<ConnectPage> {
           BlocProvider.of<ConnectBloc>(context).add(connect_bloc.UpdateState());
         },
         child: BlocBuilder<ConnectBloc, ConnectState>(
-            builder: (final context, final state) {
+            builder: (final BuildContext context, final ConnectState state) {
           return Scaffold(
             body: Container(
               width: width,
               height: height,
               color: Colors.white,
-              child: ListView.builder(
-                  itemCount: widget.users.length,
-                  itemBuilder: (BuildContext con, int index) {
-                    return _userCard(
-                        context: context,
-                        width: width,
-                        height: height,
-                        model: widget.users[index]);
-                  }),
+              child: Scrollbar(
+                child: ListView.builder(
+                    itemCount: widget.users.length,
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (BuildContext con, int index) {
+                      return _userCard(
+                          context: context,
+                          width: width,
+                          height: height,
+                          model: widget.users[index]);
+                    }),
+              ),
             ),
           );
         }),
@@ -97,7 +95,7 @@ class _ConnectPageState extends State<ConnectPage> {
         color: Colors.transparent,
         child: Stack(
           fit: StackFit.expand,
-          children: [
+          children: <Widget>[
             GestureDetector(
               onTap: () {
                 BlocProvider.of<ConnectBloc>(context)
@@ -113,7 +111,7 @@ class _ConnectPageState extends State<ConnectPage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,
-                  boxShadow: [
+                  boxShadow: <BoxShadow>[
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 3,
@@ -123,7 +121,7 @@ class _ConnectPageState extends State<ConnectPage> {
                   ],
                 ),
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     Container(
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.only(
@@ -158,7 +156,7 @@ class _ConnectPageState extends State<ConnectPage> {
                       height: height * 0.02,
                     ),
                     Row(
-                      children: [
+                      children: <Widget>[
                         SizedBox(
                           width: height * 0.03,
                         ),
@@ -210,7 +208,7 @@ class _ConnectPageState extends State<ConnectPage> {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
+                      children: <Widget>[
                         _userWonLoss(
                             title: 'Won',
                             value: '${model.wins}',
@@ -250,7 +248,7 @@ class _ConnectPageState extends State<ConnectPage> {
               top: 5,
               left: width * 0.07,
               child: Column(
-                children: [
+                children: <Widget>[
                   SizedBox(
                     height: height * 0.1,
                     width: height * 0.1,
@@ -268,7 +266,7 @@ class _ConnectPageState extends State<ConnectPage> {
                     height: 5.0,
                   ),
                   Row(
-                    children: [
+                    children: <Widget>[
                       Image.asset(
                         rankIcon,
                         height: height * 0.015,
@@ -303,7 +301,7 @@ class _ConnectPageState extends State<ConnectPage> {
       required String value,
       Color colorValue = Colors.black}) {
     return Row(
-      children: [
+      children: <Widget>[
         Text(
           title,
           textAlign: TextAlign.start,

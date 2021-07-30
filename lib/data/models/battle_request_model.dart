@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class BattleRequestModel {
 //<editor-fold desc="Data Methods" defaultstate="collapsed">
 
-  BattleRequestModel({
+  const BattleRequestModel({
     required this.dateTime,
     required this.distance,
     required this.opponentId,
@@ -19,11 +22,11 @@ class BattleRequestModel {
     );
   }
 
-  String dateTime;
-  num distance;
-  String opponentId;
-  String message;
-  String? battleName;
+  final String dateTime;
+  final num distance;
+  final String opponentId;
+  final String message;
+  final String? battleName;
 
   BattleRequestModel copyWith({
     String? dateTime,
@@ -67,7 +70,7 @@ class BattleRequestModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'dateTime': dateTime,
       'distance': distance,
       'opponentId': opponentId,

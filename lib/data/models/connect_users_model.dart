@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class ConnectUsersModel {
-  ConnectUsersModel({
+  const ConnectUsersModel({
     required this.id,
     required this.email,
     required this.nickName,
@@ -39,22 +42,22 @@ class ConnectUsersModel {
     );
   }
 
-  String id;
-  String? email;
-  String? nickName;
-  String? description;
-  String? moto;
-  String? photoLink;
-  bool isMetric;
-  num pace;
-  num weeklyDistance;
-  num rank;
-  num workoutsPerWeek;
-  num wins;
-  num loses;
-  num draws;
-  num discarded;
-  num score;
+  final String id;
+  final String? email;
+  final String? nickName;
+  final String? description;
+  final String? moto;
+  final String? photoLink;
+  final bool isMetric;
+  final num pace;
+  final num weeklyDistance;
+  final num rank;
+  final num workoutsPerWeek;
+  final num wins;
+  final num loses;
+  final num draws;
+  final num discarded;
+  final num score;
 
   ConnectUsersModel copyWith({
     String? id,
@@ -142,7 +145,7 @@ class ConnectUsersModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'id': id,
       'email': email,
       'nickName': nickName,

@@ -4,7 +4,7 @@ abstract class LoginState extends Equatable {
   const LoginState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class LoginInitial extends LoginState {}
@@ -20,21 +20,21 @@ class NavigatedToRegister extends LoginState {}
 class NavigatedToForgotPassword extends LoginState {}
 
 class SignInedGoogle extends LoginState {
-  SignInedGoogle({required this.token});
+  const SignInedGoogle({required this.token});
 
-  final token;
+  final String token;
 
   @override
-  List<Object> get props => [token];
+  List<Object> get props => <Object>[token];
 }
 
 class SignInedApple extends LoginState {
-  SignInedApple({required this.token});
+  const SignInedApple({required this.token});
 
-  final token;
+  final String token;
 
   @override
-  List<Object> get props => [token];
+  List<Object> get props => <Object>[token];
 }
 
 class FieldsChecked extends LoginState {}

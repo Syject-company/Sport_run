@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/utils/constants.dart';
@@ -15,12 +16,13 @@ class ConnectApi {
     required double? weeklyDistanceTo,
     required int? workoutsPerWeek,
   }) async {
-    final token = PreferenceUtils.getUserToken();
+    final String token = PreferenceUtils.getUserToken();
 
-    final url = '${Constants.domain}${Constants.connectUrl}$isFilterIncluded';
+    final String url =
+        '${Constants.domain}${Constants.connectUrl}$isFilterIncluded';
 
     //NOTE: queryParameters should be strings, otherwise error when parse
-    final queryParameters = {
+    final Map<String, String> queryParameters = <String, String>{
       'PaceFrom': paceFrom.toString(),
       'PaceTo': paceTo.toString(),
       'WeeklyDistanceFrom': weeklyDistanceFrom.toString(),
@@ -28,23 +30,23 @@ class ConnectApi {
       'WorkoutsPerWeek': workoutsPerWeek.toString(),
     };
 
-    final uri = isFilterIncluded
+    final Uri uri = isFilterIncluded
         ? Uri.parse(url).replace(queryParameters: queryParameters)
         : Uri.parse(url);
 
-    final res = await get(
+    final Response res = await get(
       uri,
-      headers: {
+      headers: <String, String>{
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: token,
       },
     );
-
+    //  List<Map<String, dynamic>>
     if (res.statusCode == 200) {
-      return json
-          .decode(res.body)
-          .map<ConnectUsersModel>((model) => ConnectUsersModel.fromJson(model))
-          .toList();
+      return (json.decode(res.body) as List<dynamic>)
+          .map<ConnectUsersModel>((dynamic model) {
+        return ConnectUsersModel.fromJson(model as Map<String, dynamic>);
+      }).toList();
     }
     return null;
   }

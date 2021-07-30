@@ -5,7 +5,7 @@ abstract class RunnerDataState extends Equatable {
   const RunnerDataState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class RunnerDataInitial extends RunnerDataState {}
@@ -15,28 +15,28 @@ class StateUpdated extends RunnerDataState {}
 class FieldsChecked extends RunnerDataState {}
 
 class KmOrMileIsSelected extends RunnerDataState {
-  KmOrMileIsSelected(this.isKM);
+  const KmOrMileIsSelected(this.isKM);
 
   final bool isKM;
 
   @override
-  List<Object> get props => [isKM];
+  List<Object> get props => <Object>[isKM];
 }
 
 class TimesPerWeekIsSelected extends RunnerDataState {
-  TimesPerWeekIsSelected(this.timesPerWeek);
+  const TimesPerWeekIsSelected(this.timesPerWeek);
 
   final int timesPerWeek;
 
   @override
-  List<Object> get props => [timesPerWeek];
+  List<Object> get props => <Object>[timesPerWeek];
 }
 
 class ToHomeIsNavigated extends RunnerDataState {
-  ToHomeIsNavigated(this.runnerDataModel);
+  const ToHomeIsNavigated(this.runnerDataModel);
 
   final RunnerDataModel runnerDataModel;
 
   @override
-  List<Object> get props => [runnerDataModel];
+  List<Object> get props => <Object>[runnerDataModel];
 }

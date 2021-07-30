@@ -3,39 +3,42 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' show Response;
 import 'package:one2one_run/components/widgets.dart';
+import 'package:one2one_run/data/apis/login_api.dart';
 import 'package:one2one_run/data/models/access_user_model.dart';
 import 'package:one2one_run/data/models/access_user_response_model.dart';
 import 'package:one2one_run/data/models/error_model.dart';
 import 'package:one2one_run/data/models/register_google_appple_model.dart';
+import 'package:one2one_run/data/models/register_response_google_appple_model.dart';
+import 'package:one2one_run/presentation/login_screen/login_bloc/bloc.dart'
+    as login_bloc;
 import 'package:one2one_run/presentation/login_screen/login_bloc/login_bloc.dart';
 import 'package:one2one_run/presentation/login_screen/login_bloc/login_state.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/utils/extension.dart' show EmailValidator;
-import 'package:one2one_run/presentation/login_screen/login_bloc/bloc.dart'
-    as login_bloc;
-import 'package:one2one_run/data/apis/login_api.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:one2one_run/utils/extension.dart' show EmailValidator;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 //NOte:'/login'
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final signInController = RoundedLoadingButtonController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final RoundedLoadingButtonController signInController =
+      RoundedLoadingButtonController();
 
   String? emailError;
   String? passwordError;
@@ -52,8 +55,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -66,9 +69,10 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: BlocProvider<LoginBloc>(
-          create: (final context) => LoginBloc(),
+          create: (final BuildContext context) => LoginBloc(),
           child: BlocListener<LoginBloc, LoginState>(
-            listener: (final context, final state) async {
+            listener:
+                (final BuildContext context, final LoginState state) async {
               if (state is PassIsShownOrHidden) {
                 isSecureText = !isSecureText;
               } else if (state is NavigatedToHome) {
@@ -77,22 +81,23 @@ class _LoginPageState extends State<LoginPage> {
                   email: emailController.text,
                   password: passwordController.text,
                 ))
-                    .then((value) async {
+                    .then((Response value) async {
                   if (value.statusCode == 200) {
                     await PreferenceUtils.setUserToken(
-                            AccessUserResponseModel.fromJson(
-                                    json.decode(value.body))
+                            AccessUserResponseModel.fromJson(json
+                                    .decode(value.body) as Map<String, dynamic>)
                                 .token)
-                        .then((value) async {
+                        .then((_) async {
                       signInController.success();
                       await PreferenceUtils.setIsUserAuthenticated(true).then(
-                          (value) => Navigator.of(context)
+                          (_) => Navigator.of(context)
                               .pushReplacementNamed(Constants.homeRoute));
                     });
                   } else {
                     signInController.reset();
                     await Fluttertoast.showToast(
-                        msg: ErrorModel.fromJson(json.decode(value.body))
+                        msg: ErrorModel.fromJson(
+                                json.decode(value.body) as Map<String, dynamic>)
                             .title
                             .toString(),
                         fontSize: 16.0,
@@ -104,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                     .pushReplacementNamed(Constants.registerRoute);
               } else if (state is NavigatedToForgotPassword) {
                 await Navigator.of(context).pushNamed(Constants.passwordRoute,
-                    arguments: {'title': 'Forgot password'});
+                    arguments: <String, String>{'title': 'Forgot password'});
               } else if (state is SignInedGoogle) {
                 await saveToken(value: state.token, context: context);
               } else if (state is SignInedApple) {
@@ -122,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
               );
             },
             child: BlocBuilder<LoginBloc, LoginState>(
-                builder: (final context, final state) {
+                builder: (final BuildContext context, final LoginState state) {
               return SafeArea(
                 child: Container(
                   height: height,
@@ -131,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Column(
-                      children: [
+                      children: <Widget>[
                         Image.asset(
                           logo,
                           width: 204.w,
@@ -281,7 +286,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> saveToken(
       {required String? value, required BuildContext context}) async {
     if (value != null) {
-      await PreferenceUtils.setUserToken(value).then((value) {
+      await PreferenceUtils.setUserToken(value).then((_) {
         PreferenceUtils.setIsUserAuthenticated(true);
         Navigator.of(context).pushReplacementNamed(Constants.homeRoute);
       });
@@ -310,24 +315,24 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> signInWithGoogle({required BuildContext context}) async {
-    await _googleSignIn.signIn().then((result) {
-      result?.authentication.then((googleKey) async {
+    await _googleSignIn.signIn().then((GoogleSignInAccount? result) {
+      result?.authentication.then((GoogleSignInAuthentication googleKey) async {
         print(googleKey.accessToken);
         print(_googleSignIn.currentUser?.displayName);
-        final token = googleKey.accessToken;
+        final String? token = googleKey.accessToken;
         if (token != null) {
-          final userToken =
+          final RegisterResponseGoogleAppleModel? userToken =
               await loginApi.registerGoogle(RegisterGoogleAppleModel(
             accessToken: token,
           ));
 
           BlocProvider.of<LoginBloc>(context)
-              .add(login_bloc.SignInGoogle(token: userToken?.token));
+              .add(login_bloc.SignInGoogle(token: userToken!.token));
         }
-      }).catchError((err) {
+      }).catchError((Object err) {
         print('inner error');
       });
-    }).catchError((err) async {
+    }).catchError((Object err) async {
       print('error occurred');
       await Fluttertoast.showToast(
           msg: 'Registration error',
@@ -338,18 +343,19 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<String?> signInWithApple({required BuildContext context}) async {
     await SignInWithApple.getAppleIDCredential(
-      scopes: [],
-    ).then((value) async {
-      final token = value.identityToken;
+      scopes: <AppleIDAuthorizationScopes>[],
+    ).then((AuthorizationCredentialAppleID value) async {
+      final String? token = value.identityToken;
       if (token != null) {
-        final userToken = await loginApi.registerApple(RegisterGoogleAppleModel(
+        final RegisterResponseGoogleAppleModel? userToken =
+            await loginApi.registerApple(RegisterGoogleAppleModel(
           accessToken: token,
         ));
 
         BlocProvider.of<LoginBloc>(context)
-            .add(login_bloc.SignInApple(token: userToken?.token));
+            .add(login_bloc.SignInApple(token: userToken!.token));
       }
-    }).catchError((err) async {
+    }).catchError((Object err) async {
       await Fluttertoast.showToast(
           msg: 'Registration error',
           fontSize: 16.0,

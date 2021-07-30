@@ -1,17 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/presentation/enjoy_screen/enjoy_bloc/bloc.dart'
     as enjoy_bloc;
-
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/presentation/enjoy_screen/enjoy_bloc/enjoy_bloc.dart';
 import 'package:one2one_run/presentation/enjoy_screen/enjoy_bloc/enjoy_state.dart';
 
 //NOte:'/enjoy'
 class EnjoyPage extends StatefulWidget {
-  EnjoyPage({Key? key}) : super(key: key);
+  const EnjoyPage({Key? key}) : super(key: key);
 
   @override
   _EnjoyPageState createState() => _EnjoyPageState();
@@ -25,19 +23,19 @@ class _EnjoyPageState extends State<EnjoyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height -
+    final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
-    final width = MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
 
     return BlocProvider<EnjoyBloc>(
-      create: (final context) => EnjoyBloc(),
+      create: (final BuildContext context) => EnjoyBloc(),
       child: BlocListener<EnjoyBloc, EnjoyState>(
-        listener: (final context, final state) async {
+        listener: (final BuildContext context, final EnjoyState state) async {
           if (state is StateUpdated) {}
           BlocProvider.of<EnjoyBloc>(context).add(enjoy_bloc.UpdateState());
         },
         child: BlocBuilder<EnjoyBloc, EnjoyState>(
-            builder: (final context, final state) {
+            builder: (final BuildContext context, final EnjoyState state) {
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Container(

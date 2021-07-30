@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/home_api.dart';
 import 'package:one2one_run/data/models/user_model.dart';
@@ -13,13 +12,14 @@ import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/e
 import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/edit_profile_state.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/strings.dart';
+import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 
 //NOte:'/editProfile'
 class EditProfilePage extends StatefulWidget {
-  EditProfilePage({Key? key, this.userModel, required this.userDataListener})
+  const EditProfilePage(
+      {Key? key, this.userModel, required this.userDataListener})
       : super(key: key);
 
   final UserModel? userModel;
@@ -30,13 +30,14 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  final _mottoController = TextEditingController();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _bioController = TextEditingController();
-  final _saveController = RoundedLoadingButtonController();
+  final TextEditingController _mottoController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  final RoundedLoadingButtonController _saveController =
+      RoundedLoadingButtonController();
 
-  final _homeApi = HomeApi();
+  final HomeApi _homeApi = HomeApi();
 
   int _countOfRuns = 1;
 
@@ -53,14 +54,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
 
     return SafeArea(
       child: BlocProvider<EditProfileBloc>(
-        create: (final context) => EditProfileBloc(),
+        create: (final BuildContext context) => EditProfileBloc(),
         child: BlocListener<EditProfileBloc, EditProfileState>(
-          listener: (final context, final state) async {
+          listener:
+              (final BuildContext context, final EditProfileState state) async {
             if (state is KmOrMileIsSelected) {
               _isKM = state.isKM;
               await PreferenceUtils.setIsUserUnitInKM(_isKM);
@@ -71,7 +73,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             } else if (state is TimesPerWeekIsSelected) {
               _countOfRuns = state.timesPerWeek;
             } else if (state is UserDataSaved) {
-              final model = UserProfileRequestModel(
+              final UserProfileRequestModel model = UserProfileRequestModel(
                 moto: _mottoController.text,
                 nickName: _nameController.text,
                 pace: _currentPaceValue / 60,
@@ -84,7 +86,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 workoutsPerWeek: _countOfRuns,
                 description: _bioController.text,
               );
-              await _homeApi.saveUserModel(model: model).then((value) async {
+              await _homeApi
+                  .saveUserModel(model: model)
+                  .then((bool value) async {
                 if (value) {
                   _saveController.success();
                   widget.userDataListener();
@@ -98,8 +102,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             BlocProvider.of<EditProfileBloc>(context)
                 .add(edit_profile_bloc.UpdateState());
           },
-          child: BlocBuilder<EditProfileBloc, EditProfileState>(
-              builder: (final context, final state) {
+          child: BlocBuilder<EditProfileBloc, EditProfileState>(builder:
+              (final BuildContext context, final EditProfileState state) {
             return Scaffold(
               body: Container(
                 width: width,
@@ -109,7 +113,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Column(
-                    children: [
+                    children: <Widget>[
                       const SizedBox(
                         height: 10.0,
                       ),
@@ -250,7 +254,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       required double height,
       required double width}) {
     return Column(
-      children: [
+      children: <Widget>[
         seekBarPace(
           title: 'Pace',
           context: context,
@@ -262,7 +266,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           minValue: (_isKM ? 2 : 3) * 60,
           maxValue: (_isKM ? 11 : 18) * 60,
           sliderValue: _currentPaceValue.toDouble(),
-          onChanged: (value) {
+          onChanged: (double value) {
             setState(() {
               _currentPaceValue = value;
             });
@@ -278,7 +282,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           minValue: _isKM ? 4 : 2.5,
           maxValue: _isKM ? 150 : 94,
           sliderValue: _currentWeeklyDistanceValue.toDouble(),
-          onChanged: (value) {
+          onChanged: (double value) {
             setState(() {
               _currentWeeklyDistanceValue = value;
             });
@@ -306,7 +310,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               buttonNoIcon(
                 title: 'KM',
                 color: _isKM ? redColor : grayColor,
@@ -354,7 +358,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               buttonNoIcon(
                 title: '-',
                 color: grayColor,
@@ -369,12 +373,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   }
                 },
               ),
-              Container(
+              SizedBox(
                 width: 80.w,
                 height: 50.h,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: <Widget>[
                     Text(
                       _countOfRuns.toString(),
                       textAlign: TextAlign.center,
@@ -426,7 +430,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _emailController.text = data.email ?? 'email@gmail.com';
     _bioController.text = data.description ?? 'Here will be your Biography.';
     _isKM = data.isMetric;
-    _currentPaceValue = (data.pace.toDouble() * 60);
+    _currentPaceValue = data.pace.toDouble() * 60;
     _currentWeeklyDistanceValue = data.weeklyDistance.toDouble();
     _countOfRuns = data.workoutsPerWeek.toInt();
   }

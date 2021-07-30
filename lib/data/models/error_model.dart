@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class ErrorModel {
-  ErrorModel({
+  const ErrorModel({
     required this.type,
     required this.title,
   });
@@ -11,8 +14,8 @@ class ErrorModel {
     );
   }
 
-  String? type;
-  String? title;
+  final String? type;
+  final String? title;
 
   ErrorModel copyWith({
     String? type,
@@ -42,7 +45,7 @@ class ErrorModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'type': type,
       'title': title,
     } as Map<String, dynamic>;

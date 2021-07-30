@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class AccessUserResponseModel {
-  AccessUserResponseModel({
+  const AccessUserResponseModel({
     required this.token,
     required this.id,
   });
@@ -11,8 +14,8 @@ class AccessUserResponseModel {
     );
   }
 
-  String token;
-  String id;
+  final String token;
+  final String id;
 
   AccessUserResponseModel copyWith({
     String? token,
@@ -42,7 +45,7 @@ class AccessUserResponseModel {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'token': token,
       'id': id,
     } as Map<String, dynamic>;

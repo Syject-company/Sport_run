@@ -23,21 +23,25 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //NOte:'/password'
 class PasswordPage extends StatefulWidget {
-  PasswordPage({Key? key}) : super(key: key);
+  const PasswordPage({Key? key}) : super(key: key);
 
   @override
   _PasswordPageState createState() => _PasswordPageState();
 }
 
 class _PasswordPageState extends State<PasswordPage> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  final _codeController = TextEditingController();
-  final _pageController = PageController();
-  final _verifyNameController = RoundedLoadingButtonController();
-  final _checkCodeController = RoundedLoadingButtonController();
-  final _applyNewPassController = RoundedLoadingButtonController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
+  final PageController _pageController = PageController();
+  final RoundedLoadingButtonController _verifyNameController =
+      RoundedLoadingButtonController();
+  final RoundedLoadingButtonController _checkCodeController =
+      RoundedLoadingButtonController();
+  final RoundedLoadingButtonController _applyNewPassController =
+      RoundedLoadingButtonController();
 
   String? emailError;
   String? passwordError;
@@ -48,7 +52,7 @@ class _PasswordPageState extends State<PasswordPage> {
   bool isPasswordChangedPage = false;
   bool isLoading = false;
 
-  final _changePasswordApi = ChangePasswordApi();
+  final ChangePasswordApi _changePasswordApi = ChangePasswordApi();
 
   @override
   void initState() {
@@ -57,15 +61,15 @@ class _PasswordPageState extends State<PasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        ModalRoute.of(context)?.settings.arguments as Map<String, String>;
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    final Map<String, String> title = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
 
     return BlocProvider<PasswordBloc>(
-      create: (final context) => PasswordBloc(),
+      create: (final BuildContext context) => PasswordBloc(),
       child: BlocListener<PasswordBloc, PasswordState>(
-        listener: (final context, final state) async {
+        listener:
+            (final BuildContext context, final PasswordState state) async {
           if (state is PassIsShownOrHidden) {
             isSecureText = !isSecureText;
           } else if (state is FieldsChecked) {
@@ -80,7 +84,7 @@ class _PasswordPageState extends State<PasswordPage> {
             await _changePasswordApi
                 .sendUserEmailToGetCode(
                     ChangePassEmailModel(email: _emailController.text))
-                .then((value) async {
+                .then((String value) async {
               if (value.isEmpty) {
                 await _pageController.animateToPage(1,
                     duration: const Duration(milliseconds: 400),
@@ -98,7 +102,7 @@ class _PasswordPageState extends State<PasswordPage> {
             await _changePasswordApi
                 .sendUserEmailToGetCode(
                     ChangePassEmailModel(email: _emailController.text))
-                .then((value) async {
+                .then((String value) async {
               if (value.isEmpty) {
                 await Fluttertoast.showToast(
                     msg: 'Verification code has been sent to your Email',
@@ -125,7 +129,7 @@ class _PasswordPageState extends State<PasswordPage> {
               email: _emailController.text,
               confirmationCode: _codeController.text,
             ))
-                .then((value) async {
+                .then((String value) async {
               if (value.isEmpty) {
                 _checkCodeController.success();
                 await _pageController.animateToPage(2,
@@ -159,7 +163,7 @@ class _PasswordPageState extends State<PasswordPage> {
               newPassword: _passwordController.text,
               confirmationCode: _codeController.text,
             ))
-                .then((value) async {
+                .then((String value) async {
               if (value.isEmpty) {
                 _applyNewPassController.success();
                 await _pageController.animateToPage(3,
@@ -190,7 +194,7 @@ class _PasswordPageState extends State<PasswordPage> {
               .add(password_bloc.UpdateState());
         },
         child: BlocBuilder<PasswordBloc, PasswordState>(
-            builder: (final context, final state) {
+            builder: (final BuildContext context, final PasswordState state) {
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: isPasswordChangedPage
@@ -204,19 +208,19 @@ class _PasswordPageState extends State<PasswordPage> {
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500),
                     ),
-                    actions: [
-                      isLoading
-                          ? Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: progressIndicator(),
-                            )
-                          : Container(),
+                    actions: <Widget>[
+                      if (isLoading)
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: progressIndicator(),
+                        )
+                      else
+                        Container(),
                     ],
                     backgroundColor: const Color(0xff2B2B2B),
                   ),
             body: SafeArea(
-              child: Container(
+              child: SizedBox(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Container(
@@ -226,7 +230,7 @@ class _PasswordPageState extends State<PasswordPage> {
                     child: PageView(
                       controller: _pageController,
                       physics: const NeverScrollableScrollPhysics(),
-                      children: [
+                      children: <Widget>[
                         _enterEmail(context: context, width: width),
                         _enterVerificationCode(
                           context: context,
@@ -234,7 +238,7 @@ class _PasswordPageState extends State<PasswordPage> {
                         ),
                         SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
-                          child: Container(
+                          child: SizedBox(
                             height: height - 100,
                             child: _createNewPassword(
                               context: context,
@@ -259,7 +263,7 @@ class _PasswordPageState extends State<PasswordPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        children: [
+        children: <Widget>[
           Align(
             child: Image.asset(
               passwordBackground,
@@ -354,7 +358,7 @@ class _PasswordPageState extends State<PasswordPage> {
   Widget _enterVerificationCode(
       {required BuildContext context, required double width}) {
     return Column(
-      children: [
+      children: <Widget>[
         Container(
           margin: const EdgeInsets.only(top: 10.0),
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -512,7 +516,7 @@ class _PasswordPageState extends State<PasswordPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        children: [
+        children: <Widget>[
           Container(
             margin: EdgeInsets.only(top: 10.h),
             child: Image.asset(
