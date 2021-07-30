@@ -94,6 +94,17 @@ extension UserData on void {
     return model.battleUsers[1].applicationUser.photoLink;
   }
 
+  String getOpponentRank({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id != currentUserId) {
+      return model.battleUsers[0].applicationUser.rank.toString();
+    }
+
+    return model.battleUsers[1].applicationUser.rank.toString();
+  }
+
   int? getMyBattleStatus({
     required BattleRespondModel model,
     required String currentUserId,

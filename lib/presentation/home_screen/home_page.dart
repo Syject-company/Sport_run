@@ -31,13 +31,13 @@ import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:one2one_run/utils/signal_r.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
     show DateTimeExtension, ToastExtension, UserData;
 import 'package:one2one_run/utils/no_glow_scroll_behavior.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:signalr_client/signalr_client.dart';
 
 //NOte:'/home'
 class HomePage extends StatefulWidget {
@@ -47,7 +47,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _keyScaffold = GlobalKey<ScaffoldState>();
 
   final PageController _pageController = PageController();
@@ -93,22 +93,27 @@ class _HomePageState extends State<HomePage> {
   bool _isNeedToOpenMessageDrawer = false;
   bool _isNeedToOpenChangeBattleDrawer = false;
   late bool _isKM;
+  bool _isAppInForeground = true;
 
   int _countOfRuns = 1;
   int _selectedMessageIndex = 1000;
 
   double _currentDistanceValue = 5;
 
-  HubConnection? connection;
+  late SignalR _signalR;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance?.addObserver(this);
     prepareData();
   }
 
   void prepareData() {
     _token = PreferenceUtils.getUserToken();
+    _signalR = SignalR();
+    _signalR.initSocketConnection(
+        token: _token.replaceFirst(RegExp('Bearer '), ''));
     _messaging = FirebaseMessaging.instance;
     _messaging.getToken().then((String? token) {
       _homeApi.sendFireBaseToken(tokenFireBase: token ?? '');
@@ -127,35 +132,6 @@ class _HomePageState extends State<HomePage> {
       }
     });
     _users = getUsers(isFilterIncluded: _isNeedFilter);
-  }
-
-  Future<void> startWebSockets({required BuildContext context}) async {
-    connection = HubConnectionBuilder()
-        .withUrl('https://one2onerunapi.azurewebsites.net/chathub',
-            options: HttpConnectionOptions(
-                accessTokenFactory: () async =>
-                    _token.replaceFirst(RegExp('Bearer '), '')))
-        .build();
-
-    if (connection?.state == HubConnectionState.Disconnected) {
-      await connection?.start().catchError((dynamic value) async {
-        if (value != null) {
-          await startWebSockets(context: context);
-        }
-      });
-    }
-    connection?.on('ReceiveBattleNotification', (List<Object> arguments) async {
-      final Object data = arguments[0];
-      if (data != null &&
-          _selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
-        final String id = (data as Map<dynamic, dynamic>)['battleId'] as String;
-        _battleId = id;
-        await getBattleById(context: context, battleId: id);
-      }
-      print('Iddddddd: ${(data as Map<dynamic, dynamic>)['battleId']} ');
-    });
-
-    await connection?.invoke('ConnectToGroups');
   }
 
   @override
@@ -349,9 +325,9 @@ class _HomePageState extends State<HomePage> {
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (final BuildContext context, final HomeState state) {
           getBattleDataFromFirebaseMessaging(context: context);
-          if (connection == null) {
-            startWebSockets(context: context);
-          }
+
+          startWebSockets(context: context);
+
           return Scaffold(
             key: _keyScaffold,
             backgroundColor: homeBackground,
@@ -465,29 +441,18 @@ class _HomePageState extends State<HomePage> {
                               Navigator.of(context).pop();
                             }
                           },
-                          userName: _battleRespondModel
-                                      .battleUsers[0].applicationUser.id !=
-                                  _currentUserId
-                              ? _battleRespondModel
-                                  .battleUsers[0].applicationUser.nickName
-                              : _battleRespondModel
-                                  .battleUsers[1].applicationUser.nickName,
-                          userPhoto: _battleRespondModel
-                                      .battleUsers[0].applicationUser.id !=
-                                  _currentUserId
-                              ? _battleRespondModel
-                                  .battleUsers[0].applicationUser.photoLink
-                              : _battleRespondModel
-                                  .battleUsers[1].applicationUser.photoLink,
-                          userRank: _battleRespondModel
-                                      .battleUsers[0].applicationUser.id !=
-                                  _currentUserId
-                              ? _battleRespondModel
-                                  .battleUsers[0].applicationUser.rank
-                                  .toString()
-                              : _battleRespondModel
-                                  .battleUsers[1].applicationUser.rank
-                                  .toString(),
+                          userName: getOpponentName(
+                            model: _battleRespondModel,
+                            currentUserId: _currentUserId,
+                          ),
+                          userPhoto: getOpponentPhoto(
+                            model: _battleRespondModel,
+                            currentUserId: _currentUserId,
+                          ),
+                          userRank: getOpponentRank(
+                            model: _battleRespondModel,
+                            currentUserId: _currentUserId,
+                          ),
                         );
                       },
                     },
@@ -1229,7 +1194,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void getBattleDataFromFirebaseMessaging({required BuildContext context}) {
-    //NOte: when app is terminated
+    //NOte: when app is Terminated
     _messaging.getInitialMessage().then((RemoteMessage? message) async {
       if (message != null &&
           message.data['notificationType'] == 'CreatedBattle' &&
@@ -1240,7 +1205,7 @@ class _HomePageState extends State<HomePage> {
       }
     });
 
-    //NOte: when app is in background state
+    //NOte: when app is in Background state
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage event) async {
       final String id = event.data['battleId'] as String;
       final String type = event.data['notificationType'] as String;
@@ -1249,6 +1214,25 @@ class _HomePageState extends State<HomePage> {
         _battleId = id;
         print('onMessageOpenedAppId: $id');
         await getBattleById(context: context, battleId: id);
+      }
+    });
+  }
+
+  //NOte: when app is Active
+  Future<void> startWebSockets({required BuildContext context}) async {
+    await _signalR.startConnection(
+        onReceiveNotification: (List<Object> arguments) async {
+      if (_isAppInForeground) {
+        final Object data = arguments[0];
+        if (data != null &&
+            _selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
+          final String id =
+              (data as Map<dynamic, dynamic>)['battleId'] as String;
+          _battleId = id;
+          await getBattleById(context: context, battleId: id);
+        }
+        print(
+            'SignalR_BattleId: ${(data as Map<dynamic, dynamic>)['battleId']} ');
       }
     });
   }
@@ -1272,12 +1256,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _isAppInForeground = state == AppLifecycleState.resumed;
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
     _pageController.dispose();
     _battleNameController.dispose();
     _messageController.dispose();
-    if (connection != null) {
-      connection?.stop();
+    if (_signalR != null) {
+      _signalR.stopConnection();
     }
     super.dispose();
   }
