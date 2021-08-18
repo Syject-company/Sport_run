@@ -20,7 +20,7 @@ class ProfileApi {
 
     request.headers.addAll(<String, String>{
       HttpHeaders.authorizationHeader: token,
-      'Content-Type': 'multipart/form-data'
+      HttpHeaders.contentTypeHeader: 'multipart/form-data'
     });
     request.files.add(multipartFile);
 

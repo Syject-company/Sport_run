@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:http/http.dart';
 import 'package:one2one_run/data/models/change_pass_email_model.dart';
 import 'package:one2one_run/data/models/code_verification_model.dart';
@@ -21,7 +21,7 @@ class ChangePasswordApi {
     final Response res = await post(Uri.parse(_urlSendUserEmail),
         body: json.encode(model),
         headers: <String, String>{
-          'Content-Type': 'application/json',
+          HttpHeaders.contentTypeHeader: 'application/json',
         });
 
     if (res.statusCode == 200) {
@@ -36,7 +36,7 @@ class ChangePasswordApi {
     final Response res = await post(Uri.parse(_urlCodeVerification),
         body: json.encode(model),
         headers: <String, String>{
-          'Content-Type': 'application/json',
+          HttpHeaders.contentTypeHeader: 'application/json',
         });
 
     if (res.statusCode == 200) {
@@ -51,7 +51,7 @@ class ChangePasswordApi {
     final Response res = await patch(Uri.parse(_urlUpdatePasswordUrl),
         body: json.encode(model),
         headers: <String, String>{
-          'Content-Type': 'application/json',
+          HttpHeaders.contentTypeHeader: 'application/json',
         });
 
     if (res.statusCode == 200) {

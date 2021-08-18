@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:http/http.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/utils/constants.dart';
@@ -15,8 +15,8 @@ class InteractApi {
     final String token = PreferenceUtils.getUserToken();
     final Response res =
         await get(Uri.parse('$_urlGetTabById/$tabId'), headers: <String,String>{
-      'Content-Type': 'application/json',
-      'authorization': token,
+      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.authorizationHeader: token,
     });
 
     if (res.statusCode == 200) {

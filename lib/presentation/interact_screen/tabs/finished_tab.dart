@@ -7,11 +7,11 @@ import 'package:one2one_run/utils/extension.dart' show UserData;
 class FinishedTab extends StatelessWidget {
   const FinishedTab({
     Key? key,
-    required this.pendingList,
+    required this.finishedList,
     required this.currentUserId,
   }) : super(key: key);
 
-  final List<BattleRespondModel> pendingList;
+  final List<BattleRespondModel> finishedList;
   final String currentUserId;
 
   @override
@@ -23,34 +23,52 @@ class FinishedTab extends StatelessWidget {
       width: width,
       height: height,
       color: const Color(0xffF5F5F5),
-      child: pendingList.isNotEmpty
+      child: finishedList.isNotEmpty
           ? Scrollbar(
               child: ListView.builder(
-                  itemCount: pendingList.length,
+                  itemCount: finishedList.length,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (BuildContext con, int index) {
                     return interactListItem(
                       context: context,
                       width: width,
                       height: height,
-                      heightPercentage: 0.245,
-                      model: pendingList[index],
-                      distance: distance(distance: pendingList[index].distance),
+                      //heightPercentage: 0.245,
+                      heightPercentage: 0.4,
+                      model: finishedList[index],
+                      distance:
+                          distance(distance: finishedList[index].distance),
                       opponentName: getOpponentName(
-                        model: pendingList[index],
+                        model: finishedList[index],
                         currentUserId: currentUserId,
                       ),
                       opponentPhoto: getOpponentPhoto(
-                        model: pendingList[index],
+                        model: finishedList[index],
                         currentUserId: currentUserId,
                       ),
                       isNeedButtons: false,
                       isFinishedTab: true,
-                      statusCodeNum: pendingList[index].status.toInt(),
+                      statusCodeNum: finishedList[index].status.toInt(),
                       myStatusCodeNum: getMyBattleStatus(
-                        model: pendingList[index],
+                        model: finishedList[index],
                         currentUserId: currentUserId,
                       ),
+                      myProofTime: getMyProofTime(
+                        model: finishedList[index],
+                        currentUserId: currentUserId,
+                      ),
+                      myProofPhotos: getMyProofPhotos(
+                        model: finishedList[index],
+                        currentUserId: currentUserId,
+                      ).cast<String>(),
+                      opponentProofTime: getOpponentProofTime(
+                        model: finishedList[index],
+                        currentUserId: currentUserId,
+                      ),
+                      opponentProofPhotos: getOpponentProofPhotos(
+                        model: finishedList[index],
+                        currentUserId: currentUserId,
+                      ).cast<String>(),
                     );
                   }),
             )

@@ -25,6 +25,8 @@ class Constants {
   static const String connectUrl = '/api/Battle/Users/';
   static const String createBattleUrl = '/api/Battle';
   static const String sendFireBaseTokenUrl = '/api/Account/FirebaseToken/';
+  static const String enableNotificationsUrl = '/api/Account/MuteNotifications';
+  static const String getNotificationsStateUrl = '/api/Account/NotificationsMode';
 
   //Data:
   static const String socketUrl = 'https://one2onerunapi.azurewebsites.net/chathub';
