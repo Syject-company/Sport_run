@@ -73,3 +73,7 @@ String get distanceIcon => 'assets/icons/distance.png';
 String get wonIcon => 'assets/icons/won.png';
 
 String get lostIcon => 'assets/icons/lost.png';
+
+String get timeIcon => 'assets/icons/time.png';
+
+String get noProofsIcon => 'assets/icons/no_proofs.png';

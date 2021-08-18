@@ -115,4 +115,53 @@ extension UserData on void {
 
     return model.battleUsers[1].batlleStatus?.toInt();
   }
+
+//0001-01-01T00:00:00
+  String getMyProofTime({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id == currentUserId) {
+      return getTimeWithOutDate(time: model.battleUsers[0].time);
+    }
+
+    return getTimeWithOutDate(time: model.battleUsers[1].time);
+  }
+
+  List<dynamic> getMyProofPhotos({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id == currentUserId) {
+      return model.battleUsers[0].photos;
+    }
+
+    return model.battleUsers[1].photos;
+  }
+
+  String getOpponentProofTime({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id != currentUserId) {
+      return getTimeWithOutDate(time: model.battleUsers[0].time);
+    }
+
+    return getTimeWithOutDate(time: model.battleUsers[1].time);
+  }
+
+  List<dynamic> getOpponentProofPhotos({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id != currentUserId) {
+      return model.battleUsers[0].photos;
+    }
+
+    return model.battleUsers[1].photos;
+  }
+
+  String getTimeWithOutDate({required String time}) {
+    return time.substring(11, 16);
+  }
 }

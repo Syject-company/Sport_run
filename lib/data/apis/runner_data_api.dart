@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:http/http.dart';
 import 'package:one2one_run/data/models/runner_data_model.dart';
 import 'package:one2one_run/utils/constants.dart';
@@ -16,8 +16,8 @@ class RunnerDataApi {
     final Response res = await patch(Uri.parse(_urlRunnerData),
         body: json.encode(model),
         headers: <String, String>{
-          'Content-Type': 'application/json',
-          'authorization': token,
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
         });
 
     return res.statusCode == 200;

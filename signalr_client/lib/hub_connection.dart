@@ -233,7 +233,7 @@ class HubConnection {
             completer.complete(invocationEvent.result);
           }
         } else {
-          completer.completeError(new GeneralError(
+          completer.completeError(GeneralError(
               "Unexpected message type: ${invocationEvent.type}"));
         }
       }
@@ -241,7 +241,7 @@ class HubConnection {
 
     final formatedMessage = _protocol.writeMessage(invocationMessage);
     _sendMessage(formatedMessage).catchError((dynamic error) {
-      completer.completeError(error as Error);
+      completer.completeError(error as GeneralError);
       _callbacks.remove(invocationMessage.invocationId);
     });
 

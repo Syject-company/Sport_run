@@ -1032,6 +1032,10 @@ Widget interactListItem({
   bool isFinishedTab = false,
   required int statusCodeNum,
   int? myStatusCodeNum,
+  String myProofTime = '00:00',
+  String opponentProofTime = '00:00',
+  List<String>? myProofPhotos,
+  List<String>? opponentProofPhotos,
   required double heightPercentage,
 }) {
   return Container(
@@ -1187,6 +1191,18 @@ Widget interactListItem({
           ),
         ),
         Visibility(
+          visible: isFinishedTab,
+          child: timeAndPhotoFinishedTab(
+            model: model,
+            myProofTime: myProofTime,
+            myProofPhotos: myProofPhotos ?? <String>[],
+            opponentProofTime: opponentProofTime,
+            opponentProofPhotos: opponentProofPhotos ?? <String>[],
+            height: height,
+            width: width,
+          ),
+        ),
+        Visibility(
           visible: isNeedButtons,
           child: Padding(
             padding: EdgeInsets.only(top: height * 0.01),
@@ -1238,6 +1254,162 @@ Widget interactListItem({
             ],
           ),
         ),
+      ],
+    ),
+  );
+}
+
+Widget timeAndPhotoFinishedTab({
+  required BattleRespondModel model,
+  required double height,
+  required double width,
+  required String myProofTime,
+  required String opponentProofTime,
+  required List<String> myProofPhotos,
+  required List<String> opponentProofPhotos,
+}) {
+  return Column(
+    children: <Widget>[
+      SizedBox(
+        height: height * 0.02,
+      ),
+      const Divider(
+        height: 3,
+        endIndent: 3.0,
+        indent: 3.0,
+      ),
+      SizedBox(
+        height: height * 0.02,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          timePhotosProofs(
+            title: 'Me',
+            time: myProofTime,
+            photos: myProofPhotos,
+            width: width,
+            height: height,
+          ),
+          Container(
+            color: Colors.grey,
+            height: height * 0.1,
+            width: 0.2,
+            margin: EdgeInsets.symmetric(horizontal: width * 0.02),
+          ),
+          timePhotosProofs(
+            title: 'Opponent',
+            time: opponentProofTime,
+            photos: opponentProofPhotos,
+            width: width,
+            height: height,
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+Widget timePhotosProofs(
+    {required double height,
+    required double width,
+    required String title,
+    required String time,
+    required List<String> photos}) {
+  return SizedBox(
+    width: width / 2.45,
+    child: Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Text(
+              title,
+              maxLines: 1,
+              style: TextStyle(
+                  color: const Color(0xff9F9F9F),
+                  fontSize: 12.sp,
+                  fontFamily: 'roboto',
+                  fontWeight: FontWeight.w500),
+            ),
+            const Spacer(),
+            Row(
+              children: <Widget>[
+                Image.asset(
+                  timeIcon,
+                  height: height * 0.018,
+                  width: height * 0.018,
+                  fit: BoxFit.fill,
+                  color: Colors.grey,
+                ),
+                const SizedBox(
+                  width: 3.0,
+                ),
+                Text(
+                  time != '00:00' ? time : '--:--',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(
+          height: height * 0.01,
+        ),
+        if (photos.isNotEmpty)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              SizedBox(
+                width: width * 0.02,
+              ),
+              SizedBox(
+                height: height * 0.08,
+                width: height * 0.08,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Image.network(
+                    photos[0],
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: photos.length > 1,
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      width: width * 0.05,
+                    ),
+                    SizedBox(
+                      height: height * 0.08,
+                      width: height * 0.08,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Image.network(
+                          photos.length > 1 ? photos[1] : '',
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width * 0.02,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        else
+          Image.asset(
+            noProofsIcon,
+            height: height * 0.08,
+            width: height * 0.12,
+            fit: BoxFit.contain,
+          ),
       ],
     ),
   );

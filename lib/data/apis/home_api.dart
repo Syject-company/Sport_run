@@ -32,8 +32,8 @@ class HomeApi {
     print('User token: $token');
     final Response res =
         await get(Uri.parse(_urlUserModel), headers: <String, String>{
-      'Content-Type': 'application/json',
-      'authorization': token,
+      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.authorizationHeader: token,
     });
 
     return UserModel.fromJson(json.decode(res.body) as Map<String, dynamic>);
@@ -45,8 +45,8 @@ class HomeApi {
     final Response res = await put(Uri.parse(_urlUserModelUpdate),
         body: json.encode(model),
         headers: <String, String>{
-          'Content-Type': 'application/json',
-          'authorization': token,
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
         });
 
     return res.statusCode == 200;
@@ -58,8 +58,8 @@ class HomeApi {
     final Response res = await post(Uri.parse(_urlCreateBattle),
         body: json.encode(model),
         headers: <String, String>{
-          'Content-Type': 'application/json',
-          'authorization': token,
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
           'accept': '*/*',
         });
 
@@ -72,8 +72,8 @@ class HomeApi {
     final Response res = await post(
         Uri.parse('$_urlSendFirebaseToken$tokenFireBase'),
         headers: <String, String>{
-          'Content-Type': 'application/json',
-          'authorization': token,
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
         });
 
     return res.statusCode == 200;
@@ -112,8 +112,8 @@ class HomeApi {
     final Response res = await post(
         Uri.parse('$_urlGetBattleById/$battleId/Accept'),
         headers: <String, String>{
-          'Content-Type': 'application/json',
-          'authorization': token,
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
         });
 
     return res.statusCode == 200;
@@ -125,8 +125,8 @@ class HomeApi {
     final Response res = await post(
         Uri.parse('$_urlGetBattleById/$battleId/Decline'),
         headers: <String, String>{
-          'Content-Type': 'application/json',
-          'authorization': token,
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
         });
 
     return res.statusCode == 200;
@@ -140,8 +140,8 @@ class HomeApi {
     final Response res = await patch(Uri.parse('$_urlGetBattleById/$battleId'),
         body: json.encode(model),
         headers: <String, String>{
-          'Content-Type': 'application/json',
-          'authorization': token,
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
         });
 
     return res.statusCode == 200;

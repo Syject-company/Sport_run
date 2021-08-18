@@ -134,7 +134,7 @@ class BattleUsers {
   factory BattleUsers.fromJson(Map<String, dynamic> map) {
     return BattleUsers(
       id: map['id'] as String,
-      time: map['time'] as num,
+      time: map['time'] as String,
       batlleStatus: map['batlleStatus'] as num?,
       resultIsConfirmed: map['resultIsConfirmed'] as bool,
       resultIsRejected: map['resultIsRejected'] as bool,
@@ -147,7 +147,7 @@ class BattleUsers {
   }
 
   final String id;
-  final num time;
+  final String time;
   final num? batlleStatus;
   final bool resultIsConfirmed;
   final bool resultIsRejected;
@@ -157,7 +157,7 @@ class BattleUsers {
 
   BattleUsers copyWith({
     String? id,
-    num? time,
+    String? time,
     num? batlleStatus,
     bool? resultIsConfirmed,
     bool? resultIsRejected,
