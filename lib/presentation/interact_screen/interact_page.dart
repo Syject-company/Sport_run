@@ -101,7 +101,7 @@ class _InteractPageState extends State<InteractPage> {
                           AsyncSnapshot<List<BattleRespondModel>?> snapshot) {
                         if (snapshot.hasData && snapshot.data != null) {
                           return ActiveTab(
-                            pendingList:
+                            activeList:
                                 snapshot.data ?? <BattleRespondModel>[],
                             currentUserId:
                                 PreferenceUtils.getCurrentUserModel().id,
