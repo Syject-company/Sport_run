@@ -77,3 +77,5 @@ String get lostIcon => 'assets/icons/lost.png';
 String get timeIcon => 'assets/icons/time.png';
 
 String get noProofsIcon => 'assets/icons/no_proofs.png';
+
+String get startChatImage => 'assets/images/start_chat.png';

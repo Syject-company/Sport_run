@@ -94,6 +94,61 @@ Widget inputTextField({
   );
 }
 
+Widget inputTextChatField({
+  required TextEditingController controller,
+  required double width,
+  required double height,
+  required VoidCallback onSend,
+  required List<String> messages,
+
+}) {
+  return Row(
+    children: <Widget>[
+      SizedBox(
+        width: width - (width * 0.28),
+        child: TextFormField(
+          controller: controller,
+          style: const TextStyle(
+            color: Colors.black87,
+            fontSize: 16.0,
+            fontWeight: FontWeight.w600,
+          ),
+          cursorColor: const Color(0xffFF1744),
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.only(
+              bottom: 5.0,
+              top: 10.0,
+              left: 5.0,
+            ),
+            alignLabelWithHint: false,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            fillColor: Colors.transparent,
+            filled: true,
+            hintText: 'Message',
+            hintStyle: hintTextStyle,
+          ),
+        ),
+      ),
+      ElevatedButton(
+        onPressed: onSend,
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          minimumSize: Size(width * 0.05, height * 0.065),
+          primary: const Color(0xfff6f6f6),
+          shadowColor: Colors.grey[200],
+        ),
+        child: const Icon(
+          Icons.send,
+          color: Color(0xffCDCDCD),
+        ),
+      ),
+    ],
+  );
+}
+
 Widget buttonWithIcon(
     {required VoidCallback onPressed,
     required double height,
@@ -1037,224 +1092,228 @@ Widget interactListItem({
   List<String>? myProofPhotos,
   List<String>? opponentProofPhotos,
   required double heightPercentage,
+  required VoidCallback onTapCard,
 }) {
-  return Container(
-    height: height * heightPercentage,
-    width: width,
-    padding: EdgeInsets.all(width * 0.035),
-    margin: EdgeInsets.symmetric(
-      horizontal: width * 0.025,
-      vertical: height * 0.02,
-    ),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10),
-      color: Colors.white,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.5),
-          spreadRadius: 3,
-          blurRadius: 5,
-          offset: const Offset(0, 3),
-        ),
-      ],
-    ),
-    child: Column(
-      children: <Widget>[
-        Text(
-          model.battleName,
-          style: TextStyle(
-              color: Colors.red,
-              fontSize: 18.sp,
-              fontFamily: 'roboto',
-              fontWeight: FontWeight.w700),
-        ),
-        SizedBox(
-          height: height * 0.017,
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            statusLabel(
-              width: width,
-              isBattleMainStatus: true,
-              statusCode: statusCodeNum,
-            ),
-            Visibility(
-              visible: myStatusCodeNum != null && isFinishedTab,
-              child: Row(
-                children: <Widget>[
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  statusLabel(
-                    width: width,
-                    isBattleMainStatus: false,
-                    statusCode: myStatusCodeNum ?? 0,
-                  ),
-                ],
+  return GestureDetector(
+    onTap: onTapCard,
+    child: Container(
+      height: height * heightPercentage,
+      width: width,
+      padding: EdgeInsets.all(width * 0.035),
+      margin: EdgeInsets.symmetric(
+        horizontal: width * 0.025,
+        vertical: height * 0.02,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 3,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        children: <Widget>[
+          Text(
+            model.battleName ?? 'Battle',
+            style: TextStyle(
+                color: Colors.red,
+                fontSize: 18.sp,
+                fontFamily: 'roboto',
+                fontWeight: FontWeight.w700),
+          ),
+          SizedBox(
+            height: height * 0.017,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              statusLabel(
+                width: width,
+                isBattleMainStatus: true,
+                statusCode: statusCodeNum,
               ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: height * 0.008,
-        ),
-        Row(
-          children: <Widget>[
-            Container(
-              height: height * 0.05,
-              width: height * 0.05,
-              margin: EdgeInsets.only(
-                right: width * 0.02,
+              Visibility(
+                visible: myStatusCodeNum != null && isFinishedTab,
+                child: Row(
+                  children: <Widget>[
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    statusLabel(
+                      width: width,
+                      isBattleMainStatus: false,
+                      statusCode: myStatusCodeNum ?? 0,
+                    ),
+                  ],
+                ),
               ),
-              child: CircleAvatar(
-                backgroundColor: Colors.transparent,
-                radius: 80,
-                backgroundImage: opponentPhoto == null
-                    ? AssetImage(
-                        defaultProfileImage,
-                      ) as ImageProvider
-                    : NetworkImage(opponentPhoto),
+            ],
+          ),
+          SizedBox(
+            height: height * 0.008,
+          ),
+          Row(
+            children: <Widget>[
+              Container(
+                height: height * 0.05,
+                width: height * 0.05,
+                margin: EdgeInsets.only(
+                  right: width * 0.02,
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  radius: 80,
+                  backgroundImage: opponentPhoto == null
+                      ? AssetImage(
+                          defaultProfileImage,
+                        ) as ImageProvider
+                      : NetworkImage(opponentPhoto),
+                ),
               ),
-            ),
-            Text(
-              'Opponent',
-              style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12.sp,
-                  fontFamily: 'roboto',
-                  fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(
-              width: 5.0,
-            ),
-            Text(
-              opponentName ?? 'Nickname',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14.sp,
-                  fontFamily: 'roboto',
-                  fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-        Visibility(
-          visible: !isFinishedTab,
-          child: Container(
-            alignment: Alignment.centerLeft,
-            width: width,
-            height: height * 0.038,
-            margin: EdgeInsets.only(
-              left: height * 0.062,
-              bottom: height * 0.02,
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Text(
-                model.message ?? 'It will be a piece of cake!',
-                maxLines: 1,
+              Text(
+                'Opponent',
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.grey,
                     fontSize: 12.sp,
                     fontFamily: 'roboto',
                     fontWeight: FontWeight.w600),
               ),
-            ),
-          ),
-        ),
-        Visibility(
-          visible: !isFinishedTab,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: cardItem(
-              height: height,
-              width: width + width * 0.7,
-              title: 'Time left',
-              icon: weeklyDistanceIcon,
-              value: model.timeLeft.toString(),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: height * 0.01,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: cardItem(
-            height: height,
-            width: width + 50,
-            title: 'Distance',
-            icon: distanceIcon,
-            value: distance,
-          ),
-        ),
-        Visibility(
-          visible: isFinishedTab,
-          child: timeAndPhotoFinishedTab(
-            model: model,
-            myProofTime: myProofTime,
-            myProofPhotos: myProofPhotos ?? <String>[],
-            opponentProofTime: opponentProofTime,
-            opponentProofPhotos: opponentProofPhotos ?? <String>[],
-            height: height,
-            width: width,
-          ),
-        ),
-        Visibility(
-          visible: isNeedButtons,
-          child: Padding(
-            padding: EdgeInsets.only(top: height * 0.01),
-            child: const Divider(
-              height: 5,
-              endIndent: 3.0,
-              indent: 3.0,
-            ),
-          ),
-        ),
-        Visibility(
-          visible: isNeedButtons,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              buttonNoIcon(
-                title: 'Accept',
-                color: const Color(0xffCFFFB1),
-                textColor: Colors.black87,
-                width: width * 0.25,
-                height: height * 0.055,
-                buttonTextSize: 14.sp,
-                onPressed: () {
-                  onTapAccept!(model.id);
-                },
+              const SizedBox(
+                width: 5.0,
               ),
-              buttonNoIcon(
-                title: 'Change',
-                color: const Color(0xffEDEDED),
-                textColor: Colors.grey,
-                width: width * 0.25,
-                height: height * 0.055,
-                buttonTextSize: 14.sp,
-                onPressed: () {
-                  onTapChange!(model.id, model);
-                },
-              ),
-              buttonNoIcon(
-                title: 'Decline',
-                color: Colors.white,
-                textColor: Colors.grey,
-                width: width * 0.25,
-                height: height * 0.055,
-                buttonTextSize: 14.sp,
-                onPressed: () {
-                  onTapDecline!(model.id);
-                },
+              Text(
+                opponentName ?? 'Nickname',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14.sp,
+                    fontFamily: 'roboto',
+                    fontWeight: FontWeight.w600),
               ),
             ],
           ),
-        ),
-      ],
+          Visibility(
+            visible: !isFinishedTab,
+            child: Container(
+              alignment: Alignment.centerLeft,
+              width: width,
+              height: height * 0.038,
+              margin: EdgeInsets.only(
+                left: height * 0.062,
+                bottom: height * 0.02,
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Text(
+                  model.message ?? 'It will be a piece of cake!',
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: !isFinishedTab,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: cardItem(
+                height: height,
+                width: width + width * 0.7,
+                title: 'Time left',
+                icon: weeklyDistanceIcon,
+                value: model.timeLeft.toString(),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: height * 0.01,
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: cardItem(
+              height: height,
+              width: width + 50,
+              title: 'Distance',
+              icon: distanceIcon,
+              value: distance,
+            ),
+          ),
+          Visibility(
+            visible: isFinishedTab,
+            child: timeAndPhotoFinishedTab(
+              model: model,
+              myProofTime: myProofTime,
+              myProofPhotos: myProofPhotos ?? <String>[],
+              opponentProofTime: opponentProofTime,
+              opponentProofPhotos: opponentProofPhotos ?? <String>[],
+              height: height,
+              width: width,
+            ),
+          ),
+          Visibility(
+            visible: isNeedButtons,
+            child: Padding(
+              padding: EdgeInsets.only(top: height * 0.01),
+              child: const Divider(
+                height: 5,
+                endIndent: 3.0,
+                indent: 3.0,
+              ),
+            ),
+          ),
+          Visibility(
+            visible: isNeedButtons,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                buttonNoIcon(
+                  title: 'Accept',
+                  color: const Color(0xffCFFFB1),
+                  textColor: Colors.black87,
+                  width: width * 0.25,
+                  height: height * 0.055,
+                  buttonTextSize: 14.sp,
+                  onPressed: () {
+                    onTapAccept!(model.id);
+                  },
+                ),
+                buttonNoIcon(
+                  title: 'Change',
+                  color: const Color(0xffEDEDED),
+                  textColor: Colors.grey,
+                  width: width * 0.25,
+                  height: height * 0.055,
+                  buttonTextSize: 14.sp,
+                  onPressed: () {
+                    onTapChange!(model.id, model);
+                  },
+                ),
+                buttonNoIcon(
+                  title: 'Decline',
+                  color: Colors.white,
+                  textColor: Colors.grey,
+                  width: width * 0.25,
+                  height: height * 0.055,
+                  buttonTextSize: 14.sp,
+                  onPressed: () {
+                    onTapDecline!(model.id);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }

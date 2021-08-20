@@ -164,4 +164,15 @@ extension UserData on void {
   String getTimeWithOutDate({required String time}) {
     return time.substring(11, 16);
   }
+
+  String getOpponentId({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id != currentUserId) {
+      return model.battleUsers[0].applicationUser.id;
+    }
+
+    return model.battleUsers[1].applicationUser.id;
+  }
 }

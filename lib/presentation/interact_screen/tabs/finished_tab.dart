@@ -69,6 +69,9 @@ class FinishedTab extends StatelessWidget {
                         model: finishedList[index],
                         currentUserId: currentUserId,
                       ).cast<String>(),
+                      onTapCard: (){
+                        // TODO(Issa): action.
+                      },
                     );
                   }),
             )

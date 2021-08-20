@@ -55,6 +55,9 @@ class PendingTab extends StatelessWidget {
                     onTapChange: onTapChange,
                     onTapDecline: onTapDecline,
                     statusCodeNum: pendingList[index].status.toInt(),
+                    onTapCard: (){
+                      // TODO(Issa): action.
+                    },
                   );
                 }),
           )

@@ -9,6 +9,7 @@ class Constants {
   static const String homeRoute = '/home';
   static const String passwordRoute = '/password';
   static const String editProfileRoute = '/editProfile';
+  static const String acceptedRoute = '/accepted';
 
   //Api urls:
   static const String registerUrl = '/api/Account/registration';
@@ -24,6 +25,7 @@ class Constants {
   static const String updateUserPhotoUrl = '/api/Account/Photo';
   static const String connectUrl = '/api/Battle/Users/';
   static const String createBattleUrl = '/api/Battle';
+  static const String getOpponentChatUrl = '/api/Chats/';
   static const String sendFireBaseTokenUrl = '/api/Account/FirebaseToken/';
   static const String enableNotificationsUrl = '/api/Account/MuteNotifications';
   static const String getNotificationsStateUrl = '/api/Account/NotificationsMode';
