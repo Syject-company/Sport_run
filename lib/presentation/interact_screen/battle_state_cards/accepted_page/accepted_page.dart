@@ -6,13 +6,16 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/interact_api.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
-import 'package:one2one_run/presentation/enjoy_screen/enjoy_bloc/bloc.dart'
-    as enjoy_bloc;
-import 'package:one2one_run/presentation/enjoy_screen/enjoy_bloc/enjoy_bloc.dart';
-import 'package:one2one_run/presentation/enjoy_screen/enjoy_bloc/enjoy_state.dart';
+import 'package:one2one_run/data/models/user_model.dart';
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/accepted_page/accepted_bloc/accepted_bloc.dart';
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/accepted_page/accepted_bloc/bloc.dart'
+    as accepted_bloc;
+
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/accepted_page/accepted_bloc/accepted_state.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
+import 'package:one2one_run/utils/preference_utils.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //NOte:'/accepted'
 class AcceptedPage extends StatefulWidget {
@@ -31,31 +34,32 @@ class AcceptedPage extends StatefulWidget {
 
 class _AcceptedPageState extends State<AcceptedPage> {
   final TextEditingController _chatController = TextEditingController();
+  final RoundedLoadingButtonController _uploadResultsController =
+      RoundedLoadingButtonController();
 
   List<Messages> messages = <Messages>[];
 
   final InteractApi _interactApi = InteractApi();
 
+  late UserModel _currentUserModel;
+
   @override
   void initState() {
     super.initState();
-
+    _currentUserModel = PreferenceUtils.getCurrentUserModel();
     getOpponentMessages();
   }
 
-  // TODO(Issa): complete
+  // TODO(Issa): complete get Message 'Put it in Widget build(BuildContext context) FutureBuilder above BlocProvider'
   Future<void> getOpponentMessages() async {
     await _interactApi
         .getOpponentChatMessages(
             opponentId: getOpponentId(
                 model: widget.activeModel, currentUserId: widget.currentUserId))
         .then((OpponentChatModel? value) {
-
-          if(value!=null){
-            messages = value.messages.cast<Messages>();
-          }else{
-
-          }
+      if (value != null) {
+        messages = value.messages.cast<Messages>();
+      } else {}
     });
   }
 
@@ -65,15 +69,30 @@ class _AcceptedPageState extends State<AcceptedPage> {
         (MediaQuery.of(context).padding.top + kToolbarHeight);
     final double width = MediaQuery.of(context).size.width;
 
-    return BlocProvider<EnjoyBloc>(
-      create: (final BuildContext context) => EnjoyBloc(),
-      child: BlocListener<EnjoyBloc, EnjoyState>(
-        listener: (final BuildContext context, final EnjoyState state) async {
-          if (state is StateUpdated) {}
-          BlocProvider.of<EnjoyBloc>(context).add(enjoy_bloc.UpdateState());
+    return BlocProvider<AcceptedBloc>(
+      create: (final BuildContext context) => AcceptedBloc(),
+      child: BlocListener<AcceptedBloc, AcceptedState>(
+        listener:
+            (final BuildContext context, final AcceptedState state) async {
+          if (state is ResultBattleUploaded) {
+            _uploadResultsController.reset();
+            // TODO Complete work here
+            uploadResultsDialog(
+                context: context,
+                width: width,
+                height: height,
+                time: '10:00',
+                onTimePressed: (){
+
+                },
+                onAddPressed: () async {
+                });
+          }
+          BlocProvider.of<AcceptedBloc>(context)
+              .add(accepted_bloc.UpdateState());
         },
-        child: BlocBuilder<EnjoyBloc, EnjoyState>(
-            builder: (final BuildContext context, final EnjoyState state) {
+        child: BlocBuilder<AcceptedBloc, AcceptedState>(
+            builder: (final BuildContext context, final AcceptedState state) {
           return Scaffold(
             backgroundColor: homeBackground,
             appBar: AppBar(
@@ -88,84 +107,44 @@ class _AcceptedPageState extends State<AcceptedPage> {
               ),
               backgroundColor: colorPrimary,
             ),
-            body: SizedBox(
+            body: battleDetailsCard(
+              model: widget.activeModel,
               width: width,
               height: height,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.only(
-                          left: width * 0.04, top: height * 0.04),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Chat',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'roboto',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    //NOTE:Chat
-                    Container(
-                      height: height * 0.5,
-                      width: width,
-                      padding: EdgeInsets.all(width * 0.035),
-                      margin: EdgeInsets.symmetric(
-                        horizontal: width * 0.025,
-                        vertical: height * 0.02,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white,
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 3,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        //  mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          SizedBox(
-                            height: height * 0.371,
-                            width: width,
-                            child: messages.isNotEmpty
-                                ? Column(
-                                    children: <Widget>[],
-                                  )
-                                : Center(
-                                    child: Image.asset(
-                                      startChatImage,
-                                      height: height * 0.13,
-                                      width: height * 0.2,
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                          ),
-                          const Divider(
-                            height: 5,
-                            endIndent: 1.0,
-                            indent: 1.0,
-                          ),
-                          inputTextChatField(
-                              controller: _chatController,
-                              height: height,
-                              width: width,
-                              messages: <String>[],
-                              onSend: () {})
-                        ],
-                      ),
-                    ),
-                    //NOTE:Chat
-                  ],
-                ),
+              context: context,
+              currentUserModel: _currentUserModel,
+              messages: messages,
+              chatController: _chatController,
+              uploadResultsController: _uploadResultsController,
+              onTapUploadResults: (String battleId) {
+                BlocProvider.of<AcceptedBloc>(context)
+                    .add(accepted_bloc.UploadResultBattle(id: battleId));
+              },
+              distance: distance(distance: widget.activeModel.distance),
+              opponentName: getOpponentName(
+                model: widget.activeModel,
+                currentUserId: widget.currentUserId,
               ),
+              opponentPhoto: getOpponentPhoto(
+                model: widget.activeModel,
+                currentUserId: widget.currentUserId,
+              ),
+              myProofTime: getMyProofTime(
+                model: widget.activeModel,
+                currentUserId: widget.currentUserId,
+              ),
+              myProofPhotos: getMyProofPhotos(
+                model: widget.activeModel,
+                currentUserId: widget.currentUserId,
+              ).cast<String>(),
+              opponentProofTime: getOpponentProofTime(
+                model: widget.activeModel,
+                currentUserId: widget.currentUserId,
+              ),
+              opponentProofPhotos: getOpponentProofPhotos(
+                model: widget.activeModel,
+                currentUserId: widget.currentUserId,
+              ).cast<String>(),
             ),
           );
         }),
@@ -175,6 +154,7 @@ class _AcceptedPageState extends State<AcceptedPage> {
 
   @override
   void dispose() {
+    _chatController.dispose();
     super.dispose();
   }
 }
