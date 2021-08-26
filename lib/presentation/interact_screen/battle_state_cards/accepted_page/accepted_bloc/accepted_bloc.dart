@@ -9,8 +9,16 @@ class AcceptedBloc extends Bloc<AcceptedEvent, AcceptedState> {
   Stream<AcceptedState> mapEventToState(AcceptedEvent event) async* {
     if (event is UpdateState) {
       yield StateUpdated();
-    } else if (event is UploadResultBattle) {
-      yield ResultBattleUploaded(id: event.id);
+    } else if (event is PrepareResultBattle) {
+      yield ResultBattlePrepared();
+    } else if (event is ShowUploadResultPage) {
+      yield UploadResultPageShown(isNeedResultPage: event.isNeedResultPage);
+    } else if (event is OpenTimePicker) {
+      yield TimePickerOpened();
+    }else if (event is OpenGallery) {
+      yield GalleryIsOpened();
+    }else if (event is UploadResultBattle) {
+      yield ResultBattleUploaded();
     }
   }
 }

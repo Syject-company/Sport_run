@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -101,7 +103,6 @@ Widget inputTextChatField({
   required double width,
   required double height,
   required VoidCallback onSend,
-  required List<String> messages,
 }) {
   return Row(
     children: <Widget>[
@@ -111,8 +112,8 @@ Widget inputTextChatField({
           controller: controller,
           style: const TextStyle(
             color: Colors.black87,
-            fontSize: 16.0,
-            fontWeight: FontWeight.w600,
+            fontSize: 15.0,
+            fontWeight: FontWeight.w500,
           ),
           cursorColor: const Color(0xffFF1744),
           decoration: InputDecoration(
@@ -189,6 +190,58 @@ Widget buttonWithIcon(
           ),
         ],
       ),
+    ),
+  );
+}
+
+Widget buttonWithIconAndTitleBelow({
+  required VoidCallback onPressed,
+  required double height,
+  double width = double.maxFinite,
+  double iconSize = 24.0,
+  Color buttonColor = Colors.white,
+  Color textColor = Colors.black,
+  Color? iconColor,
+  double textSize = 17.0,
+  String? text,
+  required String icon,
+  Color? shadowColor,
+}) {
+  return Center(
+    child: Column(
+      children: <Widget>[
+        ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            shadowColor: shadowColor,
+            minimumSize: Size(width, height),
+            primary: buttonColor,
+          ),
+          child: Image.asset(
+            icon,
+            height: iconSize,
+            width: iconSize,
+            color: iconColor,
+          ),
+        ),
+        Visibility(
+          visible: text != null,
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 15.0),
+            child: Text(
+              text ?? '',
+              style: TextStyle(
+                fontSize: textSize,
+                color: textColor,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+        ),
+      ],
     ),
   );
 }
@@ -591,118 +644,6 @@ void dialog({
                   textColor: redColor,
                   buttonTextSize: 13.sp,
                   onPressed: onApplyPressed,
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void uploadResultsDialog({
-  required BuildContext context,
-  required double width,
-  required double height,
-  required String time,
-  required VoidCallback onAddPressed,
-  required VoidCallback onTimePressed,
-}) {
-  showDialog<dynamic>(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Row(
-          children: <Widget>[
-            Image.asset(
-              interactIcon,
-              height: 8.0,
-              width: 8.0,
-              fit: BoxFit.contain,
-              color: Colors.red,
-            ),
-            const SizedBox(
-              width: 10.0,
-            ),
-            Text(
-              'Upload result',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: 'roboto',
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-        content: SizedBox(
-          // TODO Size
-          height: 300,
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-                child: Text(
-                  'Time',
-                  style: TextStyle(
-                      color: const Color(0xff838383),
-                      fontSize: 13.sp,
-                      fontFamily: 'roboto',
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
-              Padding(
-                padding:
-                    EdgeInsets.only(left: width * 0.02, right: width * 0.03),
-                child: TextButton(
-                  onPressed: onTimePressed,
-                  child: Text(
-                    time,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15.sp,
-                      fontFamily: 'roboto',
-                      fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                width: 100.0,
-                height: 50.0,
-                child: buttonNoIcon(
-                  title: 'CANCEL',
-                  color: Colors.transparent,
-                  height: 40.h,
-                  shadowColor: Colors.transparent,
-                  textColor: Colors.black,
-                  buttonTextSize: 13.sp,
-                  onPressed: () async {
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-              SizedBox(
-                width: 100.0,
-                height: 50.0,
-                child: buttonNoIcon(
-                  title: 'ADD',
-                  color: Colors.transparent,
-                  height: 40.h,
-                  shadowColor: Colors.transparent,
-                  textColor: redColor,
-                  buttonTextSize: 13.sp,
-                  onPressed: onAddPressed,
                 ),
               ),
             ],
@@ -1313,7 +1254,6 @@ Widget interactListItem({
               width: width,
               height: height * 0.038,
               margin: EdgeInsets.only(
-                left: height * 0.062,
                 bottom: height * 0.02,
               ),
               child: SingleChildScrollView(
@@ -1431,7 +1371,8 @@ Widget battleDetailsCard({
   required List<Messages> messages,
   required TextEditingController chatController,
   required RoundedLoadingButtonController uploadResultsController,
-  required Function(String battleId) onTapUploadResults,
+  required VoidCallback onTapUploadResults,
+  required VoidCallback onMessageSend,
 }) {
   return Center(
     child: SizedBox(
@@ -1700,9 +1641,35 @@ Widget battleDetailsCard({
                     height: height * 0.271,
                     width: width,
                     child: messages.isNotEmpty
-                        ? Column(
-                            children: <Widget>[],
-                          )
+                        ? ListView.builder(
+                            itemCount: messages.length,
+                            reverse: true,
+                            physics: const BouncingScrollPhysics(),
+                            itemBuilder: (BuildContext con, int index) {
+                              return Wrap(children: <Widget>[
+                                Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: height * 0.008),
+                                  decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(10.0),
+                                      topLeft: Radius.circular(10.0),
+                                      topRight: Radius.circular(10.0),
+                                    ),
+                                    color: Color(0xffF5F5F5),
+                                  ),
+                                  child: Text(
+                                    messages[index].text ?? '.',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontFamily: 'roboto',
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ]);
+                            })
                         : Center(
                             child: Image.asset(
                               startChatImage,
@@ -1718,11 +1685,11 @@ Widget battleDetailsCard({
                     indent: 1.0,
                   ),
                   inputTextChatField(
-                      controller: chatController,
-                      height: height,
-                      width: width,
-                      messages: <String>[],
-                      onSend: () {})
+                    controller: chatController,
+                    height: height,
+                    width: width,
+                    onSend: onMessageSend,
+                  )
                 ],
               ),
             ),
@@ -1743,7 +1710,7 @@ Widget timeAndPhotoInteract({
   required List<String> myProofPhotos,
   required List<String> opponentProofPhotos,
   required RoundedLoadingButtonController uploadResultsController,
-  required Function(String battleId) onTapUploadResults,
+  required VoidCallback onTapUploadResults,
 }) {
   return Padding(
     padding: EdgeInsets.only(
@@ -1804,7 +1771,7 @@ Widget timePhotosProofs({
   required String time,
   required List<String> photos,
   required RoundedLoadingButtonController uploadResultsController,
-  required Function(String battleId) onTapUploadResults,
+  required VoidCallback onTapUploadResults,
   required String battleId,
 }) {
   return SizedBox(
@@ -1822,9 +1789,7 @@ Widget timePhotosProofs({
               controller: uploadResultsController,
               textColor: Colors.black,
               backColor: const Color(0xffF2F2F2),
-              onTap: () {
-                onTapUploadResults(battleId);
-              },
+              onTap: onTapUploadResults,
             ),
           )
         : Column(
@@ -1946,6 +1911,212 @@ Widget showEmptyListText({required double height, required double width}) {
               fontWeight: FontWeight.w500),
         ),
       ],
+    ),
+  );
+}
+
+Widget uploadBattleResult({
+  required double width,
+  required double height,
+  required String resultTime,
+  required VoidCallback onCancelTap,
+  required VoidCallback onUploadTap,
+  required VoidCallback onTimeTap,
+  required VoidCallback onAddPhotoFirstTap,
+  required VoidCallback onAddPhotoSecondTap,
+  required File? imageFirst,
+  required File? imageSecond,
+}) {
+  return Center(
+    child: Container(
+      height: height * 0.67,
+      margin: EdgeInsets.all(width * 0.025),
+      padding: EdgeInsets.all(width * 0.05),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            spreadRadius: 200,
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Image.asset(
+                interactIcon,
+                height: 10.0,
+                width: 10.0,
+                fit: BoxFit.contain,
+                color: Colors.red,
+              ),
+              const SizedBox(
+                width: 10.0,
+              ),
+              Text(
+                'Upload result',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'roboto',
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: height * 0.03,
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Time',
+              style: TextStyle(
+                  color: const Color(0xff838383),
+                  fontSize: 13.sp,
+                  fontFamily: 'roboto',
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
+          SizedBox(
+            width: width,
+            child: TextButton(
+              onPressed: onTimeTap,
+              style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero, alignment: Alignment.centerLeft),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    resultTime,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Divider(
+                    height: 1,
+                    color: Colors.black,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: height * 0.02,
+          ),
+          Text(
+            'You can upload 1 or 2 photos',
+            style: TextStyle(
+                color: Colors.grey,
+                fontFamily: 'roboto',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            height: height * 0.08,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              if (imageFirst == null)
+                SizedBox(
+                  width: width * 0.35,
+                  height: width * 0.35,
+                  child: buttonWithIconAndTitleBelow(
+                    buttonColor: const Color(0xffF4F4F4),
+                    textColor: Colors.grey,
+                    shadowColor: Colors.transparent,
+                    textSize: 15.sp,
+                    icon: addIcon,
+                    width: width * 0.2,
+                    height: width * 0.2,
+                    text: 'Add photo',
+                    onPressed: onAddPhotoFirstTap,
+                  ),
+                )
+              else
+                SizedBox(
+                  width: width * 0.35,
+                  height: width * 0.35,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.file(
+                      imageFirst,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              if (imageSecond == null)
+                SizedBox(
+                  width: width * 0.35,
+                  height: width * 0.35,
+                  child: buttonWithIconAndTitleBelow(
+                    buttonColor: const Color(0xffF4F4F4),
+                    textColor: Colors.grey,
+                    shadowColor: Colors.transparent,
+                    textSize: 15.sp,
+                    icon: addIcon,
+                    width: width * 0.2,
+                    height: width * 0.2,
+                    text: 'Add photo',
+                    onPressed: onAddPhotoFirstTap,
+                  ),
+                )
+              else
+                SizedBox(
+                  width: width * 0.35,
+                  height: width * 0.35,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.file(
+                      imageSecond,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const Spacer(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              SizedBox(
+                width: 100.0,
+                height: 50.0,
+                child: buttonNoIcon(
+                  title: 'CANCEL',
+                  color: Colors.transparent,
+                  height: 40.h,
+                  shadowColor: Colors.transparent,
+                  textColor: Colors.black,
+                  buttonTextSize: 13.sp,
+                  onPressed: onCancelTap,
+                ),
+              ),
+              SizedBox(
+                width: 100.0,
+                height: 50.0,
+                child: buttonNoIcon(
+                  title: 'UPLOAD',
+                  color: Colors.transparent,
+                  height: 40.h,
+                  shadowColor: Colors.transparent,
+                  textColor: redColor,
+                  buttonTextSize: 13.sp,
+                  onPressed: onUploadTap,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     ),
   );
 }

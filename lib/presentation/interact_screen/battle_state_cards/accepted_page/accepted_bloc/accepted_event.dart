@@ -7,11 +7,19 @@ abstract class AcceptedEvent extends Equatable {
 
 class UpdateState extends AcceptedEvent {}
 
-class UploadResultBattle extends AcceptedEvent {
-  UploadResultBattle({required this.id});
+class PrepareResultBattle extends AcceptedEvent {}
 
-  final String id;
+class UploadResultBattle extends AcceptedEvent {}
+
+class ShowUploadResultPage extends AcceptedEvent {
+   ShowUploadResultPage({required this.isNeedResultPage});
+
+  final bool isNeedResultPage;
 
   @override
-  List<Object> get props => <Object>[id];
+  List<Object> get props => <Object>[isNeedResultPage];
 }
+
+class OpenTimePicker extends AcceptedEvent {}
+
+class OpenGallery extends AcceptedEvent {}

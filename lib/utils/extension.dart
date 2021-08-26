@@ -34,6 +34,22 @@ extension DateTimeExtension on void {
         DateTime(date.year, date.month, date.day, time.hour, time.minute)
             .toLocal());
   }
+//0001-01-01T00:00:00
+  String getFormattedTimeForServer({
+    required TimeOfDay time,
+  }) {
+    return DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(
+        DateTime(1, 1, 1, time.hour, time.minute)
+            .toLocal());
+  }
+//00:00
+  String getFormattedTimeForUser({
+    required TimeOfDay time,
+  }) {
+    return DateFormat('HH:mm').format(
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, time.hour, time.minute)
+            .toLocal());
+  }
 }
 
 extension ToastExtension on void {

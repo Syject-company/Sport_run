@@ -21,6 +21,14 @@ import 'package:one2one_run/utils/constants.dart';
     await _startWebSocket();
     await _hubConnection?.invoke('ConnectToGroups');
     _hubConnection?.on('ReceiveBattleNotification', onReceiveNotification);
+    // TODO: check on back error
+/*    await _hubConnection?.invoke('ConnectToGroups');
+    await _hubConnection?.invoke('SendMessage',args: <Object>['message from socket', '14c2e3f0-0b18-4606-9f61-8867d66beeda']).then((dynamic value) {
+      dynamic dd = value;
+    }).catchError((dynamic value){
+       dynamic dd = value;
+    });
+    _hubConnection?.on('ReceiveMessage', onReceiveNotification);*/
   }
 
   Future<void> _startWebSocket() async {

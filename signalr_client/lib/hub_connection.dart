@@ -241,7 +241,7 @@ class HubConnection {
 
     final formatedMessage = _protocol.writeMessage(invocationMessage);
     _sendMessage(formatedMessage).catchError((dynamic error) {
-      completer.completeError(error as GeneralError);
+      completer.completeError(error);
       _callbacks.remove(invocationMessage.invocationId);
     });
 
