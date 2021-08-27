@@ -31,9 +31,13 @@ class _InteractPageState extends State<InteractPage> {
   final InteractApi _interActApi = InteractApi();
   final HomeApi _homeApi = HomeApi();
 
+  late Future<List<BattleRespondModel>?> getInteractTabsDataById;
+
   @override
   void initState() {
     super.initState();
+
+    getInteractTabsDataById = _interActApi.getInteractTabsDataById(tabId: 0);
   }
 
   @override
@@ -57,6 +61,8 @@ class _InteractPageState extends State<InteractPage> {
                     fontSize: 16.0,
                     textColor: Colors.green,
                     gravity: ToastGravity.CENTER);
+                getInteractTabsDataById =
+                    _interActApi.getInteractTabsDataById(tabId: 0);
               } else {
                 await toastUnexpectedError();
               }
@@ -75,6 +81,10 @@ class _InteractPageState extends State<InteractPage> {
                 await toastUnexpectedError();
               }
             });
+          } else if (state is ActivePageUpdated) {
+            getInteractTabsDataById =
+                _interActApi.getInteractTabsDataById(tabId: 0);
+            print('onNeedToRefreshActivePage');
           }
           BlocProvider.of<InteractBloc>(context)
               .add(interact_bloc.UpdateState());
@@ -96,15 +106,18 @@ class _InteractPageState extends State<InteractPage> {
               body: TabBarView(
                 children: <Widget>[
                   FutureBuilder<List<BattleRespondModel>?>(
-                      future: _interActApi.getInteractTabsDataById(tabId: 0),
+                      future: getInteractTabsDataById,
                       builder: (BuildContext context,
                           AsyncSnapshot<List<BattleRespondModel>?> snapshot) {
                         if (snapshot.hasData && snapshot.data != null) {
                           return ActiveTab(
-                            activeList:
-                                snapshot.data ?? <BattleRespondModel>[],
+                            activeList: snapshot.data ?? <BattleRespondModel>[],
                             currentUserId:
                                 PreferenceUtils.getCurrentUserModel().id,
+                            onNeedToRefreshActivePage: () {
+                              BlocProvider.of<InteractBloc>(context)
+                                  .add(interact_bloc.UpdateActivePage());
+                            },
                           );
                         }
                         return Container(

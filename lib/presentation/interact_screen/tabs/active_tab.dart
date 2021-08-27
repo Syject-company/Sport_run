@@ -11,10 +11,12 @@ class ActiveTab extends StatelessWidget {
     Key? key,
     required this.activeList,
     required this.currentUserId,
+    required this.onNeedToRefreshActivePage,
   }) : super(key: key);
 
   final List<BattleRespondModel> activeList;
   final String currentUserId;
+  final VoidCallback onNeedToRefreshActivePage;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +57,7 @@ class ActiveTab extends StatelessWidget {
                                 builder: (BuildContext context) =>  AcceptedPage(
                                  activeModel: activeList[index],
                                   currentUserId: currentUserId,
+                                  onNeedToRefreshActivePage: onNeedToRefreshActivePage,
                                 )));
                       },
                     );

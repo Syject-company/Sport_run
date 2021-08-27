@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -1362,7 +1363,8 @@ Widget battleDetailsCard({
   required BuildContext context,
   String myProofTime = '00:00',
   String opponentProofTime = '00:00',
-  List<String>? myProofPhotos,
+  List<String> myProofsPhoto = const <String>[],
+  List<String> myProofPhotosLocalStorage = const <String>[],
   List<String>? opponentProofPhotos,
   required UserModel currentUserModel,
   required String distance,
@@ -1448,7 +1450,9 @@ Widget battleDetailsCard({
                           width: width,
                           model: model,
                           myProofTime: myProofTime,
-                          myProofPhotos: myProofPhotos ?? <String>[],
+                          myProofPhotos: myProofsPhoto.isNotEmpty
+                              ? myProofsPhoto
+                              : myProofPhotosLocalStorage,
                           opponentProofTime: opponentProofTime,
                           opponentProofPhotos:
                               opponentProofPhotos ?? <String>[],
@@ -1776,7 +1780,7 @@ Widget timePhotosProofs({
 }) {
   return SizedBox(
     width: width / 2.45,
-    child: isMyProofs && (photos.isEmpty || time == '00:00')
+    child: isMyProofs && photos.isEmpty
         ? Padding(
             padding: EdgeInsets.symmetric(
               horizontal: width * 0.03,
@@ -1855,9 +1859,15 @@ Widget timePhotosProofs({
                       width: height * 0.08,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
-                        child: Image.network(
-                          photos[0],
+                        child: CachedNetworkImage(
+                          imageUrl: photos[0],
                           fit: BoxFit.fill,
+                          placeholder: (BuildContext context, String url) =>  Container(
+                            width: 50,
+                            height: 50,
+                            color: Colors.transparent,
+                            child: Center(child: progressIndicator()),
+                          ),
                         ),
                       ),
                     ),
@@ -1869,9 +1879,15 @@ Widget timePhotosProofs({
                         margin: EdgeInsets.only(left: width * 0.03),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
-                          child: Image.network(
-                            photos.length > 1 ? photos[1] : '',
+                          child: CachedNetworkImage(
+                            imageUrl: photos.length > 1 ? photos[1] : '',
                             fit: BoxFit.fill,
+                            placeholder: (BuildContext context, String url) =>  Container(
+                              width: 50,
+                              height: 50,
+                              color: Colors.transparent,
+                              child: Center(child: progressIndicator()),
+                            ),
                           ),
                         ),
                       ),
@@ -1915,7 +1931,7 @@ Widget showEmptyListText({required double height, required double width}) {
   );
 }
 
-Widget uploadBattleResult({
+Widget uploadBattleResultDialog({
   required double width,
   required double height,
   required String resultTime,
@@ -1926,6 +1942,7 @@ Widget uploadBattleResult({
   required VoidCallback onAddPhotoSecondTap,
   required File? imageFirst,
   required File? imageSecond,
+  required bool isUploading,
 }) {
   return Center(
     child: Container(
@@ -2098,6 +2115,15 @@ Widget uploadBattleResult({
                   textColor: Colors.black,
                   buttonTextSize: 13.sp,
                   onPressed: onCancelTap,
+                ),
+              ),
+              Container(
+                width: 50,
+                height: 50,
+                color: Colors.transparent,
+                child: Visibility(
+                  visible: isUploading,
+                  child: Center(child: progressIndicator()),
                 ),
               ),
               SizedBox(

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -10,15 +9,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/interact_api.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
+import 'package:one2one_run/data/models/battle_result_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/accepted_page/accepted_bloc/accepted_bloc.dart';
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/accepted_page/accepted_bloc/accepted_state.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/accepted_page/accepted_bloc/bloc.dart'
     as accepted_bloc;
-import 'package:http/http.dart';
-import 'package:one2one_run/presentation/interact_screen/battle_state_cards/accepted_page/accepted_bloc/accepted_state.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/extension.dart'
     show UserData, DateTimeExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -30,10 +28,12 @@ class AcceptedPage extends StatefulWidget {
     Key? key,
     required this.activeModel,
     required this.currentUserId,
+    required this.onNeedToRefreshActivePage,
   }) : super(key: key);
 
   final BattleRespondModel activeModel;
   final String currentUserId;
+  final VoidCallback onNeedToRefreshActivePage;
 
   @override
   _AcceptedPageState createState() => _AcceptedPageState();
@@ -45,16 +45,17 @@ class _AcceptedPageState extends State<AcceptedPage> {
       RoundedLoadingButtonController();
 
   List<Messages> _messages = <Messages>[];
-  List<String> _resultPhotos = <String>[];
+  final List<String> _resultPhotos = <String>[];
 
   final InteractApi _interactApi = InteractApi();
 
   late UserModel _currentUserModel;
 
   String _resultTime = '01:30';
-  String _resultTimeForServer = '0001-01-01T00:01:30';
+  String _resultTimeForServer = '0001-01-01T01:30:00';
 
   bool _isUploadResultsPage = false;
+  bool _isUploadingProgress = false;
 
   final ImagePicker _imagePicker = ImagePicker();
   File? _imageFirst;
@@ -101,30 +102,40 @@ class _AcceptedPageState extends State<AcceptedPage> {
                 listener: (final BuildContext context,
                     final AcceptedState state) async {
                   if (state is ResultBattlePrepared) {
-                    if (_imageFirst != null) {
-                      await _interactApi
-                          .sendResultPhoto(fileImage: _imageFirst)
-                          .then((String? photoFirst) async {
-                        if (photoFirst != null) {
-                          _resultPhotos.add(photoFirst);
+                    _isUploadingProgress = true;
+                    await _interactApi
+                        .sendResultPhoto(fileImage: _imageFirst)
+                        .then((String? photoFirst) async {
+                      if (photoFirst != null) {
+                        _resultPhotos
+                            .add(photoFirst.replaceAll(RegExp(r'\"'), ''));
 
-                          if (_imageSecond != null) {
-                            await _interactApi
-                                .sendResultPhoto(fileImage: _imageSecond)
-                                .then((String? photoSecond) {
-                              if (photoSecond != null) {
-                                _resultPhotos.add(photoSecond);
-                              }
-                            });
-                          }
+                        if (_imageSecond != null) {
+                          await _interactApi
+                              .sendResultPhoto(fileImage: _imageSecond)
+                              .then((String? photoSecond) {
+                            if (photoSecond != null) {
+                              _resultPhotos.add(
+                                  photoSecond.replaceAll(RegExp(r'\"'), ''));
+                            }
+                          });
                         }
-                      });
-                    }
+                      }
+                    });
                     BlocProvider.of<AcceptedBloc>(context)
                         .add(accepted_bloc.UploadResultBattle());
                   } else if (state is ResultBattleUploaded) {
-                   await _interactApi.sendBattleResult(model: model, id: id)
-
+                         await _interactApi.sendBattleResult(model: BattleResultModel(
+                     photos: _resultPhotos,
+                     time: _resultTimeForServer,
+                   ), id: widget.activeModel.id).then((bool value){
+                     var ddv = value;
+                   });
+                    _isUploadingProgress = false;
+                    widget.onNeedToRefreshActivePage();
+                    BlocProvider.of<AcceptedBloc>(context).add(
+                        accepted_bloc.ShowUploadResultPage(
+                            isNeedResultPage: false));
                   } else if (state is UploadResultPageShown) {
                     _isUploadResultsPage = state.isNeedResultPage;
                     _clearResultsData();
@@ -158,12 +169,13 @@ class _AcceptedPageState extends State<AcceptedPage> {
                       backgroundColor: colorPrimary,
                     ),
                     body: _isUploadResultsPage
-                        ? uploadBattleResult(
+                        ? uploadBattleResultDialog(
                             width: width,
                             height: height,
                             resultTime: _resultTime,
                             imageFirst: _imageFirst,
                             imageSecond: _imageSecond,
+                            isUploading: _isUploadingProgress,
                             onTimeTap: () {
                               BlocProvider.of<AcceptedBloc>(context)
                                   .add(accepted_bloc.OpenTimePicker());
@@ -219,14 +231,17 @@ class _AcceptedPageState extends State<AcceptedPage> {
                               model: widget.activeModel,
                               currentUserId: widget.currentUserId,
                             ),
-                            myProofTime: getMyProofTime(
-                              model: widget.activeModel,
-                              currentUserId: widget.currentUserId,
-                            ),
-                            myProofPhotos: getMyProofPhotos(
+                            myProofTime: _resultPhotos.isEmpty
+                                ? getMyProofTime(
+                                    model: widget.activeModel,
+                                    currentUserId: widget.currentUserId,
+                                  )
+                                : _resultTime,
+                            myProofsPhoto: getMyProofPhotos(
                               model: widget.activeModel,
                               currentUserId: widget.currentUserId,
                             ).cast<String>(),
+                            myProofPhotosLocalStorage: _resultPhotos,
                             opponentProofTime: getOpponentProofTime(
                               model: widget.activeModel,
                               currentUserId: widget.currentUserId,
@@ -292,7 +307,7 @@ class _AcceptedPageState extends State<AcceptedPage> {
     }
 
     _resultTime = '01:30';
-    _resultTimeForServer = '0001-01-01T00:01:30';
+    _resultTimeForServer = '0001-01-01T01:30:00';
   }
 
   @override
