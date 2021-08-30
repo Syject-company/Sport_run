@@ -29,5 +29,7 @@ class BattleIsDeclined extends InteractState {
   List<Object> get props => <Object>[id];
 }
 
+class ActivePageUpdated extends InteractState {}
+
 
 

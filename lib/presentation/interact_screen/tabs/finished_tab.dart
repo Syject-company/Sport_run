@@ -33,8 +33,8 @@ class FinishedTab extends StatelessWidget {
                       context: context,
                       width: width,
                       height: height,
-                      //heightPercentage: 0.245,
-                      heightPercentage: 0.4,
+                      heightPercentage: 0.245,
+                      //heightPercentage: 0.4,
                       model: finishedList[index],
                       distance:
                           distance(distance: finishedList[index].distance),
@@ -53,22 +53,6 @@ class FinishedTab extends StatelessWidget {
                         model: finishedList[index],
                         currentUserId: currentUserId,
                       ),
-                      myProofTime: getMyProofTime(
-                        model: finishedList[index],
-                        currentUserId: currentUserId,
-                      ),
-                      myProofPhotos: getMyProofPhotos(
-                        model: finishedList[index],
-                        currentUserId: currentUserId,
-                      ).cast<String>(),
-                      opponentProofTime: getOpponentProofTime(
-                        model: finishedList[index],
-                        currentUserId: currentUserId,
-                      ),
-                      opponentProofPhotos: getOpponentProofPhotos(
-                        model: finishedList[index],
-                        currentUserId: currentUserId,
-                      ).cast<String>(),
                       onTapCard: (){
                         // TODO(Issa): action.
                       },

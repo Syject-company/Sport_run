@@ -24,3 +24,5 @@ class DeclineBattle extends InteractEvent {
   @override
   List<Object> get props => <Object>[id];
 }
+
+class UpdateActivePage extends InteractEvent {}

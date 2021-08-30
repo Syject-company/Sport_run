@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
+import 'package:one2one_run/data/models/battle_result_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -12,6 +13,12 @@ class InteractApi {
 
   final String _urlGetOpponentChat =
       '${Constants.domain}${Constants.getOpponentChatUrl}';
+
+  final String _urlSendResultPhoto =
+      '${Constants.domain}${Constants.sendResultPhotoUrl}';
+
+  final String _urlSendBattleResult =
+      '${Constants.domain}${Constants.createBattleUrl}';
 
   //@get
   Future<List<BattleRespondModel>?> getInteractTabsDataById(
@@ -47,5 +54,47 @@ class InteractApi {
           json.decode(res.body) as Map<String, dynamic>);
     }
     return null;
+  }
+
+  //@patch
+  Future<String?> sendResultPhoto({required File? fileImage}) async {
+    final String token = PreferenceUtils.getUserToken();
+
+    final MultipartRequest request =
+        MultipartRequest('PATCH', Uri.parse(_urlSendResultPhoto));
+
+    final MultipartFile multipartFile =
+        await MultipartFile.fromPath('Photo', fileImage!.path);
+
+    request.headers.addAll(<String, String>{
+      HttpHeaders.authorizationHeader: token,
+      HttpHeaders.contentTypeHeader: 'multipart/form-data'
+    });
+    request.files.add(multipartFile);
+
+    final StreamedResponse response = await request.send();
+
+    //NOTE: to get the body response from StreamedResponse
+    final Response responsePhoto = await Response.fromStream(response);
+
+    if (responsePhoto.statusCode == 200) {
+      return responsePhoto.body;
+    }
+
+    return null;
+  }
+
+  //@patch
+  Future<bool> sendBattleResult({required BattleResultModel model, required String id}) async {
+    final String token = PreferenceUtils.getUserToken();
+    print('User token: $token');
+    final Response res = await patch(Uri.parse('$_urlSendBattleResult/$id/Results'),
+        body: json.encode(model),
+        headers: <String, String>{
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
+        });
+
+    return res.statusCode == 200;
   }
 }

@@ -12,7 +12,10 @@ class OpponentChatModel {
   factory OpponentChatModel.fromJson(Map<String, dynamic> map) {
     return OpponentChatModel(
       id: map['id'] as String,
-      messages: map['messages'] as List<dynamic>,
+      messages: (map['messages'] as List<dynamic>)
+          .map<Messages>((dynamic value) =>
+              Messages.fromJson(value as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -68,7 +71,7 @@ class Messages {
     required this.messageGroupId,
   });
 
-  factory Messages.fromMap(Map<String, dynamic> map) {
+  factory Messages.fromJson(Map<String, dynamic> map) {
     return Messages(
       id: map['id'] as String,
       text: map['text'] as String,
@@ -80,7 +83,7 @@ class Messages {
   }
 
   final String id;
-  final String text;
+  final String? text;
   final String applicationUserId;
   final String dateTime;
   final int messageType;
@@ -130,7 +133,7 @@ class Messages {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
       'text': text,
