@@ -11,6 +11,7 @@ import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/data_values.dart';
+import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 TextStyle get hintTextStyle => const TextStyle(
@@ -655,6 +656,96 @@ void dialog({
   );
 }
 
+void dialogImageZoom({
+  required BuildContext context,
+  required double height,
+  required double width,
+  required List<String> photos,
+}) {
+  showDialog<dynamic>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        insetPadding:
+            const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+        title: Text(
+          'Pinch to zoom',
+          style: TextStyle(
+              color: Colors.black,
+              fontFamily: 'roboto',
+              fontSize: 13.sp,
+              fontWeight: FontWeight.normal),
+        ),
+        content: SizedBox(
+          height: height * 0.6,
+          width: width,
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  PinchZoomImage(
+                    image: CachedNetworkImage(
+                      imageUrl: photos[0],
+                      fit: BoxFit.fill,
+                      placeholder: (BuildContext context, String url) =>
+                          Container(
+                        width: 60,
+                        height: 60,
+                        color: Colors.transparent,
+                        child: Center(child: progressIndicator()),
+                      ),
+                    ),
+                    zoomedBackgroundColor:
+                        const Color.fromRGBO(240, 240, 240, 1.0),
+                  ),
+                  Visibility(
+                    visible: photos.length > 1,
+                    child: Container(
+                      margin: EdgeInsets.only(top: height * 0.02),
+                      child: PinchZoomImage(
+                        image: CachedNetworkImage(
+                          imageUrl: photos.length > 1 ? photos[1] : '',
+                          fit: BoxFit.fill,
+                          placeholder: (BuildContext context, String url) =>
+                              Container(
+                            width: 60,
+                            height: 60,
+                            color: Colors.transparent,
+                            child: Center(child: progressIndicator()),
+                          ),
+                        ),
+                        zoomedBackgroundColor:
+                            const Color.fromRGBO(240, 240, 240, 1.0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        actions: <Widget>[
+          SizedBox(
+            width: 100.0,
+            height: 50.0,
+            child: buttonNoIcon(
+              title: 'Close'.toUpperCase(),
+              color: Colors.transparent,
+              height: 40.h,
+              shadowColor: Colors.transparent,
+              textColor: Colors.black,
+              buttonTextSize: 13.sp,
+              onPressed: () async {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 Widget seekBarWeekly({
   required String title,
   required BuildContext context,
@@ -983,14 +1074,8 @@ Widget _userCreatedBattleInfo({
             height: height * 0.07,
             width: height * 0.07,
             margin: EdgeInsets.only(bottom: height * 0.01),
-            child: CircleAvatar(
-              backgroundColor: Colors.transparent,
-              radius: 80,
-              backgroundImage: userPhoto == null
-                  ? AssetImage(
-                      defaultProfileImage,
-                    ) as ImageProvider
-                  : NetworkImage(userPhoto),
+            child: userAvatarPhoto(
+              photoUrl: userPhoto,
             ),
           ),
           Container(
@@ -1217,15 +1302,7 @@ Widget interactListItem({
                 margin: EdgeInsets.only(
                   right: width * 0.02,
                 ),
-                child: CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  radius: 80,
-                  backgroundImage: opponentPhoto == null
-                      ? AssetImage(
-                          defaultProfileImage,
-                        ) as ImageProvider
-                      : NetworkImage(opponentPhoto),
-                ),
+                child: userAvatarPhoto(photoUrl: opponentPhoto),
               ),
               Text(
                 'Opponent',
@@ -1375,6 +1452,7 @@ Widget battleDetailsCard({
   required RoundedLoadingButtonController uploadResultsController,
   required VoidCallback onTapUploadResults,
   required VoidCallback onMessageSend,
+  required Function(List<String> photos) onTapProofImage,
 }) {
   return Center(
     child: SizedBox(
@@ -1458,6 +1536,7 @@ Widget battleDetailsCard({
                               opponentProofPhotos ?? <String>[],
                           uploadResultsController: uploadResultsController,
                           onTapUploadResults: onTapUploadResults,
+                          onTapProofImage: onTapProofImage,
                         ),
                       ],
                     ),
@@ -1477,17 +1556,8 @@ Widget battleDetailsCard({
                                   SizedBox(
                                     height: height * 0.1,
                                     width: height * 0.1,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.transparent,
-                                      radius: 80,
-                                      backgroundImage:
-                                          currentUserModel.photoLink == null
-                                              ? AssetImage(
-                                                  defaultProfileImage,
-                                                ) as ImageProvider
-                                              : NetworkImage(
-                                                  currentUserModel.photoLink!),
-                                    ),
+                                    child: userAvatarPhoto(
+                                        photoUrl: currentUserModel.photoLink),
                                   ),
                                   SizedBox(
                                     height: height * 0.01,
@@ -1568,15 +1638,8 @@ Widget battleDetailsCard({
                                   SizedBox(
                                     height: height * 0.1,
                                     width: height * 0.1,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.transparent,
-                                      radius: 80,
-                                      backgroundImage: opponentPhoto == null
-                                          ? AssetImage(
-                                              defaultProfileImage,
-                                            ) as ImageProvider
-                                          : NetworkImage(opponentPhoto),
-                                    ),
+                                    child: userAvatarPhoto(
+                                        photoUrl: opponentPhoto),
                                   ),
                                   SizedBox(
                                     height: height * 0.01,
@@ -1650,29 +1713,72 @@ Widget battleDetailsCard({
                             reverse: true,
                             physics: const BouncingScrollPhysics(),
                             itemBuilder: (BuildContext con, int index) {
-                              return Wrap(children: <Widget>[
-                                Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  margin: EdgeInsets.symmetric(
-                                      vertical: height * 0.008),
-                                  decoration: const BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                      bottomRight: Radius.circular(10.0),
-                                      topLeft: Radius.circular(10.0),
-                                      topRight: Radius.circular(10.0),
-                                    ),
-                                    color: Color(0xffF5F5F5),
+                              return Column(
+                                children: <Widget>[
+                                  Visibility(
+                                    visible: currentUserModel.id ==
+                                        messages[index].applicationUserId,
+                                    child: Wrap(children: <Widget>[
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8.0),
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: height * 0.008),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                              bottomLeft: Radius.circular(10.0),
+                                              topLeft: Radius.circular(10.0),
+                                              topRight: Radius.circular(10.0),
+                                            ),
+                                            color: redColor,
+                                          ),
+                                          child: Text(
+                                            messages[index].text ?? '.',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: 'roboto',
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
                                   ),
-                                  child: Text(
-                                    messages[index].text ?? '.',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'roboto',
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.w500),
+                                  Visibility(
+                                    visible: currentUserModel.id !=
+                                        messages[index].applicationUserId,
+                                    child: Wrap(children: <Widget>[
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8.0),
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: height * 0.008),
+                                          decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              bottomRight:
+                                                  Radius.circular(10.0),
+                                              topLeft: Radius.circular(10.0),
+                                              topRight: Radius.circular(10.0),
+                                            ),
+                                            color: Color(0xffF5F5F5),
+                                          ),
+                                          child: Text(
+                                            messages[index].text ?? '.',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontFamily: 'roboto',
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
                                   ),
-                                ),
-                              ]);
+                                ],
+                              );
                             })
                         : Center(
                             child: Image.asset(
@@ -1715,6 +1821,7 @@ Widget timeAndPhotoInteract({
   required List<String> opponentProofPhotos,
   required RoundedLoadingButtonController uploadResultsController,
   required VoidCallback onTapUploadResults,
+  required Function(List<String> photos) onTapProofImage,
 }) {
   return Padding(
     padding: EdgeInsets.only(
@@ -1744,6 +1851,7 @@ Widget timeAndPhotoInteract({
               battleId: model.id,
               uploadResultsController: uploadResultsController,
               onTapUploadResults: onTapUploadResults,
+              onTapProofImage: onTapProofImage,
             ),
             Container(
               color: Colors.grey,
@@ -1760,6 +1868,7 @@ Widget timeAndPhotoInteract({
               battleId: model.id,
               uploadResultsController: uploadResultsController,
               onTapUploadResults: onTapUploadResults,
+              onTapProofImage: onTapProofImage,
             ),
           ],
         ),
@@ -1776,6 +1885,7 @@ Widget timePhotosProofs({
   required List<String> photos,
   required RoundedLoadingButtonController uploadResultsController,
   required VoidCallback onTapUploadResults,
+  required Function(List<String> photos) onTapProofImage,
   required String battleId,
 }) {
   return SizedBox(
@@ -1850,39 +1960,24 @@ Widget timePhotosProofs({
                 height: height * 0.01,
               ),
               if (photos.isNotEmpty)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: height * 0.08,
-                      width: height * 0.08,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: CachedNetworkImage(
-                          imageUrl: photos[0],
-                          fit: BoxFit.fill,
-                          placeholder: (BuildContext context, String url) =>  Container(
-                            width: 50,
-                            height: 50,
-                            color: Colors.transparent,
-                            child: Center(child: progressIndicator()),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: photos.length > 1,
-                      child: Container(
+                GestureDetector(
+                  onTap: () {
+                    onTapProofImage(photos);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
                         height: height * 0.08,
                         width: height * 0.08,
-                        margin: EdgeInsets.only(left: width * 0.03),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
                           child: CachedNetworkImage(
-                            imageUrl: photos.length > 1 ? photos[1] : '',
+                            imageUrl: photos[0],
                             fit: BoxFit.fill,
-                            placeholder: (BuildContext context, String url) =>  Container(
+                            placeholder: (BuildContext context, String url) =>
+                                Container(
                               width: 50,
                               height: 50,
                               color: Colors.transparent,
@@ -1891,8 +1986,30 @@ Widget timePhotosProofs({
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      Visibility(
+                        visible: photos.length > 1,
+                        child: Container(
+                          height: height * 0.08,
+                          width: height * 0.08,
+                          margin: EdgeInsets.only(left: width * 0.03),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: CachedNetworkImage(
+                              imageUrl: photos.length > 1 ? photos[1] : '',
+                              fit: BoxFit.fill,
+                              placeholder: (BuildContext context, String url) =>
+                                  Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.transparent,
+                                child: Center(child: progressIndicator()),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 )
               else
                 Image.asset(
@@ -2145,4 +2262,32 @@ Widget uploadBattleResultDialog({
       ),
     ),
   );
+}
+
+Widget userAvatarPhoto({required String? photoUrl}) {
+  return photoUrl == null
+      ? CircleAvatar(
+          backgroundColor: Colors.transparent,
+          radius: 80,
+          backgroundImage: AssetImage(
+            defaultProfileImage,
+          ),
+        )
+      : CachedNetworkImage(
+          placeholder: (BuildContext context, String url) => Container(
+            width: 50,
+            height: 50,
+            color: Colors.transparent,
+            child: Center(child: progressIndicator()),
+          ),
+          imageUrl: photoUrl,
+          imageBuilder:
+              (BuildContext context, ImageProvider<Object> imageProvider) {
+            return CircleAvatar(
+              backgroundColor: Colors.transparent,
+              radius: 80,
+              backgroundImage: imageProvider,
+            );
+          },
+        );
 }

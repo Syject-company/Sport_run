@@ -2,9 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
-import 'package:one2one_run/presentation/interact_screen/battle_state_cards/accepted_page/accepted_page.dart';
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/active_detail_page.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
+import 'package:one2one_run/utils/signal_r.dart';
 
 class ActiveTab extends StatelessWidget {
   const ActiveTab({
@@ -12,11 +13,13 @@ class ActiveTab extends StatelessWidget {
     required this.activeList,
     required this.currentUserId,
     required this.onNeedToRefreshActivePage,
+    required this.signalR,
   }) : super(key: key);
 
   final List<BattleRespondModel> activeList;
   final String currentUserId;
   final VoidCallback onNeedToRefreshActivePage;
+  final SignalR signalR;
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +53,18 @@ class ActiveTab extends StatelessWidget {
                       ),
                       isNeedButtons: false,
                       statusCodeNum: activeList[index].status.toInt(),
-                      onTapCard: () async{
+                      onTapCard: () async {
                         await Navigator.push<dynamic>(
                             context,
                             MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) =>  AcceptedPage(
-                                 activeModel: activeList[index],
-                                  currentUserId: currentUserId,
-                                  onNeedToRefreshActivePage: onNeedToRefreshActivePage,
-                                )));
+                                builder: (BuildContext context) =>
+                                    ActiveDetailPage(
+                                      activeModel: activeList[index],
+                                      signalR: signalR,
+                                      currentUserId: currentUserId,
+                                      onNeedToRefreshActivePage:
+                                          onNeedToRefreshActivePage,
+                                    )));
                       },
                     );
                   }),

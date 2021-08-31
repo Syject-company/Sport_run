@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
+import 'package:one2one_run/utils/signal_r.dart';
 
 class PendingTab extends StatelessWidget {
   const PendingTab({
@@ -12,6 +13,7 @@ class PendingTab extends StatelessWidget {
     required this.onTapAccept,
     required this.onTapChange,
     required this.onTapDecline,
+    required this.signalR,
   }) : super(key: key);
 
   final List<BattleRespondModel> pendingList;
@@ -19,6 +21,7 @@ class PendingTab extends StatelessWidget {
   final Function(String id) onTapAccept;
   final Function(String id, BattleRespondModel model) onTapChange;
   final Function(String id) onTapDecline;
+  final SignalR signalR;
 
   @override
   Widget build(BuildContext context) {

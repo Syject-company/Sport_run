@@ -9,7 +9,6 @@ class Constants {
   static const String homeRoute = '/home';
   static const String passwordRoute = '/password';
   static const String editProfileRoute = '/editProfile';
-  static const String acceptedRoute = '/accepted';
 
   //Api urls:
   static const String registerUrl = '/api/Account/registration';
@@ -33,5 +32,9 @@ class Constants {
 
   //Data:
   static const String socketUrl = 'https://one2onerunapi.azurewebsites.net/chathub';
+  static const String socketConnectToGroups = 'ConnectToGroups';
+  static const String socketReceiveBattleNotification = 'ReceiveBattleNotification';
+  static const String socketReceiveMessage = 'ReceiveMessage';
+  static const String socketSendMessage = 'SendMessage';
 
 }

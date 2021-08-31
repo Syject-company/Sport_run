@@ -47,8 +47,8 @@ class _SettingsPageState extends State<SettingsPage> {
         builder: (BuildContext context,
             AsyncSnapshot<SettingsNotificationModel?> snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
-            _isNeedBattleUpdate = snapshot.data!.disableButtlesNotifications;
-            _isNeedChatMessage = snapshot.data!.disableChatsNotifications;
+            _isNeedBattleUpdate = !snapshot.data!.disableButtlesNotifications;
+            _isNeedChatMessage = !snapshot.data!.disableChatsNotifications;
 
             return BlocProvider<SettingsBloc>(
               create: (final BuildContext context) => SettingsBloc(),
@@ -62,8 +62,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   } else if (state is NotificationEnabled) {
                     await _settingsApi
                         .enableNotifications(SettingsNotificationModel(
-                      disableButtlesNotifications: state.enableBattleUpdate,
-                      disableChatsNotifications: state.enableChatMessage,
+                      disableButtlesNotifications: !state.enableBattleUpdate,
+                      disableChatsNotifications: !state.enableChatMessage,
                     ))
                         .then((bool value) async {
                       if (value) {
