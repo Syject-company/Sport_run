@@ -16,12 +16,14 @@ import 'package:one2one_run/presentation/interact_screen/tabs/pending_tab.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
+import 'package:one2one_run/utils/signal_r.dart';
 
 //NOte:'/interact'
 class InteractPage extends StatefulWidget {
-  const InteractPage({Key? key, required this.onTapChange}) : super(key: key);
+  const InteractPage({Key? key, required this.onTapChange, required this.signalR}) : super(key: key);
 
   final Function(String id, BattleRespondModel model) onTapChange;
+  final SignalR signalR;
 
   @override
   _InteractPageState createState() => _InteractPageState();
@@ -112,6 +114,7 @@ class _InteractPageState extends State<InteractPage> {
                         if (snapshot.hasData && snapshot.data != null) {
                           return ActiveTab(
                             activeList: snapshot.data ?? <BattleRespondModel>[],
+                            signalR: widget.signalR,
                             currentUserId:
                                 PreferenceUtils.getCurrentUserModel().id,
                             onNeedToRefreshActivePage: () {
@@ -135,6 +138,7 @@ class _InteractPageState extends State<InteractPage> {
                           return PendingTab(
                             pendingList:
                                 snapshot.data ?? <BattleRespondModel>[],
+                            signalR: widget.signalR,
                             currentUserId:
                                 PreferenceUtils.getCurrentUserModel().id,
                             onTapAccept: (String id) {
@@ -163,6 +167,7 @@ class _InteractPageState extends State<InteractPage> {
                           return FinishedTab(
                             finishedList:
                                 snapshot.data ?? <BattleRespondModel>[],
+                            signalR: widget.signalR,
                             currentUserId:
                                 PreferenceUtils.getCurrentUserModel().id,
                           );

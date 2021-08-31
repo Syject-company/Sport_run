@@ -25,13 +25,14 @@ dependencies:
   rounded_loading_button: ^2.0.5
   image_picker: ^0.8.3+3
   flutter_conditional_rendering: ^2.0.0
+  pinch_zoom_image_last: ^0.4.1
 
   #Functions
   shared_preferences: ^2.0.7
   google_sign_in: ^5.0.7
   sign_in_with_apple: ^3.0.0
-  firebase_messaging: ^10.0.5
-  firebase_core: ^1.5.0
+  firebase_messaging: ^10.0.6
+  firebase_core: ^1.6.0
   intl: ^0.17.0
   signal_r:
     path: signalr_client

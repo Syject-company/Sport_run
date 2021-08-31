@@ -566,6 +566,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         width: width,
                         height: height,
                         child: InteractPage(
+                          signalR: _signalR,
                           onTapChange: (String id, BattleRespondModel model) {
                             BlocProvider.of<HomeBloc>(context).add(
                                 home_bloc.OpenChangeBattleDrawer(id, model));
@@ -1220,20 +1221,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   //NOte: when app is Active
   Future<void> startWebSockets({required BuildContext context}) async {
-    await _signalR.startConnection(
-        onReceiveNotification: (List<Object> arguments) async {
-      if (_isAppInForeground) {
-        final Object data = arguments[0];
-        if (data != null &&
-            _selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
-          final String id =
-              (data as Map<dynamic, dynamic>)['battleId'] as String;
-          _battleId = id;
-          await getBattleById(context: context, battleId: id);
+    await _signalR.startConnection().whenComplete(() async {
+      await _signalR.receiveBattleNotification(
+          onReceiveNotification: (List<Object> arguments) async {
+        if (_isAppInForeground) {
+          final Object data = arguments[0];
+          if (data != null &&
+              _selectedDrawersType != DrawersType.BattleOnNotificationDrawer) {
+            final Map<dynamic, dynamic> dataNotification =
+                data as Map<dynamic, dynamic>;
+            final num messageType = dataNotification['messageType'] as num;
+            if (messageType == 1) {
+              final String id = dataNotification['battleId'] as String;
+              _battleId = id;
+              await getBattleById(context: context, battleId: id);
+            }
+          }
+          print(
+              'SignalR_BattleId: ${(data as Map<dynamic, dynamic>)['battleId']} ');
         }
-        print(
-            'SignalR_BattleId: ${(data as Map<dynamic, dynamic>)['battleId']} ');
-      }
+      });
     });
   }
 

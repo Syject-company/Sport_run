@@ -1,7 +1,7 @@
-import 'package:signal_r/signalr_client.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:signal_r/signalr_client.dart';
 
- class SignalR {
+class SignalR {
   HubConnection? _hubConnection;
 
   Future<void> initSocketConnection({required String token}) async {
@@ -16,19 +16,26 @@ import 'package:one2one_run/utils/constants.dart';
         ?.onclose((Exception error) => print('Connection Closed $error'));
   }
 
-  Future<void> startConnection(
-      {required Function(List<Object> arguments) onReceiveNotification}) async {
+  Future<void> startConnection() async {
     await _startWebSocket();
- /*   await _hubConnection?.invoke('ConnectToGroups');
-    _hubConnection?.on('ReceiveBattleNotification', onReceiveNotification);*/
-    // TODO: check on back error
-    await _hubConnection?.invoke('ConnectToGroups');
-    await _hubConnection?.invoke('SendMessage',args: <Object>['Text', 'd77cd9d6-84bc-42fe-847a-dbe81a5b96ff']).then((dynamic value) {
-      dynamic dd = value;
-    }).catchError((dynamic value){
-       dynamic dd = value;
-    });
-    _hubConnection?.on('ReceiveMessage', onReceiveNotification);
+    await _hubConnection?.invoke(Constants.socketConnectToGroups);
+  }
+
+  Future<void> receiveBattleNotification(
+      {required Function(List<Object> arguments) onReceiveNotification}) async {
+    _hubConnection?.on(
+        Constants.socketReceiveBattleNotification, onReceiveNotification);
+  }
+
+  Future<void> receiveChatMessage(
+      {required Function(List<Object> arguments) onReceiveChatMessage}) async {
+    _hubConnection?.on(Constants.socketReceiveMessage, onReceiveChatMessage);
+  }
+
+  Future<void> sendChatMessage(
+      {required String message, required String id}) async {
+    await _hubConnection
+        ?.invoke(Constants.socketSendMessage, args: <Object>[message, id]);
   }
 
   Future<void> _startWebSocket() async {
