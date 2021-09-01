@@ -108,7 +108,8 @@ Widget inputTextChatField({
 }) {
   return Row(
     children: <Widget>[
-      SizedBox(
+      Container(
+        margin: EdgeInsets.only(top: height * 0.02),
         width: width - (width * 0.28),
         child: TextFormField(
           controller: controller,
@@ -119,8 +120,8 @@ Widget inputTextChatField({
           ),
           cursorColor: const Color(0xffFF1744),
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.only(
-              bottom: 5.0,
+            contentPadding: EdgeInsets.only(
+              bottom: height * 0.03,
               top: 10.0,
               left: 5.0,
             ),
@@ -143,6 +144,7 @@ Widget inputTextChatField({
           minimumSize: Size(width * 0.05, height * 0.065),
           primary: const Color(0xfff6f6f6),
           shadowColor: Colors.grey[200],
+          onPrimary: redColor,
         ),
         child: const Icon(
           Icons.send,
@@ -1681,9 +1683,9 @@ Widget battleDetailsCard({
                     fontWeight: FontWeight.w600),
               ),
             ),
-            //NOTE:Chat
+            //NOTE:Chat card
             Container(
-              height: height * 0.4,
+              height: height * 0.415,
               width: width,
               padding: EdgeInsets.all(width * 0.035),
               margin: EdgeInsets.symmetric(

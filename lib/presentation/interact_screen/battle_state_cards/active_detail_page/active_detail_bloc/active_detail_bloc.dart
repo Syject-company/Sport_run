@@ -23,6 +23,8 @@ class ActiveDetailBloc extends Bloc<ActiveDetailEvent, ActiveDetailState> {
       yield ImageZoomDialogIsOpened(photos: event.photos);
     } else if (event is SendMessageChat) {
       yield MessageChatSent();
+    } else if (event is GetChatMessage) {
+      yield ChatMessageGot(messageModel: event.messageModel);
     }
   }
 }
