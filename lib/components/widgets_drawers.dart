@@ -89,15 +89,7 @@ Widget changeBattleDrawer({
                     height: height * 0.08,
                     width: height * 0.08,
                     margin: EdgeInsets.symmetric(horizontal: width * 0.05),
-                    child: CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: 80,
-                      backgroundImage: userPhoto == null
-                          ? AssetImage(
-                              defaultProfileImage,
-                            ) as ImageProvider
-                          : NetworkImage(userPhoto),
-                    ),
+                    child: userAvatarPhoto(photoUrl: userPhoto),
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -321,15 +313,7 @@ Widget battleOfferOnNotificationDrawer({
                     height: height * 0.08,
                     width: height * 0.08,
                     margin: EdgeInsets.symmetric(horizontal: width * 0.05),
-                    child: CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: 80,
-                      backgroundImage: secondUserModel.photoLink == null
-                          ? AssetImage(
-                              defaultProfileImage,
-                            ) as ImageProvider
-                          : NetworkImage(secondUserModel.photoLink!),
-                    ),
+                    child: userAvatarPhoto(photoUrl: secondUserModel.photoLink),
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -873,15 +857,7 @@ Widget battleDrawer({
                   height: height * 0.08,
                   width: height * 0.08,
                   margin: EdgeInsets.symmetric(horizontal: width * 0.05),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    radius: 80,
-                    backgroundImage: model?.photoLink == null
-                        ? AssetImage(
-                            defaultProfileImage,
-                          ) as ImageProvider
-                        : NetworkImage(model!.photoLink!),
-                  ),
+                  child: userAvatarPhoto(photoUrl: model?.photoLink),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,

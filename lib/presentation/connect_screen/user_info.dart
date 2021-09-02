@@ -44,18 +44,9 @@ class UserInfo extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     SizedBox(
-                      height: height * 0.12,
-                      width: height * 0.12,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        radius: 80,
-                        backgroundImage: userModel.photoLink == null
-                            ? AssetImage(
-                                defaultProfileImage,
-                              ) as ImageProvider
-                            : NetworkImage(userModel.photoLink!),
-                      ),
-                    ),
+                        height: height * 0.12,
+                        width: height * 0.12,
+                        child: userAvatarPhoto(photoUrl: userModel.photoLink)),
                     SizedBox(
                       width: width * 0.04,
                     ),

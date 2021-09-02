@@ -755,19 +755,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     child: SizedBox(
                                       height: 64.h,
                                       width: 64.h,
-                                      child: CircleAvatar(
-                                        radius: 30.0,
-                                        backgroundImage: snapshot
-                                                    .data!.photoLink !=
-                                                null
-                                            ? NetworkImage(
-                                                    snapshot.data!.photoLink!)
-                                                as ImageProvider
-                                            : AssetImage(
-                                                defaultProfileImage,
-                                              ),
-                                        backgroundColor: Colors.transparent,
-                                      ),
+                                      child: userAvatarPhoto(photoUrl: snapshot.data!.photoLink),
                                     ),
                                   ),
                                   Padding(
