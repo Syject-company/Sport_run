@@ -1451,6 +1451,7 @@ Widget battleDetailsCard({
   required String? opponentPhoto,
   required String opponentName,
   required String opponentRank,
+  required bool isNeedToCheckOpponentResults,
   required List<Messages> messages,
   required TextEditingController chatController,
   required RoundedLoadingButtonController uploadResultsController,
@@ -1470,7 +1471,7 @@ Widget battleDetailsCard({
           children: <Widget>[
             //NOTE: check an opponent's results button
             Visibility(
-              visible: true,
+              visible: isNeedToCheckOpponentResults,
               child: Container(
                 height: height * 0.08,
                 width: width,

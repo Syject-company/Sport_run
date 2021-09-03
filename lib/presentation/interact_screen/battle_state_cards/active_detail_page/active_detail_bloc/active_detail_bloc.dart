@@ -29,6 +29,10 @@ class ActiveDetailBloc extends Bloc<ActiveDetailEvent, ActiveDetailState> {
       yield OpponentResultsDialogOpened(
         model: event.model,
       );
+    } else if (event is IsNeedToCheckOpponentResults) {
+      yield OpponentResultsChecked(
+        isNeed: event.isNeed,
+      );
     }
   }
 }

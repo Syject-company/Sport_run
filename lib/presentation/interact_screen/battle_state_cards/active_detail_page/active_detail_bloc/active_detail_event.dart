@@ -56,3 +56,14 @@ class OpenOpponentResultsDialog extends ActiveDetailEvent {
   @override
   List<Object> get props => <Object>[model];
 }
+
+class IsNeedToCheckOpponentResults extends ActiveDetailEvent {
+  IsNeedToCheckOpponentResults({
+    required this.isNeed,
+  });
+
+  final bool isNeed;
+
+  @override
+  List<Object> get props => <Object>[isNeed];
+}

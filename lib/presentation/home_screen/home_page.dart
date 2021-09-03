@@ -755,7 +755,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     child: SizedBox(
                                       height: 64.h,
                                       width: 64.h,
-                                      child: userAvatarPhoto(photoUrl: snapshot.data!.photoLink),
+                                      child: userAvatarPhoto(
+                                          photoUrl: snapshot.data!.photoLink),
                                     ),
                                   ),
                                   Padding(

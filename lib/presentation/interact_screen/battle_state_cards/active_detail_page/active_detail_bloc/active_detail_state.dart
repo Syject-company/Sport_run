@@ -60,3 +60,14 @@ class OpponentResultsDialogOpened extends ActiveDetailState {
   @override
   List<Object> get props => <Object>[model];
 }
+
+class OpponentResultsChecked extends ActiveDetailState {
+  const OpponentResultsChecked({
+    required this.isNeed,
+  });
+
+  final bool isNeed;
+
+  @override
+  List<Object> get props => <Object>[isNeed];
+}
