@@ -218,8 +218,17 @@ class CheckOpponentResultsPage extends StatelessWidget {
                             buttonTextSize: 14.0,
                             shadowColor: Colors.transparent,
                             onPressed: () {
-                              onTapResults(false);
-                              Navigator.pop(context);
+                              dialog(
+                                  context: context,
+                                  title: "Are you sure you want to reject the opponent's results?",
+                                  text: 'You can open chat for discussion.',
+                                  applyButtonText: 'REJECT',
+                                  cancelButtonText: 'CANCEL',
+                                  onApplyPressed: () {
+                                    Navigator.pop(context);
+                                    onTapResults(false);
+                                    Navigator.pop(context);
+                                  });
                             },
                           ),
                         ),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_page.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/signal_r.dart';
 
@@ -34,36 +35,44 @@ class PendingTab extends StatelessWidget {
       color: const Color(0xffF5F5F5),
       child: pendingList.isNotEmpty
           ? Scrollbar(
-            child: ListView.builder(
-                itemCount: pendingList.length,
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (BuildContext con, int index) {
-                  return interactListItem(
-                    context: context,
-                    width: width,
-                    height: height,
-                    heightPercentage: 0.43,
-                    model: pendingList[index],
-                    distance: distance(distance: pendingList[index].distance),
-                    opponentName: getOpponentName(
+              child: ListView.builder(
+                  itemCount: pendingList.length,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (BuildContext con, int index) {
+                    return interactListItem(
+                      context: context,
+                      width: width,
+                      height: height,
+                      heightPercentage: 0.43,
                       model: pendingList[index],
-                      currentUserId: currentUserId,
-                    ),
-                    opponentPhoto: getOpponentPhoto(
-                      model: pendingList[index],
-                      currentUserId: currentUserId,
-                    ),
-                    isNeedButtons: true,
-                    onTapAccept: onTapAccept,
-                    onTapChange: onTapChange,
-                    onTapDecline: onTapDecline,
-                    statusCodeNum: pendingList[index].status.toInt(),
-                    onTapCard: (){
-                      // TODO(Issa): action.
-                    },
-                  );
-                }),
-          )
+                      distance: distance(distance: pendingList[index].distance),
+                      opponentName: getOpponentName(
+                        model: pendingList[index],
+                        currentUserId: currentUserId,
+                      ),
+                      opponentPhoto: getOpponentPhoto(
+                        model: pendingList[index],
+                        currentUserId: currentUserId,
+                      ),
+                      isNeedButtons: true,
+                      onTapAccept: onTapAccept,
+                      onTapChange: onTapChange,
+                      onTapDecline: onTapDecline,
+                      statusCodeNum: pendingList[index].status.toInt(),
+                      onTapCard: () async {
+                        await Navigator.push<dynamic>(
+                            context,
+                            MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) =>
+                                    PendingDetailPage(
+                                      pendingModel: pendingList[index],
+                                      signalR: signalR,
+                                      currentUserId: currentUserId,
+                                    )));
+                      },
+                    );
+                  }),
+            )
           : showEmptyListText(height: height, width: width),
     );
   }

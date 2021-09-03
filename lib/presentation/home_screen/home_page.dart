@@ -365,7 +365,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       onTapSecondButton: () {
                         dialog(
                             context: context,
-                            title: 'Logout',
+                            //title: 'Logout',
                             text: 'Are you sure you want to logout?',
                             applyButtonText: 'Logout',
                             cancelButtonText: 'Cancel',
