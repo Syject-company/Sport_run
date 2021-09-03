@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_discarded_detail_page/finished_discarded_detail_page.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/signal_r.dart';
 
@@ -36,8 +37,9 @@ class FinishedTab extends StatelessWidget {
                       context: context,
                       width: width,
                       height: height,
-                      heightPercentage: 0.245,
-                      //heightPercentage: 0.4,
+                      heightPercentage: finishedList[index].status.toInt() == 3
+                          ? 0.29
+                          : 0.245,
                       model: finishedList[index],
                       distance:
                           distance(distance: finishedList[index].distance),
@@ -56,8 +58,18 @@ class FinishedTab extends StatelessWidget {
                         model: finishedList[index],
                         currentUserId: currentUserId,
                       ),
-                      onTapCard: (){
-                        // TODO(Issa): action.
+                      onTapCard: () async {
+                        if (finishedList[index].status.toInt() == 6) {
+                          await Navigator.push<dynamic>(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) =>
+                                      FinishedDiscardedDetailPage(
+                                        finishedModel: finishedList[index],
+                                        signalR: signalR,
+                                        currentUserId: currentUserId,
+                                      )));
+                        }
                       },
                     );
                   }),
