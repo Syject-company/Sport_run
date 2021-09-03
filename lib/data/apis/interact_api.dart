@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/battle_result_model.dart';
+import 'package:one2one_run/data/models/confirm_opponent_results_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -85,10 +86,28 @@ class InteractApi {
   }
 
   //@patch
-  Future<bool> sendBattleResult({required BattleResultModel model, required String id}) async {
+  Future<bool> sendBattleResult(
+      {required BattleResultModel model, required String id}) async {
     final String token = PreferenceUtils.getUserToken();
     print('User token: $token');
-    final Response res = await patch(Uri.parse('$_urlSendBattleResult/$id/Results'),
+    final Response res = await patch(
+        Uri.parse('$_urlSendBattleResult/$id/Results'),
+        body: json.encode(model),
+        headers: <String, String>{
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
+        });
+
+    return res.statusCode == 200;
+  }
+
+  //@post
+  Future<bool> checkOpponentResults(
+      {required String id, required ConfirmOpponentResultsModel model}) async {
+    final String token = PreferenceUtils.getUserToken();
+    print('User token: $token');
+    final Response res = await post(
+        Uri.parse('$_urlSendBattleResult/$id/TimeConfirmation'),
         body: json.encode(model),
         headers: <String, String>{
           HttpHeaders.contentTypeHeader: 'application/json',

@@ -252,15 +252,7 @@ class _ConnectPageState extends State<ConnectPage> {
                   SizedBox(
                     height: height * 0.1,
                     width: height * 0.1,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: 80,
-                      backgroundImage: model.photoLink == null
-                          ? AssetImage(
-                              defaultProfileImage,
-                            ) as ImageProvider
-                          : NetworkImage(model.photoLink!),
-                    ),
+                    child: userAvatarPhoto(photoUrl: model.photoLink),
                   ),
                   const SizedBox(
                     height: 5.0,

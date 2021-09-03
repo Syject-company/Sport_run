@@ -33,6 +33,7 @@ dependencies:
   sign_in_with_apple: ^3.0.0
   firebase_messaging: ^10.0.6
   firebase_core: ^1.6.0
+  firebase_analytics: "^8.3.0"
   intl: ^0.17.0
   signal_r:
     path: signalr_client

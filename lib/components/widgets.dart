@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
+import 'package:one2one_run/data/models/check_opponent_results_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/resources/colors.dart';
@@ -1449,12 +1450,16 @@ Widget battleDetailsCard({
   required String distance,
   required String? opponentPhoto,
   required String opponentName,
+  required String opponentRank,
+  required bool isNeedToCheckOpponentResults,
   required List<Messages> messages,
   required TextEditingController chatController,
   required RoundedLoadingButtonController uploadResultsController,
   required VoidCallback onTapUploadResults,
   required VoidCallback onMessageSend,
   required Function(List<String> photos) onTapProofImage,
+  required Function(CheckOpponentResultsModel checkOpponentResultsModel)
+      onTapOpponentResults,
 }) {
   return Center(
     child: SizedBox(
@@ -1464,8 +1469,54 @@ Widget battleDetailsCard({
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: <Widget>[
+            //NOTE: check an opponent's results button
+            Visibility(
+              visible: isNeedToCheckOpponentResults,
+              child: Container(
+                height: height * 0.08,
+                width: width,
+                margin: EdgeInsets.only(
+                  top: height * 0.015,
+                  left: width * 0.025,
+                  right: width * 0.025,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: buttonNoIcon(
+                  title: "Check an opponent's results".toUpperCase(),
+                  color: redColor,
+                  height: height * 0.055,
+                  width: width * 0.2,
+                  textColor: Colors.white,
+                  buttonTextSize: 14.0,
+                  shadowColor: Colors.transparent,
+                  onPressed: () {
+                    onTapOpponentResults(
+                      CheckOpponentResultsModel(
+                        name: opponentName,
+                        userPhoto: opponentPhoto,
+                        rank: opponentRank,
+                        time: opponentProofTime,
+                        distance: distance,
+                        battlePhotos: opponentProofPhotos!,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            //NOTE: Battle details
             Container(
-              //height: height * 0.41,
               height: height * 0.49,
               width: width,
               color: Colors.transparent,
@@ -2269,7 +2320,7 @@ Widget uploadBattleResultDialog({
 Widget userAvatarPhoto({required String? photoUrl}) {
   return photoUrl == null
       ? CircleAvatar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           radius: 80,
           backgroundImage: AssetImage(
             defaultProfileImage,
@@ -2286,7 +2337,7 @@ Widget userAvatarPhoto({required String? photoUrl}) {
           imageBuilder:
               (BuildContext context, ImageProvider<Object> imageProvider) {
             return CircleAvatar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               radius: 80,
               backgroundImage: imageProvider,
             );

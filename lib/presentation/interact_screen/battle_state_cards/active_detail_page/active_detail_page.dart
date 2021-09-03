@@ -10,12 +10,15 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/interact_api.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/battle_result_model.dart';
+import 'package:one2one_run/data/models/check_opponent_results_model.dart';
+import 'package:one2one_run/data/models/confirm_opponent_results_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/active_detail_bloc/active_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/active_detail_bloc/active_detail_state.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/active_detail_bloc/bloc.dart'
     as active_detail_bloc;
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/check_opponent_results.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/extension.dart'
     show UserData, DateTimeExtension;
@@ -53,14 +56,16 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
   final InteractApi _interactApi = InteractApi();
 
   late UserModel _currentUserModel;
+  late BattleUsers _opponentBattleModel;
+  late ApplicationUser _opponentAppUserModel;
 
   String _resultTime = '01:30';
   String _resultTimeForServer = '0001-01-01T01:30:00';
-  late String _opponentId;
   String _messageText = '';
 
   bool _isUploadResultsPage = false;
   bool _isUploadingProgress = false;
+  bool _isNeedToCheckOpponentResults = true;
 
   final ImagePicker _imagePicker = ImagePicker();
   File? _imageFirst;
@@ -70,8 +75,11 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
   void initState() {
     super.initState();
     _currentUserModel = PreferenceUtils.getCurrentUserModel();
-    _opponentId = getOpponentId(
+    _opponentBattleModel = getOpponentBattleModel(
         model: widget.activeModel, currentUserId: widget.currentUserId);
+    _opponentAppUserModel = _opponentBattleModel.applicationUser;
+    _isNeedToCheckOpponentResults =
+        isNeedToCheckOpponentResults(model: _opponentBattleModel);
   }
 
   @override
@@ -81,7 +89,8 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
     final double width = MediaQuery.of(context).size.width;
 
     return FutureBuilder<OpponentChatModel?>(
-        future: _interactApi.getOpponentChatMessages(opponentId: _opponentId),
+        future: _interactApi.getOpponentChatMessages(
+            opponentId: _opponentAppUserModel.id),
         builder:
             (BuildContext context, AsyncSnapshot<OpponentChatModel?> snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
@@ -99,7 +108,6 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
                       if (photoFirst != null) {
                         _resultPhotos
                             .add(photoFirst.replaceAll(RegExp(r'\"'), ''));
-
                         if (_imageSecond != null) {
                           await _interactApi
                               .sendResultPhoto(fileImage: _imageSecond)
@@ -152,6 +160,30 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
                     );
                   } else if (state is ChatMessageGot) {
                     _messages.add(state.messageModel);
+                  } else if (state is OpponentResultsDialogOpened) {
+                    await Navigator.push<dynamic>(
+                        context,
+                        MaterialPageRoute<dynamic>(
+                            builder: (BuildContext cxt) =>
+                                CheckOpponentResultsPage(
+                                  model: state.model,
+                                  onTapResults: (bool isAccepted) async {
+                                    await _interactApi
+                                        .checkOpponentResults(
+                                            id: widget.activeModel.id,
+                                            model: ConfirmOpponentResultsModel(
+                                                confirmation: isAccepted))
+                                        .then((bool value) {
+                                      BlocProvider.of<ActiveDetailBloc>(context)
+                                          .add(active_detail_bloc
+                                              .IsNeedToCheckOpponentResults(
+                                                  isNeed: value));
+                                    });
+                                  },
+                                )));
+                  } else if (state is OpponentResultsChecked) {
+                    widget.onNeedToRefreshActivePage();
+                    _isNeedToCheckOpponentResults = !state.isNeed;
                   }
                   BlocProvider.of<ActiveDetailBloc>(context)
                       .add(active_detail_bloc.UpdateState());
@@ -175,99 +207,10 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
                         backgroundColor: colorPrimary,
                       ),
                       body: _isUploadResultsPage
-                          ? uploadBattleResultDialog(
-                              width: width,
-                              height: height,
-                              resultTime: _resultTime,
-                              imageFirst: _imageFirst,
-                              imageSecond: _imageSecond,
-                              isUploading: _isUploadingProgress,
-                              onTimeTap: () {
-                                BlocProvider.of<ActiveDetailBloc>(context)
-                                    .add(active_detail_bloc.OpenTimePicker());
-                              },
-                              onCancelTap: () {
-                                BlocProvider.of<ActiveDetailBloc>(context).add(
-                                    active_detail_bloc.ShowUploadResultPage(
-                                        isNeedResultPage: false));
-                              },
-                              onAddPhotoFirstTap: () {
-                                BlocProvider.of<ActiveDetailBloc>(context)
-                                    .add(active_detail_bloc.OpenGallery());
-                              },
-                              onAddPhotoSecondTap: () {
-                                BlocProvider.of<ActiveDetailBloc>(context)
-                                    .add(active_detail_bloc.OpenGallery());
-                              },
-                              onUploadTap: () async {
-                                if (_imageFirst != null) {
-                                  BlocProvider.of<ActiveDetailBloc>(context)
-                                      .add(active_detail_bloc
-                                          .PrepareResultBattle());
-                                } else {
-                                  await Fluttertoast.showToast(
-                                      msg: 'Please, upload at least one photo!',
-                                      fontSize: 16.0,
-                                      gravity: ToastGravity.CENTER);
-                                }
-                              },
-                            )
-                          : battleDetailsCard(
-                              model: widget.activeModel,
-                              width: width,
-                              height: height,
-                              context: context,
-                              currentUserModel: _currentUserModel,
-                              messages: _messages.reversed.toList(),
-                              chatController: _chatController,
-                              onMessageSend: () {
-                                _messageText = _chatController.text;
-                                _chatController.clear();
-                                BlocProvider.of<ActiveDetailBloc>(context)
-                                    .add(active_detail_bloc.SendMessageChat());
-                              },
-                              uploadResultsController:
-                                  _showUploadResultsPageController,
-                              onTapUploadResults: () {
-                                BlocProvider.of<ActiveDetailBloc>(context).add(
-                                    active_detail_bloc.ShowUploadResultPage(
-                                        isNeedResultPage: true));
-                              },
-                              onTapProofImage: (List<String> photos) {
-                                BlocProvider.of<ActiveDetailBloc>(context).add(
-                                    active_detail_bloc.OpenImageZoomDialog(
-                                        photos: photos));
-                              },
-                              distance: distance(
-                                  distance: widget.activeModel.distance),
-                              opponentName: getOpponentName(
-                                model: widget.activeModel,
-                                currentUserId: widget.currentUserId,
-                              ),
-                              opponentPhoto: getOpponentPhoto(
-                                model: widget.activeModel,
-                                currentUserId: widget.currentUserId,
-                              ),
-                              myProofTime: _resultPhotos.isEmpty
-                                  ? getMyProofTime(
-                                      model: widget.activeModel,
-                                      currentUserId: widget.currentUserId,
-                                    )
-                                  : _resultTime,
-                              myProofsPhoto: getMyProofPhotos(
-                                model: widget.activeModel,
-                                currentUserId: widget.currentUserId,
-                              ).cast<String>(),
-                              myProofPhotosLocalStorage: _resultPhotos,
-                              opponentProofTime: getOpponentProofTime(
-                                model: widget.activeModel,
-                                currentUserId: widget.currentUserId,
-                              ),
-                              opponentProofPhotos: getOpponentProofPhotos(
-                                model: widget.activeModel,
-                                currentUserId: widget.currentUserId,
-                              ).cast<String>(),
-                            ),
+                          ? battleResultDialog(
+                              width: width, height: height, context: context)
+                          : detailsCard(
+                              width: width, height: height, context: context),
                     );
                   },
                 )));
@@ -279,6 +222,102 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
             child: Center(child: progressIndicator()),
           );
         });
+  }
+
+  Widget detailsCard(
+      {required BuildContext context,
+      required double width,
+      required double height}) {
+    return battleDetailsCard(
+      model: widget.activeModel,
+      width: width,
+      height: height,
+      context: context,
+      currentUserModel: _currentUserModel,
+      messages: _messages.reversed.toList(),
+      chatController: _chatController,
+      onMessageSend: () {
+        _messageText = _chatController.text;
+        _chatController.clear();
+        BlocProvider.of<ActiveDetailBloc>(context)
+            .add(active_detail_bloc.SendMessageChat());
+      },
+      onTapOpponentResults:
+          (CheckOpponentResultsModel checkOpponentResultsModel) {
+        BlocProvider.of<ActiveDetailBloc>(context)
+            .add(active_detail_bloc.OpenOpponentResultsDialog(
+          model: checkOpponentResultsModel,
+        ));
+      },
+      uploadResultsController: _showUploadResultsPageController,
+      onTapUploadResults: () {
+        BlocProvider.of<ActiveDetailBloc>(context).add(
+            active_detail_bloc.ShowUploadResultPage(isNeedResultPage: true));
+      },
+      onTapProofImage: (List<String> photos) {
+        BlocProvider.of<ActiveDetailBloc>(context)
+            .add(active_detail_bloc.OpenImageZoomDialog(photos: photos));
+      },
+      distance: distance(distance: widget.activeModel.distance),
+      opponentName: _opponentAppUserModel.nickName,
+      opponentPhoto: _opponentAppUserModel.photoLink,
+      opponentRank: _opponentAppUserModel.rank.toString(),
+      isNeedToCheckOpponentResults: _isNeedToCheckOpponentResults,
+      myProofTime: _resultPhotos.isEmpty
+          ? getMyProofTime(
+              model: widget.activeModel,
+              currentUserId: widget.currentUserId,
+            )
+          : _resultTime,
+      myProofsPhoto: getMyProofPhotos(
+        model: widget.activeModel,
+        currentUserId: widget.currentUserId,
+      ).cast<String>(),
+      myProofPhotosLocalStorage: _resultPhotos,
+      opponentProofTime: getTimeWithOutDate(time: _opponentBattleModel.time),
+      opponentProofPhotos: _opponentBattleModel.photos.cast<String>(),
+    );
+  }
+
+  Widget battleResultDialog(
+      {required BuildContext context,
+      required double width,
+      required double height}) {
+    return uploadBattleResultDialog(
+      width: width,
+      height: height,
+      resultTime: _resultTime,
+      imageFirst: _imageFirst,
+      imageSecond: _imageSecond,
+      isUploading: _isUploadingProgress,
+      onTimeTap: () {
+        BlocProvider.of<ActiveDetailBloc>(context)
+            .add(active_detail_bloc.OpenTimePicker());
+      },
+      onCancelTap: () {
+        BlocProvider.of<ActiveDetailBloc>(context).add(
+            active_detail_bloc.ShowUploadResultPage(isNeedResultPage: false));
+      },
+      onAddPhotoFirstTap: () {
+        BlocProvider.of<ActiveDetailBloc>(context)
+            .add(active_detail_bloc.OpenGallery());
+      },
+      onAddPhotoSecondTap: () {
+        BlocProvider.of<ActiveDetailBloc>(context)
+            .add(active_detail_bloc.OpenGallery());
+      },
+      onUploadTap: () async {
+        if (_imageFirst != null) {
+          BlocProvider.of<ActiveDetailBloc>(context)
+              .add(active_detail_bloc.PrepareResultBattle());
+        } else {
+          await Fluttertoast.showToast(
+              msg: 'Please, upload at least one photo!',
+              fontSize: 16.0,
+              gravity: ToastGravity.CENTER);
+        }
+      },
+    );
   }
 
   Future<TimeOfDay?> getTime({required BuildContext context}) {

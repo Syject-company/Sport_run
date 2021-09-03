@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:one2one_run/data/models/check_opponent_results_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
 
 abstract class ActiveDetailEvent extends Equatable {
@@ -43,4 +44,26 @@ class GetChatMessage extends ActiveDetailEvent {
 
   @override
   List<Object> get props => <Object>[messageModel];
+}
+
+class OpenOpponentResultsDialog extends ActiveDetailEvent {
+  OpenOpponentResultsDialog({
+    required this.model,
+  });
+
+  final CheckOpponentResultsModel model;
+
+  @override
+  List<Object> get props => <Object>[model];
+}
+
+class IsNeedToCheckOpponentResults extends ActiveDetailEvent {
+  IsNeedToCheckOpponentResults({
+    required this.isNeed,
+  });
+
+  final bool isNeed;
+
+  @override
+  List<Object> get props => <Object>[isNeed];
 }
