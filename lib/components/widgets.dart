@@ -1397,6 +1397,22 @@ Widget interactListItem({
               value: distance,
             ),
           ),
+          // TODO(issa): need to text on backend
+          Visibility(
+            visible: isFinishedTab && statusCodeNum == 3,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: height * 0.013),
+              child: Text(
+                'Declined by',
+                maxLines: 1,
+                style: TextStyle(
+                    color: Colors.redAccent,
+                    fontSize: 12.sp,
+                    fontFamily: 'roboto',
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
           Visibility(
             visible: isNeedButtons,
             child: Padding(
@@ -1455,7 +1471,7 @@ Widget interactListItem({
   );
 }
 
-Widget pendingBattleDetailsCard({
+Widget pendingFinishedBattleDetailsCard({
   required double width,
   required double height,
   required BattleRespondModel model,
@@ -1468,6 +1484,7 @@ Widget pendingBattleDetailsCard({
   required TextEditingController chatController,
   required VoidCallback onMessageSend,
   required Function(List<String> photos) onTapProofImage,
+  bool isFinishedTab = false,
 }) {
   return Center(
     child: SizedBox(
@@ -1479,7 +1496,7 @@ Widget pendingBattleDetailsCard({
           children: <Widget>[
             //NOTE: Battle details
             Container(
-              height: height * 0.33,
+              height: isFinishedTab ? height * 0.38 : height * 0.33,
               width: width,
               color: Colors.transparent,
               margin: EdgeInsets.only(top: height * 0.01),
@@ -1538,6 +1555,26 @@ Widget pendingBattleDetailsCard({
                           title: 'Deadline',
                           icon: weeklyDistanceIcon,
                           value: model.timeLeft.toString(),
+                        ),
+                        Visibility(
+                          visible: isFinishedTab,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: width * 0.02,
+                                vertical: height * 0.02),
+                            child: Center(
+                              child: Text(
+                                'The battle is canceled because none of the participants have uploaded their results.',
+                                maxLines: 3,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 12.sp,
+                                    fontFamily: 'roboto',
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),

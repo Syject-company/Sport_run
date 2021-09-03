@@ -55,12 +55,12 @@ mixin DataValues {
   };
 
   static Map<String, dynamic> wonData = <String, dynamic>{
-    'title': 'Won',
+    'title': 'Winner',
     'icon': wonIcon,
     'color': const Color(0xffCFFFB1),
   };
   static Map<String, dynamic> lostData = <String, dynamic>{
-    'title': 'Lost',
+    'title': '2nd place',
     'icon': lostIcon,
     'color': const Color(0xffFFBABA),
   };
