@@ -123,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     onTap: () {
                                       dialog(
                                           context: context,
-                                          title: 'Profile picture',
+                                          //title: 'Profile picture',
                                           text: 'Profile picture',
                                           applyButtonText: 'Change',
                                           cancelButtonText: 'Cancel',
