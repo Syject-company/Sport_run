@@ -20,7 +20,11 @@ import 'package:one2one_run/utils/signal_r.dart';
 
 //NOte:'/interact'
 class InteractPage extends StatefulWidget {
-  const InteractPage({Key? key, required this.onTapChange, required this.signalR}) : super(key: key);
+  const InteractPage({
+    Key? key,
+    required this.onTapChange,
+    required this.signalR,
+  }) : super(key: key);
 
   final Function(String id, BattleRespondModel model) onTapChange;
   final SignalR signalR;
@@ -190,6 +194,7 @@ class _InteractPageState extends State<InteractPage> {
 
   @override
   void dispose() {
+    widget.signalR.stopReceiveChatMessageData();
     super.dispose();
   }
 }

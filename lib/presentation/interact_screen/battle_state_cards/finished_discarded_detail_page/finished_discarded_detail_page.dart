@@ -12,6 +12,7 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/fini
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_discarded_detail_page/finished_discarded_detail_bloc/finished_discarded_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_discarded_detail_page/finished_discarded_detail_bloc/finished_discarded_detail_state.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
@@ -48,6 +49,9 @@ class _FinishedDiscardedDetailPageState
 
   String _messageText = '';
 
+  final FinishedDiscardedDetailBloc _finishedDiscardedDetailBloc =
+      FinishedDiscardedDetailBloc();
+
   @override
   void initState() {
     super.initState();
@@ -72,7 +76,7 @@ class _FinishedDiscardedDetailPageState
             _messages = snapshot.data!.messages.cast<Messages>();
             return BlocProvider<FinishedDiscardedDetailBloc>(
                 create: (final BuildContext context) =>
-                    FinishedDiscardedDetailBloc(),
+                    _finishedDiscardedDetailBloc,
                 child: BlocListener<FinishedDiscardedDetailBloc,
                         FinishedDiscardedDetailState>(
                     listener: (final BuildContext context,
@@ -92,8 +96,10 @@ class _FinishedDiscardedDetailPageState
                   } else if (state is ChatMessageGot) {
                     _messages.add(state.messageModel);
                   }
-                  BlocProvider.of<FinishedDiscardedDetailBloc>(context)
-                      .add(finished_discarded_detail_bloc.UpdateState());
+                  if (!_finishedDiscardedDetailBloc.isClosed) {
+                    BlocProvider.of<FinishedDiscardedDetailBloc>(context)
+                        .add(finished_discarded_detail_bloc.UpdateState());
+                  }
                 }, child: BlocBuilder<FinishedDiscardedDetailBloc,
                         FinishedDiscardedDetailState>(
                   builder: (final BuildContext context,
@@ -165,23 +171,28 @@ class _FinishedDiscardedDetailPageState
 
   Future<void> receiveChatMessage({required BuildContext context}) async {
     await widget.signalR.receiveChatMessage(
+        tab: InteractPageTab.FinishTab,
         onReceiveChatMessage: (List<Object> arguments) {
-      final Object data = arguments[0];
-      if (data != null) {
-        final Map<dynamic, dynamic> dataMessage = data as Map<dynamic, dynamic>;
-        final Messages model =
-            Messages.fromJson(dataMessage as Map<String, dynamic>);
-        if (model != null) {
-          BlocProvider.of<FinishedDiscardedDetailBloc>(context).add(
-              finished_discarded_detail_bloc.GetChatMessage(
-                  messageModel: model));
-        }
-      }
-    });
+          final Object data = arguments[0];
+          if (data != null) {
+            final Map<dynamic, dynamic> dataMessage =
+                data as Map<dynamic, dynamic>;
+            final Messages model =
+                Messages.fromJson(dataMessage as Map<String, dynamic>);
+            if (model != null &&
+                widget.signalR.interactPageTab == InteractPageTab.FinishTab &&
+                !_finishedDiscardedDetailBloc.isClosed) {
+              BlocProvider.of<FinishedDiscardedDetailBloc>(context).add(
+                  finished_discarded_detail_bloc.GetChatMessage(
+                      messageModel: model));
+            }
+          }
+        });
   }
 
   @override
   void dispose() {
+    _finishedDiscardedDetailBloc.close();
     _chatController.dispose();
     super.dispose();
   }

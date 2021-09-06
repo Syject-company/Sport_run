@@ -1,8 +1,10 @@
 import 'package:one2one_run/utils/constants.dart';
+import 'package:one2one_run/utils/enums.dart';
 import 'package:signal_r/signalr_client.dart';
 
 class SignalR {
   HubConnection? _hubConnection;
+  InteractPageTab interactPageTab = InteractPageTab.NON;
 
   Future<void> initSocketConnection({required String token}) async {
     _hubConnection = HubConnectionBuilder()
@@ -27,15 +29,22 @@ class SignalR {
         Constants.socketReceiveBattleNotification, onReceiveNotification);
   }
 
-  Future<void> receiveChatMessage(
-      {required Function(List<Object> arguments) onReceiveChatMessage}) async {
-    _hubConnection?.on(Constants.socketReceiveMessage, onReceiveChatMessage);
-  }
-
   Future<void> sendChatMessage(
       {required String message, required String id}) async {
     await _hubConnection
         ?.invoke(Constants.socketSendMessage, args: <Object>[message, id]);
+  }
+
+  Future<void> receiveChatMessage(
+      {required InteractPageTab tab,
+      required Function(List<Object> arguments) onReceiveChatMessage}) async {
+    interactPageTab = tab;
+    _hubConnection?.on(Constants.socketReceiveMessage, onReceiveChatMessage);
+  }
+
+  Future<void> stopReceiveChatMessageData() async {
+    interactPageTab = InteractPageTab.NON;
+    _hubConnection?.off(Constants.socketReceiveMessage);
   }
 
   Future<void> _startWebSocket() async {

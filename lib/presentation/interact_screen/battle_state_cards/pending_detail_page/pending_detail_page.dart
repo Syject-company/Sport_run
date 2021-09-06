@@ -12,6 +12,7 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pend
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_bloc/pending_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_bloc/pending_detail_state.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
@@ -46,6 +47,8 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
 
   String _messageText = '';
 
+  final PendingDetailBloc _pendingDetailBloc = PendingDetailBloc();
+
   @override
   void initState() {
     super.initState();
@@ -69,7 +72,7 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
           if (snapshot.hasData && snapshot.data != null) {
             _messages = snapshot.data!.messages.cast<Messages>();
             return BlocProvider<PendingDetailBloc>(
-                create: (final BuildContext context) => PendingDetailBloc(),
+                create: (final BuildContext context) => _pendingDetailBloc,
                 child: BlocListener<PendingDetailBloc, PendingDetailState>(
                     listener: (final BuildContext context,
                         final PendingDetailState state) async {
@@ -88,8 +91,11 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
                   } else if (state is ChatMessageGot) {
                     _messages.add(state.messageModel);
                   }
-                  BlocProvider.of<PendingDetailBloc>(context)
-                      .add(pending_detail_bloc.UpdateState());
+
+                  if (!_pendingDetailBloc.isClosed) {
+                    BlocProvider.of<PendingDetailBloc>(context)
+                        .add(pending_detail_bloc.UpdateState());
+                  }
                 }, child: BlocBuilder<PendingDetailBloc, PendingDetailState>(
                   builder: (final BuildContext context,
                       final PendingDetailState state) {
@@ -159,22 +165,27 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
 
   Future<void> receiveChatMessage({required BuildContext context}) async {
     await widget.signalR.receiveChatMessage(
+        tab: InteractPageTab.PendingTab,
         onReceiveChatMessage: (List<Object> arguments) {
-      final Object data = arguments[0];
-      if (data != null) {
-        final Map<dynamic, dynamic> dataMessage = data as Map<dynamic, dynamic>;
-        final Messages model =
-            Messages.fromJson(dataMessage as Map<String, dynamic>);
-        if (model != null) {
-          BlocProvider.of<PendingDetailBloc>(context)
-              .add(pending_detail_bloc.GetChatMessage(messageModel: model));
-        }
-      }
-    });
+          final Object data = arguments[0];
+          if (data != null) {
+            final Map<dynamic, dynamic> dataMessage =
+                data as Map<dynamic, dynamic>;
+            final Messages model =
+                Messages.fromJson(dataMessage as Map<String, dynamic>);
+            if (model != null &&
+                widget.signalR.interactPageTab == InteractPageTab.PendingTab &&
+                !_pendingDetailBloc.isClosed) {
+              BlocProvider.of<PendingDetailBloc>(context)
+                  .add(pending_detail_bloc.GetChatMessage(messageModel: model));
+            }
+          }
+        });
   }
 
   @override
   void dispose() {
+    _pendingDetailBloc.close();
     _chatController.dispose();
     super.dispose();
   }

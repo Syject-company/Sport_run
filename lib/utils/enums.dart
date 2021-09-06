@@ -12,3 +12,10 @@ enum DrawersType {
   BattleOnNotificationDrawer,
   ChangeBattleDrawer,
 }
+
+enum InteractPageTab {
+  ActiveTab,
+  PendingTab,
+  FinishTab,
+  NON,
+}

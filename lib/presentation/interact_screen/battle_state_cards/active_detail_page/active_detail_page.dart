@@ -20,6 +20,7 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/acti
     as active_detail_bloc;
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/check_opponent_results.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
     show UserData, DateTimeExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -71,6 +72,8 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
   File? _imageFirst;
   File? _imageSecond;
 
+  final ActiveDetailBloc _activeDetailBloc = ActiveDetailBloc();
+
   @override
   void initState() {
     super.initState();
@@ -96,7 +99,7 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
           if (snapshot.hasData && snapshot.data != null) {
             _messages = snapshot.data!.messages.cast<Messages>();
             return BlocProvider<ActiveDetailBloc>(
-                create: (final BuildContext context) => ActiveDetailBloc(),
+                create: (final BuildContext context) => _activeDetailBloc,
                 child: BlocListener<ActiveDetailBloc, ActiveDetailState>(
                     listener: (final BuildContext context,
                         final ActiveDetailState state) async {
@@ -185,8 +188,10 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
                     widget.onNeedToRefreshActivePage();
                     _isNeedToCheckOpponentResults = !state.isNeed;
                   }
-                  BlocProvider.of<ActiveDetailBloc>(context)
-                      .add(active_detail_bloc.UpdateState());
+                  if (!_activeDetailBloc.isClosed) {
+                    BlocProvider.of<ActiveDetailBloc>(context)
+                        .add(active_detail_bloc.UpdateState());
+                  }
                 }, child: BlocBuilder<ActiveDetailBloc, ActiveDetailState>(
                   builder: (final BuildContext context,
                       final ActiveDetailState state) {
@@ -364,18 +369,20 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
 
   Future<void> receiveChatMessage({required BuildContext context}) async {
     await widget.signalR.receiveChatMessage(
+        tab: InteractPageTab.ActiveTab,
         onReceiveChatMessage: (List<Object> arguments) {
-      final Object data = arguments[0];
-      if (data != null) {
-        final Map<dynamic, dynamic> dataMessage = data as Map<dynamic, dynamic>;
-        final Messages model =
-            Messages.fromJson(dataMessage as Map<String, dynamic>);
-        if (model != null) {
-          BlocProvider.of<ActiveDetailBloc>(context)
-              .add(active_detail_bloc.GetChatMessage(messageModel: model));
-        }
-      }
-    });
+          final Object data = arguments[0];
+          if (data != null) {
+            final Map<dynamic, dynamic> dataMessage =
+                data as Map<dynamic, dynamic>;
+            final Messages model =
+                Messages.fromJson(dataMessage as Map<String, dynamic>);
+            if (model != null && !_activeDetailBloc.isClosed) {
+              BlocProvider.of<ActiveDetailBloc>(context)
+                  .add(active_detail_bloc.GetChatMessage(messageModel: model));
+            }
+          }
+        });
   }
 
   void _clearResultsData() {
@@ -392,6 +399,7 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
 
   @override
   void dispose() {
+    _activeDetailBloc.close();
     _chatController.dispose();
     super.dispose();
   }
