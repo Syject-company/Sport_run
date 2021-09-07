@@ -27,15 +27,19 @@ class SignalR {
         Constants.socketReceiveBattleNotification, onReceiveNotification);
   }
 
+  Future<void> sendChatMessage(
+      {required String message, required String id}) async {
+    await _hubConnection
+        ?.invoke(Constants.socketSendMessage, args: <Object>[message, id]);
+  }
+
   Future<void> receiveChatMessage(
       {required Function(List<Object> arguments) onReceiveChatMessage}) async {
     _hubConnection?.on(Constants.socketReceiveMessage, onReceiveChatMessage);
   }
 
-  Future<void> sendChatMessage(
-      {required String message, required String id}) async {
-    await _hubConnection
-        ?.invoke(Constants.socketSendMessage, args: <Object>[message, id]);
+  Future<void> stopReceiveChatMessageData() async {
+    _hubConnection?.off(Constants.socketReceiveMessage);
   }
 
   Future<void> _startWebSocket() async {

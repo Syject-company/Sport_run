@@ -7,7 +7,7 @@ class BattleRespondModel {
   const BattleRespondModel({
     required this.id,
     required this.battleName,
-    required this.diff,
+    required this.finishTime,
     required this.distance,
     required this.deadlineTime,
     required this.status,
@@ -24,7 +24,7 @@ class BattleRespondModel {
       timeLeft: map['timeLeft'] as String,
       statusReason: map['statusReason'] as String,
       battleName: map['battleName'] as String,
-      diff: map['diff'] as num,
+      finishTime: map['finishTime'] as String,
       distance: map['distance'] as num,
       deadlineTime: map['deadlineTime'] as String,
       status: map['status'] as num,
@@ -36,7 +36,7 @@ class BattleRespondModel {
 
   final String id;
   final String? battleName;
-  final num diff;
+  final String? finishTime;
   final num distance;
   final String deadlineTime;
   final num status;
@@ -48,7 +48,7 @@ class BattleRespondModel {
   BattleRespondModel copyWith({
     String? id,
     String? battleName,
-    num? diff,
+    String? finishTime,
     num? distance,
     String? deadlineTime,
     num? status,
@@ -58,7 +58,7 @@ class BattleRespondModel {
     return BattleRespondModel(
       id: id ?? this.id,
       battleName: battleName ?? this.battleName,
-      diff: diff ?? this.diff,
+      finishTime: finishTime ?? this.finishTime,
       distance: distance ?? this.distance,
       deadlineTime: deadlineTime ?? this.deadlineTime,
       status: status ?? this.status,
@@ -71,7 +71,7 @@ class BattleRespondModel {
 
   @override
   String toString() {
-    return 'BattleRespondModel{id: $id, message: $message , timeLeft: $timeLeft, statusReason: $statusReason, battleName: $battleName, diff: $diff, distance: $distance, deadlineTime: $deadlineTime, status: $status, battleUsers: $battleUsers}';
+    return 'BattleRespondModel{id: $id, message: $message , timeLeft: $timeLeft, statusReason: $statusReason, battleName: $battleName, finishTime: $finishTime, distance: $distance, deadlineTime: $deadlineTime, status: $status, battleUsers: $battleUsers}';
   }
 
   @override
@@ -84,7 +84,7 @@ class BattleRespondModel {
           timeLeft == other.timeLeft &&
           statusReason == other.statusReason &&
           battleName == other.battleName &&
-          diff == other.diff &&
+          finishTime == other.finishTime &&
           distance == other.distance &&
           deadlineTime == other.deadlineTime &&
           status == other.status &&
@@ -97,7 +97,7 @@ class BattleRespondModel {
       timeLeft.hashCode ^
       statusReason.hashCode ^
       battleName.hashCode ^
-      diff.hashCode ^
+      finishTime.hashCode ^
       distance.hashCode ^
       deadlineTime.hashCode ^
       status.hashCode ^
@@ -111,7 +111,7 @@ class BattleRespondModel {
       'timeLeft': timeLeft,
       'statusReason': statusReason,
       'battleName': battleName,
-      'diff': diff,
+      'finishTime': finishTime,
       'distance': distance,
       'deadlineTime': deadlineTime,
       'status': status,
