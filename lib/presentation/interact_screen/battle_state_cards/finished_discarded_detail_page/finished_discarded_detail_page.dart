@@ -171,23 +171,13 @@ class _FinishedDiscardedDetailPageState
 
   Future<void> receiveChatMessage({required BuildContext context}) async {
     await widget.signalR.receiveChatMessage(
-        tab: InteractPageTab.FinishTab,
         onReceiveChatMessage: (List<Object> arguments) {
-          final Object data = arguments[0];
-          if (data != null) {
-            final Map<dynamic, dynamic> dataMessage =
-                data as Map<dynamic, dynamic>;
-            final Messages model =
-                Messages.fromJson(dataMessage as Map<String, dynamic>);
-            if (model != null &&
-                widget.signalR.interactPageTab == InteractPageTab.FinishTab &&
-                !_finishedDiscardedDetailBloc.isClosed) {
-              BlocProvider.of<FinishedDiscardedDetailBloc>(context).add(
-                  finished_discarded_detail_bloc.GetChatMessage(
-                      messageModel: model));
-            }
-          }
-        });
+      final Messages? model = getChatMessageData(arguments: arguments);
+      if (model != null && !_finishedDiscardedDetailBloc.isClosed) {
+        BlocProvider.of<FinishedDiscardedDetailBloc>(context).add(
+            finished_discarded_detail_bloc.GetChatMessage(messageModel: model));
+      }
+    });
   }
 
   @override

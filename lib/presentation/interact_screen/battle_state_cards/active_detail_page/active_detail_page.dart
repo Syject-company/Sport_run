@@ -20,7 +20,6 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/acti
     as active_detail_bloc;
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/check_opponent_results.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
     show UserData, DateTimeExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -138,6 +137,7 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
                         active_detail_bloc.ShowUploadResultPage(
                             isNeedResultPage: false));
                   } else if (state is UploadResultPageShown) {
+                    FocusManager.instance.primaryFocus?.unfocus();
                     _isUploadResultsPage = state.isNeedResultPage;
                     _clearResultsData();
                   } else if (state is TimePickerOpened) {
@@ -150,6 +150,7 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
                   } else if (state is GalleryIsOpened) {
                     await _pickImage(context: context);
                   } else if (state is ImageZoomDialogIsOpened) {
+                    FocusManager.instance.primaryFocus?.unfocus();
                     dialogImageZoom(
                       context: context,
                       height: height,
@@ -369,20 +370,14 @@ class _ActiveDetailPageState extends State<ActiveDetailPage> {
 
   Future<void> receiveChatMessage({required BuildContext context}) async {
     await widget.signalR.receiveChatMessage(
-        tab: InteractPageTab.ActiveTab,
         onReceiveChatMessage: (List<Object> arguments) {
-          final Object data = arguments[0];
-          if (data != null) {
-            final Map<dynamic, dynamic> dataMessage =
-                data as Map<dynamic, dynamic>;
-            final Messages model =
-                Messages.fromJson(dataMessage as Map<String, dynamic>);
-            if (model != null && !_activeDetailBloc.isClosed) {
-              BlocProvider.of<ActiveDetailBloc>(context)
-                  .add(active_detail_bloc.GetChatMessage(messageModel: model));
-            }
-          }
-        });
+      final Messages? model = getChatMessageData(arguments: arguments);
+
+      if (model != null && !_activeDetailBloc.isClosed) {
+        BlocProvider.of<ActiveDetailBloc>(context)
+            .add(active_detail_bloc.GetChatMessage(messageModel: model));
+      }
+    });
   }
 
   void _clearResultsData() {

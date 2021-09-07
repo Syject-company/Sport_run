@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_page.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_discarded_detail_page/finished_discarded_detail_page.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/signal_r.dart';
@@ -38,7 +39,7 @@ class FinishedTab extends StatelessWidget {
                       width: width,
                       height: height,
                       heightPercentage: finishedList[index].status.toInt() == 3
-                          ? 0.29
+                          ? 0.31
                           : 0.245,
                       model: finishedList[index],
                       distance:
@@ -59,22 +60,41 @@ class FinishedTab extends StatelessWidget {
                         currentUserId: currentUserId,
                       ),
                       onTapCard: () async {
-                        if (finishedList[index].status.toInt() == 6) {
-                          await Navigator.push<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                  builder: (BuildContext context) =>
-                                      FinishedDiscardedDetailPage(
-                                        finishedModel: finishedList[index],
-                                        signalR: signalR,
-                                        currentUserId: currentUserId,
-                                      )));
-                        }
+                        await _navigateToDetailPage(
+                            context: context, index: index);
                       },
                     );
                   }),
             )
           : showEmptyListText(height: height, width: width),
     );
+  }
+
+  Future<void> _navigateToDetailPage(
+      {required int index, required BuildContext context}) async {
+    switch (finishedList[index].status.toInt()) {
+      case 6:
+        await Navigator.push<dynamic>(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => FinishedDiscardedDetailPage(
+                      finishedModel: finishedList[index],
+                      signalR: signalR,
+                      currentUserId: currentUserId,
+                    )));
+
+        break;
+      case 5:
+        await Navigator.push<dynamic>(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => FinishedCompletedDetailPage(
+                      finishedModel: finishedList[index],
+                      signalR: signalR,
+                      currentUserId: currentUserId,
+                    )));
+
+        break;
+    }
   }
 }

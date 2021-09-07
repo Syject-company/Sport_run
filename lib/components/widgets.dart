@@ -1138,11 +1138,12 @@ Widget cardItem(
     required double height,
     required String icon,
     required String title,
+    AlignmentGeometry alignment = Alignment.centerLeft,
     required String value}) {
   return SizedBox(
     width: width / 2.5,
     child: FittedBox(
-      alignment: Alignment.centerLeft,
+      alignment: alignment,
       fit: BoxFit.scaleDown,
       child: Container(
         height: height * 0.04,
@@ -1397,19 +1398,20 @@ Widget interactListItem({
               value: distance,
             ),
           ),
-          // TODO(issa): need to text on backend
           Visibility(
             visible: isFinishedTab && statusCodeNum == 3,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: height * 0.013),
-              child: Text(
-                'Declined by',
-                maxLines: 1,
-                style: TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 12.sp,
-                    fontFamily: 'roboto',
-                    fontWeight: FontWeight.w600),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: height * 0.015),
+                child: Text(
+                  model.statusReason ?? 'Declined...',
+                  maxLines: 3,
+                  style: TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 12.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w600),
+                ),
               ),
             ),
           ),
@@ -1564,7 +1566,7 @@ Widget pendingFinishedBattleDetailsCard({
                                 vertical: height * 0.02),
                             child: Center(
                               child: Text(
-                                'The battle is canceled because none of the participants have uploaded their results.',
+                                "One of or both participants haven't uploaded their results.",
                                 maxLines: 3,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -1709,6 +1711,382 @@ Widget pendingFinishedBattleDetailsCard({
             //NOTE: Chat title
             Container(
               margin: EdgeInsets.only(left: width * 0.04, top: height * 0.04),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Chat',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'roboto',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+            //NOTE:Chat card
+            Container(
+              height: height * 0.415,
+              width: width,
+              padding: EdgeInsets.all(width * 0.035),
+              margin: EdgeInsets.symmetric(
+                horizontal: width * 0.025,
+                vertical: height * 0.02,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: height * 0.271,
+                    width: width,
+                    child: messages.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: messages.length,
+                            reverse: true,
+                            physics: const BouncingScrollPhysics(),
+                            itemBuilder: (BuildContext con, int index) {
+                              return Column(
+                                children: <Widget>[
+                                  Visibility(
+                                    visible: currentUserModel.id ==
+                                        messages[index].applicationUserId,
+                                    child: Wrap(children: <Widget>[
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8.0),
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: height * 0.008),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                              bottomLeft: Radius.circular(10.0),
+                                              topLeft: Radius.circular(10.0),
+                                              topRight: Radius.circular(10.0),
+                                            ),
+                                            color: redColor,
+                                          ),
+                                          child: Text(
+                                            messages[index].text ?? '.',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: 'roboto',
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
+                                  Visibility(
+                                    visible: currentUserModel.id !=
+                                        messages[index].applicationUserId,
+                                    child: Wrap(children: <Widget>[
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8.0),
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: height * 0.008),
+                                          decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              bottomRight:
+                                                  Radius.circular(10.0),
+                                              topLeft: Radius.circular(10.0),
+                                              topRight: Radius.circular(10.0),
+                                            ),
+                                            color: Color(0xffF5F5F5),
+                                          ),
+                                          child: Text(
+                                            messages[index].text ?? '.',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontFamily: 'roboto',
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
+                                ],
+                              );
+                            })
+                        : Center(
+                            child: Image.asset(
+                              startChatImage,
+                              height: height * 0.13,
+                              width: height * 0.2,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                  ),
+                  const Divider(
+                    height: 5,
+                    endIndent: 1.0,
+                    indent: 1.0,
+                  ),
+                  inputTextChatField(
+                    controller: chatController,
+                    height: height,
+                    width: width,
+                    onSend: onMessageSend,
+                  )
+                ],
+              ),
+            ),
+            //NOTE:Chat
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+Widget finishedBattleDetailsCard({
+  required double width,
+  required double height,
+  required BattleRespondModel model,
+  required BuildContext context,
+  required String finishedTime,
+  String myProofTime = '00:00',
+  String opponentProofTime = '00:00',
+  List<String> myProofsPhoto = const <String>[],
+  List<String>? opponentProofPhotos,
+  required UserModel currentUserModel,
+  required String distance,
+  required String? opponentPhoto,
+  required String opponentName,
+  required List<Messages> messages,
+  required TextEditingController chatController,
+  required VoidCallback onMessageSend,
+  required Function(List<String> photos) onTapProofImage,
+}) {
+  return Center(
+    child: SizedBox(
+      width: width,
+      height: height,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          children: <Widget>[
+            //NOTE: Battle details
+            Container(
+              height: height * 0.49,
+              width: width,
+              color: Colors.transparent,
+              margin: EdgeInsets.only(top: height * 0.01),
+              child: Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: height * 0.055,
+                      left: width * 0.025,
+                      right: width * 0.025,
+                      bottom: height * 0.02,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 3,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: height * 0.12,
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          width: width,
+                          height: height * 0.038,
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            child: Text(
+                              model.message ?? 'It will be a piece of cake!',
+                              maxLines: 1,
+                              style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12.sp,
+                                  fontFamily: 'roboto',
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: height * 0.012,
+                        ),
+                        cardItem(
+                          height: height,
+                          width: width + width * 0.7,
+                          alignment: Alignment.center,
+                          title: 'Finished at',
+                          icon: finishedIcon,
+                          value: finishedTime,
+                        ),
+                        timeAndPhotoInteract(
+                          height: height,
+                          width: width,
+                          model: model,
+                          myProofTime: myProofTime,
+                          myProofPhotos: myProofsPhoto,
+                          opponentProofTime: opponentProofTime,
+                          opponentProofPhotos:
+                              opponentProofPhotos ?? <String>[],
+                          uploadResultsController: null,
+                          onTapUploadResults: null,
+                          onTapProofImage: onTapProofImage,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: height * 0.01,
+                    left: width * 0.17,
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            ConstrainedBox(
+                              constraints:
+                                  BoxConstraints(maxWidth: height * 0.1),
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: height * 0.1,
+                                    width: height * 0.1,
+                                    child: userAvatarPhoto(
+                                        photoUrl: currentUserModel.photoLink),
+                                  ),
+                                  SizedBox(
+                                    height: height * 0.01,
+                                  ),
+                                  Text(
+                                    currentUserModel.nickName ?? 'Nickname',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontFamily: 'roboto',
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: width * 0.03),
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: height * 0.1,
+                                    child: Center(
+                                      child: statusLabel(
+                                        width: width,
+                                        isBattleMainStatus: true,
+                                        statusCode: model.status.toInt(),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: height * 0.01,
+                                  ),
+                                  Container(
+                                    height: height * 0.04,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: width * 0.017),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: const Color(0xffCDCDCD)
+                                              .withOpacity(0.3),
+                                        ),
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(6))),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Image.asset(
+                                          distanceIcon,
+                                          height: height * 0.015,
+                                          width: height * 0.015,
+                                          fit: BoxFit.fill,
+                                          color: Colors.grey,
+                                        ),
+                                        const SizedBox(
+                                          width: 5.0,
+                                        ),
+                                        Text(
+                                          distance,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12.sp,
+                                              fontFamily: 'roboto',
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ConstrainedBox(
+                              constraints:
+                                  BoxConstraints(maxWidth: height * 0.1),
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: height * 0.1,
+                                    width: height * 0.1,
+                                    child: userAvatarPhoto(
+                                        photoUrl: opponentPhoto),
+                                  ),
+                                  SizedBox(
+                                    height: height * 0.01,
+                                  ),
+                                  Text(
+                                    opponentName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontFamily: 'roboto',
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5.0,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            //NOTE: Chat title
+            Container(
+              margin: EdgeInsets.only(left: width * 0.04, top: height * 0.01),
               alignment: Alignment.centerLeft,
               child: Text(
                 'Chat',
@@ -2286,8 +2664,8 @@ Widget timeAndPhotoInteract({
   required String opponentProofTime,
   required List<String> myProofPhotos,
   required List<String> opponentProofPhotos,
-  required RoundedLoadingButtonController uploadResultsController,
-  required VoidCallback onTapUploadResults,
+  required RoundedLoadingButtonController? uploadResultsController,
+  required VoidCallback? onTapUploadResults,
   required Function(List<String> photos) onTapProofImage,
 }) {
   return Padding(
@@ -2350,14 +2728,17 @@ Widget timePhotosProofs({
   required bool isMyProofs,
   required String time,
   required List<String> photos,
-  required RoundedLoadingButtonController uploadResultsController,
-  required VoidCallback onTapUploadResults,
+  required RoundedLoadingButtonController? uploadResultsController,
+  required VoidCallback? onTapUploadResults,
   required Function(List<String> photos) onTapProofImage,
   required String battleId,
 }) {
   return SizedBox(
     width: width / 2.45,
-    child: isMyProofs && photos.isEmpty
+    child: isMyProofs &&
+            photos.isEmpty &&
+            uploadResultsController != null &&
+            onTapUploadResults != null
         ? Padding(
             padding: EdgeInsets.symmetric(
               horizontal: width * 0.03,

@@ -7,34 +7,35 @@ import 'package:one2one_run/data/apis/interact_api.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
-import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_bloc/bloc.dart'
-    as pending_detail_bloc;
-import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_bloc/pending_detail_bloc.dart';
-import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_bloc/pending_detail_state.dart';
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_bloc/bloc.dart'
+    as finished_completed_detail_bloc;
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_bloc/finished_completed_detail_bloc.dart';
+import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_bloc/finished_completed_detail_state.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
 
-//NOte:'/pendingDetail'
-class PendingDetailPage extends StatefulWidget {
-  const PendingDetailPage({
+//NOte:'/finishedCompletedDetail'
+class FinishedCompletedDetailPage extends StatefulWidget {
+  const FinishedCompletedDetailPage({
     Key? key,
-    required this.pendingModel,
+    required this.finishedModel,
     required this.currentUserId,
     required this.signalR,
   }) : super(key: key);
 
-  final BattleRespondModel pendingModel;
+  final BattleRespondModel finishedModel;
   final String currentUserId;
   final SignalR signalR;
 
   @override
-  _PendingDetailPageState createState() => _PendingDetailPageState();
+  _FinishedCompletedDetailPageState createState() =>
+      _FinishedCompletedDetailPageState();
 }
 
-class _PendingDetailPageState extends State<PendingDetailPage> {
+class _FinishedCompletedDetailPageState
+    extends State<FinishedCompletedDetailPage> {
   final TextEditingController _chatController = TextEditingController();
 
   List<Messages> _messages = <Messages>[];
@@ -47,14 +48,15 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
 
   String _messageText = '';
 
-  final PendingDetailBloc _pendingDetailBloc = PendingDetailBloc();
+  final FinishedCompletedDetailBloc _finishedCompletedDetailBloc =
+      FinishedCompletedDetailBloc();
 
   @override
   void initState() {
     super.initState();
     _currentUserModel = PreferenceUtils.getCurrentUserModel();
     _opponentBattleModel = getOpponentBattleModel(
-        model: widget.pendingModel, currentUserId: widget.currentUserId);
+        model: widget.finishedModel, currentUserId: widget.currentUserId);
     _opponentAppUserModel = _opponentBattleModel.applicationUser;
   }
 
@@ -71,11 +73,13 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
             (BuildContext context, AsyncSnapshot<OpponentChatModel?> snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
             _messages = snapshot.data!.messages.cast<Messages>();
-            return BlocProvider<PendingDetailBloc>(
-                create: (final BuildContext context) => _pendingDetailBloc,
-                child: BlocListener<PendingDetailBloc, PendingDetailState>(
+            return BlocProvider<FinishedCompletedDetailBloc>(
+                create: (final BuildContext context) =>
+                    _finishedCompletedDetailBloc,
+                child: BlocListener<FinishedCompletedDetailBloc,
+                        FinishedCompletedDetailState>(
                     listener: (final BuildContext context,
-                        final PendingDetailState state) async {
+                        final FinishedCompletedDetailState state) async {
                   if (state is ImageZoomDialogIsOpened) {
                     dialogImageZoom(
                       context: context,
@@ -86,19 +90,19 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
                   } else if (state is MessageChatSent) {
                     await sendMessage(
                       message: _messageText,
-                      id: widget.pendingModel.id,
+                      id: widget.finishedModel.id,
                     );
                   } else if (state is ChatMessageGot) {
                     _messages.add(state.messageModel);
                   }
-
-                  if (!_pendingDetailBloc.isClosed) {
-                    BlocProvider.of<PendingDetailBloc>(context)
-                        .add(pending_detail_bloc.UpdateState());
+                  if (!_finishedCompletedDetailBloc.isClosed) {
+                    BlocProvider.of<FinishedCompletedDetailBloc>(context)
+                        .add(finished_completed_detail_bloc.UpdateState());
                   }
-                }, child: BlocBuilder<PendingDetailBloc, PendingDetailState>(
+                }, child: BlocBuilder<FinishedCompletedDetailBloc,
+                        FinishedCompletedDetailState>(
                   builder: (final BuildContext context,
-                      final PendingDetailState state) {
+                      final FinishedCompletedDetailState state) {
                     receiveChatMessage(context: context);
 
                     return Scaffold(
@@ -106,7 +110,7 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
                       appBar: AppBar(
                         shadowColor: Colors.transparent,
                         title: Text(
-                          widget.pendingModel.battleName ?? 'Battle',
+                          widget.finishedModel.battleName ?? 'Battle',
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'roboto',
@@ -134,25 +138,38 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
       {required BuildContext context,
       required double width,
       required double height}) {
-    return pendingFinishedBattleDetailsCard(
-      model: widget.pendingModel,
+    return finishedBattleDetailsCard(
+      model: widget.finishedModel,
       width: width,
       height: height,
       context: context,
+      finishedTime: widget.finishedModel.finishTime != null
+          ? getDateWithOutTime(date: widget.finishedModel.finishTime!)
+          : '--:--',
+      opponentProofPhotos: _opponentBattleModel.photos.cast<String>(),
+      opponentProofTime: getTimeWithOutDate(time: _opponentBattleModel.time),
+      myProofTime: getMyProofTime(
+        model: widget.finishedModel,
+        currentUserId: widget.currentUserId,
+      ),
+      myProofsPhoto: getMyProofPhotos(
+        model: widget.finishedModel,
+        currentUserId: widget.currentUserId,
+      ).cast<String>(),
       currentUserModel: _currentUserModel,
       messages: _messages.reversed.toList(),
       chatController: _chatController,
       onMessageSend: () {
         _messageText = _chatController.text;
         _chatController.clear();
-        BlocProvider.of<PendingDetailBloc>(context)
-            .add(pending_detail_bloc.SendMessageChat());
+        BlocProvider.of<FinishedCompletedDetailBloc>(context)
+            .add(finished_completed_detail_bloc.SendMessageChat());
       },
       onTapProofImage: (List<String> photos) {
-        BlocProvider.of<PendingDetailBloc>(context)
-            .add(pending_detail_bloc.OpenImageZoomDialog(photos: photos));
+        BlocProvider.of<FinishedCompletedDetailBloc>(context).add(
+            finished_completed_detail_bloc.OpenImageZoomDialog(photos: photos));
       },
-      distance: distance(distance: widget.pendingModel.distance),
+      distance: distance(distance: widget.finishedModel.distance),
       opponentName: _opponentAppUserModel.nickName,
       opponentPhoto: _opponentAppUserModel.photoLink,
     );
@@ -167,16 +184,16 @@ class _PendingDetailPageState extends State<PendingDetailPage> {
     await widget.signalR.receiveChatMessage(
         onReceiveChatMessage: (List<Object> arguments) {
       final Messages? model = getChatMessageData(arguments: arguments);
-      if (model != null && !_pendingDetailBloc.isClosed) {
-        BlocProvider.of<PendingDetailBloc>(context)
-            .add(pending_detail_bloc.GetChatMessage(messageModel: model));
+      if (model != null && !_finishedCompletedDetailBloc.isClosed) {
+        BlocProvider.of<FinishedCompletedDetailBloc>(context).add(
+            finished_completed_detail_bloc.GetChatMessage(messageModel: model));
       }
     });
   }
 
   @override
   void dispose() {
-    _pendingDetailBloc.close();
+    _finishedCompletedDetailBloc.close();
     _chatController.dispose();
     super.dispose();
   }

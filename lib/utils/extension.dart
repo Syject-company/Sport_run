@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
+import 'package:one2one_run/data/models/opponent_chat_model.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 
 extension EmailValidator on String {
@@ -199,6 +200,10 @@ extension UserData on void {
     return time.substring(11, 16);
   }
 
+  String getDateWithOutTime({required String date}) {
+    return date.substring(0, 10);
+  }
+
   String getOpponentId({
     required BattleRespondModel model,
     required String currentUserId,
@@ -208,5 +213,16 @@ extension UserData on void {
     }
 
     return model.battleUsers[1].applicationUser.id;
+  }
+
+  Messages? getChatMessageData({required List<Object> arguments}) {
+    final Object data = arguments[0];
+    if (data != null) {
+      final Map<dynamic, dynamic> dataMessage = data as Map<dynamic, dynamic>;
+      final Messages model =
+          Messages.fromJson(dataMessage as Map<String, dynamic>);
+      return model;
+    }
+    return null;
   }
 }
