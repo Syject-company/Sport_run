@@ -1,66 +1,102 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:one2one_run/components/widgets.dart';
+import 'package:one2one_run/data/apis/enjoy_api.dart';
+import 'package:one2one_run/data/models/enjoy_response_model.dart';
+import 'package:one2one_run/data/models/user_model.dart';
+import 'package:one2one_run/resources/images.dart';
+import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:one2one_run/presentation/enjoy_screen/enjoy_bloc/bloc.dart'
-    as enjoy_bloc;
-import 'package:one2one_run/presentation/enjoy_screen/enjoy_bloc/enjoy_bloc.dart';
-import 'package:one2one_run/presentation/enjoy_screen/enjoy_bloc/enjoy_state.dart';
 
 //NOte:'/enjoy'
-class EnjoyPage extends StatefulWidget {
-  const EnjoyPage({Key? key}) : super(key: key);
+class EnjoyPage extends StatelessWidget {
+  EnjoyPage({Key? key}) : super(key: key);
 
-  @override
-  _EnjoyPageState createState() => _EnjoyPageState();
-}
+  final EnjoyApi _enjoyApi = EnjoyApi();
 
-class _EnjoyPageState extends State<EnjoyPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  late final UserModel _currentUserModel;
 
   @override
   Widget build(BuildContext context) {
+    _currentUserModel = PreferenceUtils.getCurrentUserModel();
     final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
     final double width = MediaQuery.of(context).size.width;
 
-    return BlocProvider<EnjoyBloc>(
-      create: (final BuildContext context) => EnjoyBloc(),
-      child: BlocListener<EnjoyBloc, EnjoyState>(
-        listener: (final BuildContext context, final EnjoyState state) async {
-          if (state is StateUpdated) {}
-          BlocProvider.of<EnjoyBloc>(context).add(enjoy_bloc.UpdateState());
-        },
-        child: BlocBuilder<EnjoyBloc, EnjoyState>(
-            builder: (final BuildContext context, final EnjoyState state) {
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Container(
-              width: width,
-              height: height,
-              color: Colors.white,
-              child: Center(
-                child: Text(
-                  'Enjoy',
-                  style: TextStyle(
-                      color: Colors.red,
-                      fontFamily: 'roboto',
-                      fontSize: 36.sp,
-                      fontWeight: FontWeight.w500),
+    return FutureBuilder<List<EnjoyResponseModel>?>(
+        future: _enjoyApi.getEnjoyList(),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<EnjoyResponseModel>?> snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return Column(
+              children: <Widget>[
+                Container(
+                  height: height * 0.072,
+                  width: width,
+                  margin: EdgeInsets.symmetric(
+                    horizontal: width * 0.025,
+                    vertical: height * 0.01,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset(
+                        rankIcon,
+                        height: height * 0.025,
+                        width: height * 0.025,
+                        fit: BoxFit.fill,
+                        color: Colors.red,
+                      ),
+                      const SizedBox(
+                        width: 7.0,
+                      ),
+                      Text(
+                        'You ranked #${_currentUserModel.rank}',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16.sp,
+                            fontFamily: 'roboto',
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+                SizedBox(
+                  height: height - (height * 0.132),
+                  child: Scrollbar(
+                    child: ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (BuildContext con, int index) {
+                          return userCardEnjoy(
+                            context: context,
+                            width: width,
+                            height: height,
+                            model: snapshot.data![index],
+                          );
+                        }),
+                  ),
+                ),
+              ],
+            );
+          }
+          return Container(
+            width: width,
+            height: height,
+            color: const Color(0xffF5F5F5),
+            child: Center(child: progressIndicator()),
           );
-        }),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+        });
   }
 }

@@ -50,6 +50,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  final RegisterBloc _registerBloc = RegisterBloc();
+
   @override
   void initState() {
     super.initState();
@@ -71,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: BlocProvider<RegisterBloc>(
-          create: (final BuildContext context) => RegisterBloc(),
+          create: (final BuildContext context) => _registerBloc,
           child: BlocListener<RegisterBloc, RegisterState>(
             listener:
                 (final BuildContext context, final RegisterState state) async {
@@ -124,9 +126,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 }
               }
 
-              BlocProvider.of<RegisterBloc>(context).add(
-                register_bloc.UpdateState(),
-              );
+              if (!_registerBloc.isClosed) {
+                BlocProvider.of<RegisterBloc>(context).add(
+                                register_bloc.UpdateState(),
+                              );
+              }
             },
             child: BlocBuilder<RegisterBloc, RegisterState>(builder:
                 (final BuildContext context, final RegisterState state) {
@@ -440,6 +444,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+    _registerBloc.close();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();

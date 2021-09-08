@@ -573,7 +573,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           },
                         ),
                       ),
-                      const EnjoyPage(),
+                      EnjoyPage(),
                       ProfilePage(
                         userDataListener: () {
                           BlocProvider.of<HomeBloc>(context)

@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
 
   LoginApi loginApi = LoginApi();
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final LoginBloc _loginBloc = LoginBloc();
 
   @override
   void initState() {
@@ -69,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: BlocProvider<LoginBloc>(
-          create: (final BuildContext context) => LoginBloc(),
+          create: (final BuildContext context) => _loginBloc,
           child: BlocListener<LoginBloc, LoginState>(
             listener:
                 (final BuildContext context, final LoginState state) async {
@@ -122,9 +123,11 @@ class _LoginPageState extends State<LoginPage> {
                   signInController.reset();
                 }
               }
-              BlocProvider.of<LoginBloc>(context).add(
-                login_bloc.UpdateState(),
-              );
+              if (!_loginBloc.isClosed) {
+                BlocProvider.of<LoginBloc>(context).add(
+                  login_bloc.UpdateState(),
+                );
+              }
             },
             child: BlocBuilder<LoginBloc, LoginState>(
                 builder: (final BuildContext context, final LoginState state) {
@@ -366,6 +369,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    _loginBloc.close();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
