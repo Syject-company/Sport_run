@@ -13,10 +13,11 @@ class EnjoyPage extends StatelessWidget {
 
   final EnjoyApi _enjoyApi = EnjoyApi();
 
-  final UserModel _currentUserModel = PreferenceUtils.getCurrentUserModel();
+  late final UserModel _currentUserModel;
 
   @override
   Widget build(BuildContext context) {
+    _currentUserModel = PreferenceUtils.getCurrentUserModel();
     final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
     final double width = MediaQuery.of(context).size.width;

@@ -3353,7 +3353,7 @@ Widget userCardEnjoy({
 }) {
   return Center(
     child: Container(
-      height: height * 0.41,
+      height: height * 0.38,
       width: width,
       color: Colors.transparent,
       child: Stack(
@@ -3424,7 +3424,7 @@ Widget userCardEnjoy({
                       title: 'Pace',
                       icon: paceIcon,
                       value:
-                      '${model.pace} min/${model.isMetric ? 'km' : 'mile'}',
+                          '${model.pace} min/${model.isMetric ? 'km' : 'mile'}',
                     ),
                     SizedBox(
                       width: height * 0.02,
@@ -3450,7 +3450,7 @@ Widget userCardEnjoy({
                     title: 'Weekly Distance',
                     icon: weeklyDistanceIcon,
                     value:
-                    '${model.weeklyDistance} ${model.isMetric ? 'km' : 'mile'}',
+                        '${model.weeklyDistance} ${model.isMetric ? 'km' : 'mile'}',
                   ),
                 ),
                 SizedBox(
@@ -3465,7 +3465,7 @@ Widget userCardEnjoy({
                   height: height * 0.02,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     userWonLossCard(
                         title: 'Won',
@@ -3473,15 +3473,13 @@ Widget userCardEnjoy({
                         colorValue: Colors.red),
                     Container(
                       color: Colors.grey,
+                      margin: EdgeInsets.symmetric(horizontal: width * 0.08),
                       height: 10.h,
                       width: 0.5,
                     ),
                     userWonLossCard(
                       title: 'Loss',
                       value: '${model.loses}',
-                    ),
-                    SizedBox(
-                      width: height * 0.02,
                     ),
                   ],
                 ),

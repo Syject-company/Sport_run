@@ -32,6 +32,7 @@ class RunnerDataPage extends StatefulWidget {
 class _RunnerDataPageState extends State<RunnerDataPage> {
 
   final RunnerDataApi _runnerDataApi = RunnerDataApi();
+  final RunnerDataBloc _runnerDataBloc = RunnerDataBloc();
 
   late PageController _pageController;
   final TextEditingController _nickNameController = TextEditingController();
@@ -64,7 +65,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.transparent,
         body: BlocProvider<RunnerDataBloc>(
-          create: (final BuildContext context) => RunnerDataBloc(),
+          create: (final BuildContext context) => _runnerDataBloc,
           child: BlocListener<RunnerDataBloc, RunnerDataState>(
             listener: (final BuildContext context,
                 final RunnerDataState state) async {
@@ -110,8 +111,10 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                 });
               }
 
-              BlocProvider.of<RunnerDataBloc>(context)
-                  .add(runner_data_bloc.UpdateState());
+              if (!_runnerDataBloc.isClosed) {
+                BlocProvider.of<RunnerDataBloc>(context)
+                                  .add(runner_data_bloc.UpdateState());
+              }
             },
             child: BlocBuilder<RunnerDataBloc, RunnerDataState>(builder:
                 (final BuildContext context, final RunnerDataState state) {
@@ -570,6 +573,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
 
   @override
   void dispose() {
+    _runnerDataBloc.close();
     _pageController.dispose();
     _nickNameController.dispose();
     super.dispose();
