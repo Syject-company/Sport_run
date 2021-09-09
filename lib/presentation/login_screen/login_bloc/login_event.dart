@@ -34,3 +34,5 @@ class SignInApple extends LoginEvent {
 }
 
 class CheckFields extends LoginEvent {}
+
+class NavigateToFAQHelperPage extends LoginEvent {}

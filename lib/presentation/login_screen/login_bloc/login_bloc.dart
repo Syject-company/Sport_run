@@ -23,6 +23,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield SignInedApple(token: event.token);
     } else if (event is CheckFields) {
       yield FieldsChecked();
+    }else if (event is NavigateToFAQHelperPage) {
+      yield NavigatedToFAQHelperPage();
     }
   }
 }

@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_conditional_rendering/flutter_conditional_rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:one2one_run/components/faq_helper.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/components/widgets_drawers.dart';
 import 'package:one2one_run/data/apis/connect_api.dart';
@@ -92,8 +93,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _isNeedFilter = false;
   bool _isNeedToOpenMessageDrawer = false;
   bool _isNeedToOpenChangeBattleDrawer = false;
-  late bool _isKM;
   bool _isAppInForeground = true;
+  late bool _isKM;
 
   int _countOfRuns = 1;
   int _selectedMessageIndex = 1000;
@@ -328,260 +329,267 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
           startWebSockets(context: context);
 
-          return Scaffold(
-            key: _keyScaffold,
-            backgroundColor: homeBackground,
-            onEndDrawerChanged: (bool value) {
-              if (!value && _selectedDrawersType != DrawersType.FilterDrawer) {
-                _isNeedToOpenMessageDrawer = false;
-                _isNeedToOpenChangeBattleDrawer = false;
-                _currentDistanceValue = 5;
-                _battleNameController.text = '';
-                Timer(const Duration(milliseconds: 300), () {
-                  BlocProvider.of<HomeBloc>(context)
-                      .add(home_bloc.OpenFilterDrawer());
-                });
-              }
-            },
-            appBar: AppBar(
-              shadowColor: Colors.transparent,
-              title: Text(
-                _pageTitle,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'roboto',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600),
-              ),
-              backgroundColor: colorPrimary,
-              actions: _selectedDrawerItem == DrawerItems.Profile
-                  ? appBarButtons(
-                      isNeedSecondButton: true,
-                      firstButtonIcon: const Icon(Icons.edit),
-                      onTapFirstButton: () async {
-                        await navigateToEditProfile(context: context);
-                      },
-                      secondButtonIcon: const Icon(Icons.logout),
-                      onTapSecondButton: () {
-                        dialog(
-                            context: context,
-                            //title: 'Logout',
-                            text: 'Are you sure you want to logout?',
-                            applyButtonText: 'Logout',
-                            cancelButtonText: 'Cancel',
-                            onApplyPressed: () async {
-                              await PreferenceUtils.setIsUserAuthenticated(
-                                      false)
-                                  .then((_) {
-                                PreferenceUtils.setPageRout('Register');
-                                Navigator.of(context).pushReplacementNamed(
-                                    Constants.registerRoute);
+          return WillPopScope(
+            onWillPop: _onWillPop,
+            child: Scaffold(
+              key: _keyScaffold,
+              backgroundColor: homeBackground,
+              onEndDrawerChanged: (bool value) {
+                if (!value &&
+                    _selectedDrawersType != DrawersType.FilterDrawer) {
+                  _isNeedToOpenMessageDrawer = false;
+                  _isNeedToOpenChangeBattleDrawer = false;
+                  _currentDistanceValue = 5;
+                  _battleNameController.text = '';
+                  Timer(const Duration(milliseconds: 300), () {
+                    BlocProvider.of<HomeBloc>(context)
+                        .add(home_bloc.OpenFilterDrawer());
+                  });
+                }
+              },
+              appBar: AppBar(
+                shadowColor: Colors.transparent,
+                title: Text(
+                  _pageTitle,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'roboto',
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600),
+                ),
+                backgroundColor: colorPrimary,
+                actions: _selectedDrawerItem == DrawerItems.Profile
+                    ? appBarButtons(
+                        isNeedSecondButton: true,
+                        firstButtonIcon: const Icon(Icons.edit),
+                        onTapFirstButton: () async {
+                          await navigateToEditProfile(context: context);
+                        },
+                        secondButtonIcon: const Icon(Icons.logout),
+                        onTapSecondButton: () {
+                          dialog(
+                              context: context,
+                              //title: 'Logout',
+                              text: 'Are you sure you want to logout?',
+                              applyButtonText: 'Logout',
+                              cancelButtonText: 'Cancel',
+                              onApplyPressed: () async {
+                                await PreferenceUtils.setIsUserAuthenticated(
+                                        false)
+                                    .then((_) {
+                                  PreferenceUtils.setPageRout('Register');
+                                  Navigator.of(context).pushReplacementNamed(
+                                      Constants.registerRoute);
+                                });
                               });
-                            });
-                      },
-                    )
-                  : _selectedDrawerItem == DrawerItems.Connect
-                      ? appBarButtons(
-                          isNeedSecondButton: false,
-                          firstButtonIcon:
-                              const Icon(Icons.filter_alt_outlined),
-                          onTapFirstButton: () async {
-                            if (_keyScaffold.currentState != null &&
-                                !_keyScaffold.currentState!.isEndDrawerOpen) {
-                              _keyScaffold.currentState!.openEndDrawer();
-                            }
-                          },
-                          secondButtonIcon: const Icon(Icons.search),
-                          onTapSecondButton: () {},
-                        )
-                      : _selectedDrawerItem == DrawerItems.Interact
-                          ? <Widget>[Container()]
-                          : null,
-            ),
-            drawer: _homeDrawer(
-              context: context,
-              width: width,
-              height: height,
-            ),
-            endDrawer: _selectedDrawerItem == DrawerItems.Connect ||
-                    _selectedDrawerItem == DrawerItems.Interact
-                ? ConditionalSwitch.single<DrawersType>(
-                    context: context,
-                    valueBuilder: (BuildContext context) =>
-                        _selectedDrawersType,
-                    caseBuilders: <DrawersType, Widget Function(BuildContext)>{
-                      DrawersType.FilterDrawer: (BuildContext context) =>
-                          _connectFilterDrawer(
-                              context: context, width: width, height: height),
-                      DrawersType.BattleDrawer: (BuildContext context) {
-                        return _createBattleDrawer(
-                          context: context,
-                          model: _userBattleModel,
-                          width: width,
-                          height: height,
-                        );
-                      },
-                      DrawersType.BattleOnNotificationDrawer:
-                          (BuildContext context) {
-                        return _battleOfferOnNotification(
-                          context: context,
-                          model: _battleRespondModel,
-                          width: width,
-                          height: height,
-                        );
-                      },
-                      DrawersType.ChangeBattleDrawer: (BuildContext context) {
-                        return _changeBattle(
-                          context: context,
-                          width: width,
-                          height: height,
-                          onTapCancelBattle: () {
-                            if (_keyScaffold.currentState != null &&
-                                _keyScaffold.currentState!.isEndDrawerOpen) {
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          userName: getOpponentName(
-                            model: _battleRespondModel,
-                            currentUserId: _currentUserId,
-                          ),
-                          userPhoto: getOpponentPhoto(
-                            model: _battleRespondModel,
-                            currentUserId: _currentUserId,
-                          ),
-                          userRank: getOpponentRank(
-                            model: _battleRespondModel,
-                            currentUserId: _currentUserId,
-                          ),
-                        );
-                      },
-                    },
-                    fallbackBuilder: (BuildContext context) =>
-                        _connectFilterDrawer(
-                            context: context, width: width, height: height),
-                  )
-                : null,
-            body: SafeArea(
-              child: Container(
+                        },
+                      )
+                    : _selectedDrawerItem == DrawerItems.Connect
+                        ? appBarButtons(
+                            isNeedSecondButton: false,
+                            firstButtonIcon:
+                                const Icon(Icons.filter_alt_outlined),
+                            onTapFirstButton: () async {
+                              if (_keyScaffold.currentState != null &&
+                                  !_keyScaffold.currentState!.isEndDrawerOpen) {
+                                _keyScaffold.currentState!.openEndDrawer();
+                              }
+                            },
+                            secondButtonIcon: const Icon(Icons.search),
+                            onTapSecondButton: () {},
+                          )
+                        : _selectedDrawerItem == DrawerItems.Interact
+                            ? <Widget>[Container()]
+                            : null,
+              ),
+              drawer: _homeDrawer(
+                context: context,
                 width: width,
                 height: height,
-                color: Colors.white,
-                child: ScrollConfiguration(
-                  behavior: NoGlowScrollBehavior(),
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: <Widget>[
-                      FutureBuilder<List<ConnectUsersModel>?>(
-                          future: _users,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<List<ConnectUsersModel>?>
-                                  snapshot) {
-                            if (snapshot.hasData && snapshot.data != null) {
-                              return snapshot.data!.isNotEmpty
-                                  ? ConnectPage(
-                                      users: snapshot.data!,
-                                      onBattleTap:
-                                          (ConnectUsersModel userModel) {
-                                        BlocProvider.of<HomeBloc>(context).add(
-                                            home_bloc.OpenBattleDrawer(
-                                                userModel));
-                                      },
-                                    )
-                                  : Container(
-                                      height: height,
-                                      width: width,
-                                      alignment: Alignment.bottomCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                            noFiltersBackground,
+              ),
+              endDrawer: _selectedDrawerItem == DrawerItems.Connect ||
+                      _selectedDrawerItem == DrawerItems.Interact
+                  ? ConditionalSwitch.single<DrawersType>(
+                      context: context,
+                      valueBuilder: (BuildContext context) =>
+                          _selectedDrawersType,
+                      caseBuilders: <DrawersType,
+                          Widget Function(BuildContext)>{
+                        DrawersType.FilterDrawer: (BuildContext context) =>
+                            _connectFilterDrawer(
+                                context: context, width: width, height: height),
+                        DrawersType.BattleDrawer: (BuildContext context) {
+                          return _createBattleDrawer(
+                            context: context,
+                            model: _userBattleModel,
+                            width: width,
+                            height: height,
+                          );
+                        },
+                        DrawersType.BattleOnNotificationDrawer:
+                            (BuildContext context) {
+                          return _battleOfferOnNotification(
+                            context: context,
+                            model: _battleRespondModel,
+                            width: width,
+                            height: height,
+                          );
+                        },
+                        DrawersType.ChangeBattleDrawer: (BuildContext context) {
+                          return _changeBattle(
+                            context: context,
+                            width: width,
+                            height: height,
+                            onTapCancelBattle: () {
+                              if (_keyScaffold.currentState != null &&
+                                  _keyScaffold.currentState!.isEndDrawerOpen) {
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            userName: getOpponentName(
+                              model: _battleRespondModel,
+                              currentUserId: _currentUserId,
+                            ),
+                            userPhoto: getOpponentPhoto(
+                              model: _battleRespondModel,
+                              currentUserId: _currentUserId,
+                            ),
+                            userRank: getOpponentRank(
+                              model: _battleRespondModel,
+                              currentUserId: _currentUserId,
+                            ),
+                          );
+                        },
+                      },
+                      fallbackBuilder: (BuildContext context) =>
+                          _connectFilterDrawer(
+                              context: context, width: width, height: height),
+                    )
+                  : null,
+              body: SafeArea(
+                child: Container(
+                  width: width,
+                  height: height,
+                  color: Colors.white,
+                  child: ScrollConfiguration(
+                    behavior: NoGlowScrollBehavior(),
+                    child: PageView(
+                      controller: _pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: <Widget>[
+                        FutureBuilder<List<ConnectUsersModel>?>(
+                            future: _users,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<ConnectUsersModel>?>
+                                    snapshot) {
+                              if (snapshot.hasData && snapshot.data != null) {
+                                return snapshot.data!.isNotEmpty
+                                    ? ConnectPage(
+                                        users: snapshot.data!,
+                                        onBattleTap:
+                                            (ConnectUsersModel userModel) {
+                                          BlocProvider.of<HomeBloc>(context)
+                                              .add(home_bloc.OpenBattleDrawer(
+                                                  userModel));
+                                        },
+                                      )
+                                    : Container(
+                                        height: height,
+                                        width: width,
+                                        alignment: Alignment.bottomCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                              noFiltersBackground,
+                                            ),
+                                            fit: BoxFit.cover,
                                           ),
-                                          fit: BoxFit.cover,
                                         ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            buildRoundedButton(
-                                              label: 'Refresh'.toUpperCase(),
-                                              width: width,
-                                              height: 40.h,
-                                              buttonTextSize: 14.0,
-                                              controller: _refreshController,
-                                              textColor: Colors.white,
-                                              backColor: redColor,
-                                              onTap: () async {
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(home_bloc
-                                                        .SelectConnectFilters(
-                                                  _isNeedFilter,
-                                                  _currentRangeValuesPace.start,
-                                                  _currentRangeValuesPace.end,
-                                                  _currentRangeValuesWeekly
-                                                      .start,
-                                                  _currentRangeValuesWeekly.end,
-                                                  _countOfRuns,
-                                                ));
-                                                _refreshController.reset();
-                                              },
-                                            ),
-                                            SizedBox(
-                                              height: 15.h,
-                                            ),
-                                            buttonNoIcon(
-                                              title: 'Disable filters'
-                                                  .toUpperCase(),
-                                              color: Colors.transparent,
-                                              height: 40.h,
-                                              textColor: Colors.black,
-                                              buttonTextSize: 14.0,
-                                              shadowColor: Colors.transparent,
-                                              onPressed: () {
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(home_bloc
-                                                        .SwitchIsNeedFilter(
-                                                            isNeedFilter:
-                                                                false));
-                                              },
-                                            ),
-                                          ],
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              buildRoundedButton(
+                                                label: 'Refresh'.toUpperCase(),
+                                                width: width,
+                                                height: 40.h,
+                                                buttonTextSize: 14.0,
+                                                controller: _refreshController,
+                                                textColor: Colors.white,
+                                                backColor: redColor,
+                                                onTap: () async {
+                                                  BlocProvider.of<HomeBloc>(
+                                                          context)
+                                                      .add(home_bloc
+                                                          .SelectConnectFilters(
+                                                    _isNeedFilter,
+                                                    _currentRangeValuesPace
+                                                        .start,
+                                                    _currentRangeValuesPace.end,
+                                                    _currentRangeValuesWeekly
+                                                        .start,
+                                                    _currentRangeValuesWeekly
+                                                        .end,
+                                                    _countOfRuns,
+                                                  ));
+                                                  _refreshController.reset();
+                                                },
+                                              ),
+                                              SizedBox(
+                                                height: 15.h,
+                                              ),
+                                              buttonNoIcon(
+                                                title: 'Disable filters'
+                                                    .toUpperCase(),
+                                                color: Colors.transparent,
+                                                height: 40.h,
+                                                textColor: Colors.black,
+                                                buttonTextSize: 14.0,
+                                                shadowColor: Colors.transparent,
+                                                onPressed: () {
+                                                  BlocProvider.of<HomeBloc>(
+                                                          context)
+                                                      .add(home_bloc
+                                                          .SwitchIsNeedFilter(
+                                                              isNeedFilter:
+                                                                  false));
+                                                },
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    );
-                            } else {
-                              return Container(
-                                color: Colors.white,
-                                width: width,
-                                height: height,
-                                child: progressIndicator(),
-                              );
-                            }
-                          }),
-                      SizedBox(
-                        width: width,
-                        height: height,
-                        child: InteractPage(
-                          signalR: _signalR,
-                          onTapChange: (String id, BattleRespondModel model) {
-                            BlocProvider.of<HomeBloc>(context).add(
-                                home_bloc.OpenChangeBattleDrawer(id, model));
+                                      );
+                              } else {
+                                return Container(
+                                  color: Colors.white,
+                                  width: width,
+                                  height: height,
+                                  child: progressIndicator(),
+                                );
+                              }
+                            }),
+                        SizedBox(
+                          width: width,
+                          height: height,
+                          child: InteractPage(
+                            signalR: _signalR,
+                            onTapChange: (String id, BattleRespondModel model) {
+                              BlocProvider.of<HomeBloc>(context).add(
+                                  home_bloc.OpenChangeBattleDrawer(id, model));
+                            },
+                          ),
+                        ),
+                        EnjoyPage(),
+                        ProfilePage(
+                          userDataListener: () {
+                            BlocProvider.of<HomeBloc>(context)
+                                .add(home_bloc.UpdateUserData());
                           },
                         ),
-                      ),
-                      EnjoyPage(),
-                      ProfilePage(
-                        userDataListener: () {
-                          BlocProvider.of<HomeBloc>(context)
-                              .add(home_bloc.UpdateUserData());
-                        },
-                      ),
-                      const SettingsPage(),
-                    ],
+                        const SettingsPage(),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -1249,6 +1257,40 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             gravity: ToastGravity.CENTER);
       }
     });
+  }
+
+  Future<bool> _onWillPop() async {
+    return (await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            content: const Text('Do you want to exit an App?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                      color: Colors.green,
+                      fontFamily: 'roboto',
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.normal),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(
+                  'Exit',
+                  style: TextStyle(
+                      color: Colors.redAccent,
+                      fontFamily: 'roboto',
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.normal),
+                ),
+              ),
+            ],
+          ),
+        )) ??
+        false;
   }
 
   @override

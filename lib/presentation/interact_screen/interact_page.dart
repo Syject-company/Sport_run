@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:one2one_run/components/faq_helper.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/home_api.dart';
 import 'package:one2one_run/data/apis/interact_api.dart';
@@ -14,6 +15,7 @@ import 'package:one2one_run/presentation/interact_screen/tabs/active_tab.dart';
 import 'package:one2one_run/presentation/interact_screen/tabs/finished_tab.dart';
 import 'package:one2one_run/presentation/interact_screen/tabs/pending_tab.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
@@ -30,10 +32,10 @@ class InteractPage extends StatefulWidget {
   final SignalR signalR;
 
   @override
-  _InteractPageState createState() => _InteractPageState();
+  InteractPageState createState() => InteractPageState();
 }
 
-class _InteractPageState extends State<InteractPage> {
+class InteractPageState extends State<InteractPage> {
   final InteractApi _interActApi = InteractApi();
   final HomeApi _homeApi = HomeApi();
 
@@ -42,8 +44,9 @@ class _InteractPageState extends State<InteractPage> {
   @override
   void initState() {
     super.initState();
-
     getInteractTabsDataById = _interActApi.getInteractTabsDataById(tabId: 0);
+
+    showFAQHelperPage();
   }
 
   @override
@@ -190,6 +193,20 @@ class _InteractPageState extends State<InteractPage> {
         }),
       ),
     );
+  }
+
+  void showFAQHelperPage() {
+    if (!PreferenceUtils.getIsInteractFAQHelperShown()) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        Navigator.push<dynamic>(context,
+            MaterialPageRoute<dynamic>(builder: (BuildContext context) {
+          PreferenceUtils.setIsInteractFAQHelperShown(true);
+          return FAQHelperPage(
+            faqHelperState: FAQHelperState.InteractState,
+          );
+        }));
+      });
+    }
   }
 
   @override

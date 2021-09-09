@@ -13,9 +13,8 @@ enum DrawersType {
   ChangeBattleDrawer,
 }
 
-enum InteractPageTab {
-  ActiveTab,
-  PendingTab,
-  FinishTab,
-  NON,
+enum FAQHelperState {
+  LoginState,
+  InteractState,
+  HelpState,
 }
