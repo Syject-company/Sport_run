@@ -14,8 +14,6 @@ String get nickNameBackground => 'assets/images/nick_name_background.png';
 
 String get profileCreatedBackground => 'assets/images/profile_created.png';
 
-String get popInfoBackground => 'assets/images/pop_info.png';
-
 String get passwordBackground => 'assets/images/password_background.png';
 
 String get verificationCodeBackground => 'assets/images/verification_code.png';
@@ -81,3 +79,17 @@ String get noProofsIcon => 'assets/icons/no_proofs.png';
 String get addIcon => 'assets/icons/add.png';
 
 String get startChatImage => 'assets/images/start_chat.png';
+
+//region F.A.Q.
+String get faqHelp1 => 'assets/images/faq_helper/faq_1.png';
+
+String get faqHelp2 => 'assets/images/faq_helper/faq_2.png';
+
+String get faqHelp3 => 'assets/images/faq_helper/faq_3.png';
+
+String get faqHelp4 => 'assets/images/faq_helper/faq_4.png';
+
+String get faqHelp5 => 'assets/images/faq_helper/faq_5.png';
+
+String get faqHelp6 => 'assets/images/faq_helper/faq_6.png';
+//endregion

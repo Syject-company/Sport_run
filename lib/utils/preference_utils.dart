@@ -60,6 +60,22 @@ mixin PreferenceUtils {
   static Future<void> setCurrentUserModel(UserModel value) async {
     await _prefsInstance?.setString(userModel, json.encode(value));
   }
+
+  static bool getIsLoginFAQHelperShown() {
+    return _prefsInstance?.getBool(loginFAQHelper) ?? false;
+  }
+
+  static Future<void> setIsLoginFAQHelperShown(bool value) async {
+    await _prefsInstance?.setBool(loginFAQHelper, value);
+  }
+
+  static bool getIsInteractFAQHelperShown() {
+    return _prefsInstance?.getBool(interactFAQHelper) ?? false;
+  }
+
+  static Future<void> setIsInteractFAQHelperShown(bool value) async {
+    await _prefsInstance?.setBool(interactFAQHelper, value);
+  }
 }
 
 String get isUserAuthenticated => 'is_user_authenticated';
@@ -73,3 +89,7 @@ String get userNickName => 'user_nickname';
 String get userUnit => 'user_unit';
 
 String get userModel => 'user_model';
+
+String get loginFAQHelper => 'login_faq_helper';
+
+String get interactFAQHelper => 'interact_faq_helper';

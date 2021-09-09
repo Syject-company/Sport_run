@@ -3353,7 +3353,7 @@ Widget userCardEnjoy({
 }) {
   return Center(
     child: Container(
-      height: height * 0.38,
+      height: height * 0.40,
       width: width,
       color: Colors.transparent,
       child: Stack(
@@ -3462,26 +3462,26 @@ Widget userCardEnjoy({
                   indent: height * 0.03,
                 ),
                 SizedBox(
-                  height: height * 0.02,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    userWonLossCard(
-                        title: 'Won',
-                        value: '${model.wins}',
-                        colorValue: Colors.red),
-                    Container(
-                      color: Colors.grey,
-                      margin: EdgeInsets.symmetric(horizontal: width * 0.08),
-                      height: 10.h,
-                      width: 0.5,
-                    ),
-                    userWonLossCard(
-                      title: 'Loss',
-                      value: '${model.loses}',
-                    ),
-                  ],
+                  height: height * 0.09,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      userWonLossCard(
+                          title: 'Won',
+                          value: '${model.wins}',
+                          colorValue: Colors.red),
+                      Container(
+                        color: Colors.grey,
+                        margin: EdgeInsets.symmetric(horizontal: width * 0.08),
+                        height: 10.h,
+                        width: 0.5,
+                      ),
+                      userWonLossCard(
+                        title: 'Loss',
+                        value: '${model.loses}',
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -38,3 +38,5 @@ class SignInedApple extends LoginState {
 }
 
 class FieldsChecked extends LoginState {}
+
+class NavigatedToFAQHelperPage extends LoginState {}

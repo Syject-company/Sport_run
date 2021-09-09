@@ -9,6 +9,7 @@ class Constants {
   static const String homeRoute = '/home';
   static const String passwordRoute = '/password';
   static const String editProfileRoute = '/editProfile';
+  static const String faqHelperRoute = '/faqHelper';
 
   //Api urls:
   static const String registerUrl = '/api/Account/registration';

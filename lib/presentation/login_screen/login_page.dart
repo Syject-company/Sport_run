@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' show Response;
+import 'package:one2one_run/components/faq_helper.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/login_api.dart';
 import 'package:one2one_run/data/models/access_user_model.dart';
@@ -21,6 +22,7 @@ import 'package:one2one_run/presentation/login_screen/login_bloc/login_state.dar
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show EmailValidator;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -91,8 +93,11 @@ class _LoginPageState extends State<LoginPage> {
                         .then((_) async {
                       signInController.success();
                       await PreferenceUtils.setIsUserAuthenticated(true).then(
-                          (_) => Navigator.of(context)
-                              .pushReplacementNamed(Constants.homeRoute));
+                          (_) => PreferenceUtils.getIsLoginFAQHelperShown()
+                              ? Navigator.of(context)
+                                  .pushReplacementNamed(Constants.homeRoute)
+                              : BlocProvider.of<LoginBloc>(context)
+                                  .add(login_bloc.NavigateToFAQHelperPage()));
                     });
                   } else {
                     signInController.reset();
@@ -122,6 +127,15 @@ class _LoginPageState extends State<LoginPage> {
                 } else {
                   signInController.reset();
                 }
+              } else if (state is NavigatedToFAQHelperPage) {
+                PreferenceUtils.setIsLoginFAQHelperShown(true);
+                Navigator.pushReplacement<dynamic, dynamic>(
+                    context,
+                    MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) => FAQHelperPage(
+                        faqHelperState: FAQHelperState.LoginState,
+                      ),
+                    ));
               }
               if (!_loginBloc.isClosed) {
                 BlocProvider.of<LoginBloc>(context).add(
@@ -291,7 +305,10 @@ class _LoginPageState extends State<LoginPage> {
     if (value != null) {
       await PreferenceUtils.setUserToken(value).then((_) {
         PreferenceUtils.setIsUserAuthenticated(true);
-        Navigator.of(context).pushReplacementNamed(Constants.homeRoute);
+        PreferenceUtils.getIsLoginFAQHelperShown()
+            ? Navigator.of(context).pushReplacementNamed(Constants.homeRoute)
+            : BlocProvider.of<LoginBloc>(context)
+                .add(login_bloc.NavigateToFAQHelperPage());
       });
     } else {
       await Fluttertoast.showToast(
@@ -344,9 +361,20 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  // TODO: need to complete
   Future<String?> signInWithApple({required BuildContext context}) async {
     await SignInWithApple.getAppleIDCredential(
-      scopes: <AppleIDAuthorizationScopes>[],
+      scopes: <AppleIDAuthorizationScopes>[
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+        webAuthenticationOptions: WebAuthenticationOptions(
+          // TODO: Set the `clientId` and `redirectUri` arguments to the values you entered in the Apple Developer portal during the setup
+          clientId: 'com.one2one.one2oneRun',
+          redirectUri: Uri.parse(
+            'https://flutter-sign-in-with-apple-example.glitch.me/callbacks/sign_in_with_apple',
+          ),
+        )
     ).then((AuthorizationCredentialAppleID value) async {
       final String? token = value.identityToken;
       if (token != null) {
@@ -359,6 +387,7 @@ class _LoginPageState extends State<LoginPage> {
             .add(login_bloc.SignInApple(token: userToken!.token));
       }
     }).catchError((Object err) async {
+      print('SignInWithApple: $err');
       await Fluttertoast.showToast(
           msg: 'Registration error',
           fontSize: 16.0,
