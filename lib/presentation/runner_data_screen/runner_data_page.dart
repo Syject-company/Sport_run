@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:one2one_run/components/faq_helper.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/runner_data_api.dart';
 import 'package:one2one_run/data/models/runner_data_model.dart';
@@ -15,6 +16,7 @@ import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
+import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -26,11 +28,10 @@ class RunnerDataPage extends StatefulWidget {
   final int pageIndex;
 
   @override
-  _RunnerDataPageState createState() => _RunnerDataPageState();
+  RunnerDataPageState createState() => RunnerDataPageState();
 }
 
-class _RunnerDataPageState extends State<RunnerDataPage> {
-
+class RunnerDataPageState extends State<RunnerDataPage> {
   final RunnerDataApi _runnerDataApi = RunnerDataApi();
   final RunnerDataBloc _runnerDataBloc = RunnerDataBloc();
 
@@ -93,6 +94,7 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                     .sendRunnerData(state.runnerDataModel)
                     .then((bool value) async {
                   if (value) {
+                    goController.reset();
                     await _pageController
                         .animateToPage(3,
                             duration: const Duration(milliseconds: 1),
@@ -100,20 +102,31 @@ class _RunnerDataPageState extends State<RunnerDataPage> {
                         .then((_) {
                       Timer(const Duration(seconds: 3), () async {
                         await PreferenceUtils.setIsUserAuthenticated(true);
-                        await Navigator.of(context)
-                            .pushReplacementNamed(Constants.homeRoute);
+                        if (!PreferenceUtils.getIsLoginFAQHelperShown()) {
+                          PreferenceUtils.setIsLoginFAQHelperShown(true);
+                          Navigator.pushReplacement<dynamic, dynamic>(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) =>
+                                    FAQHelperPage(
+                                  faqHelperState: FAQHelperState.LoginState,
+                                ),
+                              ));
+                        } else {
+                          await Navigator.of(context)
+                              .pushReplacementNamed(Constants.homeRoute);
+                        }
                       });
                     });
                   } else {
                     await toastUnexpectedError();
                   }
-                  goController.reset();
                 });
               }
 
               if (!_runnerDataBloc.isClosed) {
                 BlocProvider.of<RunnerDataBloc>(context)
-                                  .add(runner_data_bloc.UpdateState());
+                    .add(runner_data_bloc.UpdateState());
               }
             },
             child: BlocBuilder<RunnerDataBloc, RunnerDataState>(builder:

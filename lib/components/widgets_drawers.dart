@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
@@ -6,7 +7,6 @@ import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Widget changeBattleDrawer({
   required double height,

@@ -31,3 +31,5 @@ class ChatMessageGot extends FinishedCompletedDetailState {
   @override
   List<Object> get props => <Object>[messageModel];
 }
+
+class ImageBattleIsShared extends FinishedCompletedDetailState {}

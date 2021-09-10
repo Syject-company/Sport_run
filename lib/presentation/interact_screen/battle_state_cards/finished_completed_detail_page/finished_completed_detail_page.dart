@@ -12,9 +12,10 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/fini
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_bloc/finished_completed_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_bloc/finished_completed_detail_state.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/utils/extension.dart' show UserData;
+import 'package:one2one_run/utils/extension.dart' show UserData, ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
+import 'package:share_plus/share_plus.dart';
 
 //NOte:'/finishedCompletedDetail'
 class FinishedCompletedDetailPage extends StatefulWidget {
@@ -30,11 +31,11 @@ class FinishedCompletedDetailPage extends StatefulWidget {
   final SignalR signalR;
 
   @override
-  _FinishedCompletedDetailPageState createState() =>
-      _FinishedCompletedDetailPageState();
+  FinishedCompletedDetailPageState createState() =>
+      FinishedCompletedDetailPageState();
 }
 
-class _FinishedCompletedDetailPageState
+class FinishedCompletedDetailPageState
     extends State<FinishedCompletedDetailPage> {
   final TextEditingController _chatController = TextEditingController();
 
@@ -94,6 +95,16 @@ class _FinishedCompletedDetailPageState
                     );
                   } else if (state is ChatMessageGot) {
                     _messages.add(state.messageModel);
+                  } else if (state is ImageBattleIsShared) {
+                    await _interactApi
+                        .getImageBattleShare(id: widget.finishedModel.id)
+                        .then((String? imageUrl) {
+                      if (imageUrl != null) {
+                        Share.share(imageUrl, subject: 'One2One.run\nBattle of Supermen!\n');
+                      } else {
+                        toastUnexpectedError();
+                      }
+                    });
                   }
                   if (!_finishedCompletedDetailBloc.isClosed) {
                     BlocProvider.of<FinishedCompletedDetailBloc>(context)
@@ -109,6 +120,16 @@ class _FinishedCompletedDetailPageState
                       backgroundColor: homeBackground,
                       appBar: AppBar(
                         shadowColor: Colors.transparent,
+                        actions: appBarButtons(
+                          isNeedSecondButton: false,
+                          firstButtonIcon: const Icon(Icons.share_rounded),
+                          onTapFirstButton: () async {
+                            BlocProvider.of<FinishedCompletedDetailBloc>(
+                                    context)
+                                .add(finished_completed_detail_bloc
+                                    .ShareImageBattle());
+                          },
+                        ),
                         title: Text(
                           widget.finishedModel.battleName ?? 'Battle',
                           style: TextStyle(

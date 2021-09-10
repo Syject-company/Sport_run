@@ -12,7 +12,6 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/fini
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_discarded_detail_page/finished_discarded_detail_bloc/finished_discarded_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_discarded_detail_page/finished_discarded_detail_bloc/finished_discarded_detail_state.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
@@ -31,11 +30,11 @@ class FinishedDiscardedDetailPage extends StatefulWidget {
   final SignalR signalR;
 
   @override
-  _FinishedDiscardedDetailPageState createState() =>
-      _FinishedDiscardedDetailPageState();
+  FinishedDiscardedDetailPageState createState() =>
+      FinishedDiscardedDetailPageState();
 }
 
-class _FinishedDiscardedDetailPageState
+class FinishedDiscardedDetailPageState
     extends State<FinishedDiscardedDetailPage> {
   final TextEditingController _chatController = TextEditingController();
 

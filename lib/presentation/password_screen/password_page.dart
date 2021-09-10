@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/change_password_api.dart';
@@ -15,10 +16,9 @@ import 'package:one2one_run/presentation/password_screen/password_bloc/password_
 import 'package:one2one_run/presentation/password_screen/password_bloc/password_state.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/utils/constants.dart';
-import 'package:pinput/pin_put/pin_put.dart';
 import 'package:one2one_run/utils/extension.dart' show EmailValidator;
+import 'package:pinput/pin_put/pin_put.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //NOte:'/password'
@@ -26,10 +26,10 @@ class PasswordPage extends StatefulWidget {
   const PasswordPage({Key? key}) : super(key: key);
 
   @override
-  _PasswordPageState createState() => _PasswordPageState();
+  PasswordPageState createState() => PasswordPageState();
 }
 
-class _PasswordPageState extends State<PasswordPage> {
+class PasswordPageState extends State<PasswordPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =

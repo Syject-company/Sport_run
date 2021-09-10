@@ -4,7 +4,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:one2one_run/components/faq_helper.dart';
 import 'package:one2one_run/presentation/home_screen/home_page.dart';
 import 'package:one2one_run/presentation/login_screen/login_page.dart';
 import 'package:one2one_run/presentation/password_screen/password_page.dart';

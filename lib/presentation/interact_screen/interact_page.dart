@@ -26,10 +26,12 @@ class InteractPage extends StatefulWidget {
     Key? key,
     required this.onTapChange,
     required this.signalR,
+    required this.drawerItems,
   }) : super(key: key);
 
   final Function(String id, BattleRespondModel model) onTapChange;
   final SignalR signalR;
+  final DrawerItems drawerItems;
 
   @override
   InteractPageState createState() => InteractPageState();
@@ -196,7 +198,8 @@ class InteractPageState extends State<InteractPage> {
   }
 
   void showFAQHelperPage() {
-    if (!PreferenceUtils.getIsInteractFAQHelperShown()) {
+    if (widget.drawerItems == DrawerItems.Interact &&
+        !PreferenceUtils.getIsInteractFAQHelperShown()) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         Navigator.push<dynamic>(context,
             MaterialPageRoute<dynamic>(builder: (BuildContext context) {

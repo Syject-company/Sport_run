@@ -31,6 +31,7 @@ class Constants {
   static const String getNotificationsStateUrl = '/api/Account/NotificationsMode';
   static const String sendResultPhotoUrl = '/api/Battle/Photo';
   static const String getEnjoyModelUrl = '/api/Enjoy';
+  static const String getImageShareUrl = '/api/Share/Battle/';
 
   //Data:
   static const String socketUrl = 'https://one2onerunapi.azurewebsites.net/chathub';

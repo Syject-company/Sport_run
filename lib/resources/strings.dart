@@ -1,14 +1,14 @@
 
 
 String get termsText =>
-    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown'
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown "
     'Printer took a galley of type and scrambled it to make a type specimen book. '
     'It has survived not only five centuries, but also the leap into electronic typesetting, '
     'remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset '
     'sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like '
     'Aldus PageMaker including versions of Lorem Ipsum.\n\n'
-    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s '
-    'standard dummy text ever since the 1500s, when an unknown'
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's "
+    'standard dummy text ever since the 1500s, when an unknown '
     'Printer took a galley of type and scrambled it to make a type specimen book. '
     'It has survived not only five centuries, but also the leap into electronic typesetting, '
     'remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset '
@@ -29,7 +29,7 @@ String get termsButtonText =>
 String get distanceText =>
     'The running distance you want to challenge your opponent with.';
 
-List<String> get messagesToOpponent => [
+List<String> get messagesToOpponent => <String>[
       'I am planting this seed for something I wish to accomplish. Join me in the running battle!',
       'It’s never too late to be whoever you want to be. Join the run!',
       'Let’s share the run together. Accept now!',

@@ -8,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_conditional_rendering/flutter_conditional_rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:one2one_run/components/faq_helper.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/components/widgets_drawers.dart';
 import 'package:one2one_run/data/apis/connect_api.dart';
@@ -32,12 +31,12 @@ import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
-import 'package:one2one_run/utils/signal_r.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
     show DateTimeExtension, ToastExtension, UserData;
 import 'package:one2one_run/utils/no_glow_scroll_behavior.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
+import 'package:one2one_run/utils/signal_r.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //NOte:'/home'
@@ -45,10 +44,10 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
+class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _keyScaffold = GlobalKey<ScaffoldState>();
 
   final PageController _pageController = PageController();
@@ -395,8 +394,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 _keyScaffold.currentState!.openEndDrawer();
                               }
                             },
-                            secondButtonIcon: const Icon(Icons.search),
-                            onTapSecondButton: () {},
                           )
                         : _selectedDrawerItem == DrawerItems.Interact
                             ? <Widget>[Container()]
@@ -574,6 +571,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           height: height,
                           child: InteractPage(
                             signalR: _signalR,
+                            drawerItems: _selectedDrawerItem,
                             onTapChange: (String id, BattleRespondModel model) {
                               BlocProvider.of<HomeBloc>(context).add(
                                   home_bloc.OpenChangeBattleDrawer(id, model));
@@ -682,30 +680,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         await toastUnexpectedError();
       }
     });
-  }
-
-  List<Widget> appBarButtons({
-    required Widget firstButtonIcon,
-    required Widget secondButtonIcon,
-    required VoidCallback onTapFirstButton,
-    required VoidCallback onTapSecondButton,
-    required bool isNeedSecondButton,
-  }) {
-    return <Widget>[
-      IconButton(
-        icon: firstButtonIcon,
-        onPressed: onTapFirstButton,
-        iconSize: 20,
-      ),
-      if (isNeedSecondButton)
-        IconButton(
-          icon: secondButtonIcon,
-          onPressed: onTapSecondButton,
-          iconSize: 20,
-        )
-      else
-        Container(),
-    ];
   }
 
   Widget _homeDrawer(

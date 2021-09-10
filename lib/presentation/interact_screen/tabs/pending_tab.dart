@@ -43,7 +43,11 @@ class PendingTab extends StatelessWidget {
                       context: context,
                       width: width,
                       height: height,
-                      heightPercentage: 0.43,
+                      heightPercentage: getIfOpponentCreatedTheBattle(
+                              model: pendingList[index],
+                              currentUserId: currentUserId)
+                          ? 0.43
+                          : 0.35,
                       model: pendingList[index],
                       distance: distance(distance: pendingList[index].distance),
                       opponentName: getOpponentName(
@@ -54,7 +58,9 @@ class PendingTab extends StatelessWidget {
                         model: pendingList[index],
                         currentUserId: currentUserId,
                       ),
-                      isNeedButtons: true,
+                      isNeedButtons: getIfOpponentCreatedTheBattle(
+                          model: pendingList[index],
+                          currentUserId: currentUserId),
                       onTapAccept: onTapAccept,
                       onTapChange: onTapChange,
                       onTapDecline: onTapDecline,

@@ -31,10 +31,10 @@ class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  RegisterPageState createState() => RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class RegisterPageState extends State<RegisterPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final RoundedLoadingButtonController continueController =
@@ -82,11 +82,12 @@ class _RegisterPageState extends State<RegisterPage> {
               } else if (state is NavigatedToRunnersData) {
                 await registerApi
                     .registerEmail(AccessUserModel(
-                  email: emailController.text,
+                  email: emailController.text.trim(),
                   password: passwordController.text,
                 ))
                     .then((Response value) async {
                   if (value.statusCode == 200) {
+                    continueController.success();
                     await PreferenceUtils.setUserToken(
                             AccessUserResponseModel.fromJson(json
                                     .decode(value.body) as Map<String, dynamic>)
@@ -96,7 +97,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           Navigator.of(context).pushReplacementNamed(
                               Constants.runnersDataRoute));
                     });
-                    continueController.success();
                   } else {
                     continueController.reset();
                     await Fluttertoast.showToast(

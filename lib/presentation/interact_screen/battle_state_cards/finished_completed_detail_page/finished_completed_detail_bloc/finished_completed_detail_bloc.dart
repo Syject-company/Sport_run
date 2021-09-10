@@ -17,6 +17,8 @@ class FinishedCompletedDetailBloc
       yield MessageChatSent();
     } else if (event is GetChatMessage) {
       yield ChatMessageGot(messageModel: event.messageModel);
+    }else if (event is ShareImageBattle) {
+      yield ImageBattleIsShared();
     }
   }
 }

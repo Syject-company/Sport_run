@@ -12,7 +12,6 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pend
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_bloc/pending_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_bloc/pending_detail_state.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
@@ -31,10 +30,10 @@ class PendingDetailPage extends StatefulWidget {
   final SignalR signalR;
 
   @override
-  _PendingDetailPageState createState() => _PendingDetailPageState();
+  PendingDetailPageState createState() => PendingDetailPageState();
 }
 
-class _PendingDetailPageState extends State<PendingDetailPage> {
+class PendingDetailPageState extends State<PendingDetailPage> {
   final TextEditingController _chatController = TextEditingController();
 
   List<Messages> _messages = <Messages>[];

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/battle_result_model.dart';
@@ -20,6 +21,9 @@ class InteractApi {
 
   final String _urlSendBattleResult =
       '${Constants.domain}${Constants.createBattleUrl}';
+
+  final String _urlGetImageShare =
+      '${Constants.domain}${Constants.getImageShareUrl}';
 
   //@get
   Future<List<BattleRespondModel>?> getInteractTabsDataById(
@@ -115,5 +119,19 @@ class InteractApi {
         });
 
     return res.statusCode == 200;
+  }
+
+  //@get
+  Future<String?> getImageBattleShare({required String id}) async {
+    final String token = PreferenceUtils.getUserToken();
+    final Response res =
+        await get(Uri.parse('$_urlGetImageShare$id'), headers: <String, String>{
+      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.authorizationHeader: token,
+    });
+
+    if (res.statusCode == 200 && res.body != null) {
+      return res.body.replaceAll(RegExp(r'\"'), '');
+    }
   }
 }
