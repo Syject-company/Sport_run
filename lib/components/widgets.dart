@@ -1725,7 +1725,7 @@ Widget pendingFinishedBattleDetailsCard({
             ),
             //NOTE:Chat card
             Container(
-              height: height * 0.415,
+              height: height * 0.48,
               width: width,
               padding: EdgeInsets.all(width * 0.035),
               margin: EdgeInsets.symmetric(
@@ -1747,7 +1747,7 @@ Widget pendingFinishedBattleDetailsCard({
               child: Column(
                 children: <Widget>[
                   SizedBox(
-                    height: height * 0.271,
+                    height: height * 0.336,
                     width: width,
                     child: messages.isNotEmpty
                         ? ListView.builder(
@@ -3559,4 +3559,30 @@ Widget userWonLossCard(
       ),
     ],
   );
+}
+
+List<Widget> appBarButtons({
+  required Widget firstButtonIcon,
+  Widget? secondButtonIcon,
+  required VoidCallback onTapFirstButton,
+  VoidCallback? onTapSecondButton,
+  required bool isNeedSecondButton,
+}) {
+  return <Widget>[
+    IconButton(
+      icon: firstButtonIcon,
+      onPressed: onTapFirstButton,
+      iconSize: 20,
+    ),
+    if (isNeedSecondButton &&
+        secondButtonIcon != null &&
+        onTapSecondButton != null)
+      IconButton(
+        icon: secondButtonIcon,
+        onPressed: onTapSecondButton,
+        iconSize: 20,
+      )
+    else
+      Container(),
+  ];
 }

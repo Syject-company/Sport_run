@@ -27,3 +27,5 @@ class GetChatMessage extends FinishedCompletedDetailEvent {
   @override
   List<Object> get props => <Object>[messageModel];
 }
+
+class ShareImageBattle extends FinishedCompletedDetailEvent {}

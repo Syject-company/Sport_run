@@ -42,10 +42,10 @@ class ActiveDetailPage extends StatefulWidget {
   final SignalR signalR;
 
   @override
-  _ActiveDetailPageState createState() => _ActiveDetailPageState();
+  ActiveDetailPageState createState() => ActiveDetailPageState();
 }
 
-class _ActiveDetailPageState extends State<ActiveDetailPage> {
+class ActiveDetailPageState extends State<ActiveDetailPage> {
   final TextEditingController _chatController = TextEditingController();
   final RoundedLoadingButtonController _showUploadResultsPageController =
       RoundedLoadingButtonController();

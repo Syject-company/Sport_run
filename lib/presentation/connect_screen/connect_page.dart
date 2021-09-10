@@ -18,10 +18,10 @@ class ConnectPage extends StatefulWidget {
   final Function(ConnectUsersModel userModel) onBattleTap;
 
   @override
-  _ConnectPageState createState() => _ConnectPageState();
+  ConnectPageState createState() => ConnectPageState();
 }
 
-class _ConnectPageState extends State<ConnectPage> {
+class ConnectPageState extends State<ConnectPage> {
   @override
   void initState() {
     super.initState();

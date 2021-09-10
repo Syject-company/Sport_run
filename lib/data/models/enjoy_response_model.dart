@@ -147,22 +147,22 @@ class EnjoyResponseModel {
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'id': this.id,
-      'email': this.email,
-      'nickName': this.nickName,
-      'description': this.description,
-      'moto': this.moto,
-      'isMetric': this.isMetric,
-      'pace': this.pace,
-      'weeklyDistance': this.weeklyDistance,
-      'rank': this.rank,
-      'workoutsPerWeek': this.workoutsPerWeek,
-      'wins': this.wins,
-      'loses': this.loses,
-      'draws': this.draws,
-      'discarded': this.discarded,
-      'score': this.score,
-      'photoLink': this.photoLink,
+      'id': id,
+      'email': email,
+      'nickName': nickName,
+      'description': description,
+      'moto': moto,
+      'isMetric': isMetric,
+      'pace': pace,
+      'weeklyDistance': weeklyDistance,
+      'rank': rank,
+      'workoutsPerWeek': workoutsPerWeek,
+      'wins': wins,
+      'loses': loses,
+      'draws': draws,
+      'discarded': discarded,
+      'score': score,
+      'photoLink': photoLink,
     };
   }
 

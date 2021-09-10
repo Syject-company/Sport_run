@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/enjoy_api.dart';
 import 'package:one2one_run/data/models/enjoy_response_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 //NOte:'/enjoy'
 class EnjoyPage extends StatelessWidget {
@@ -73,7 +73,7 @@ class EnjoyPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: height - (height * 0.132),
+                  height: height - (height * 0.133),
                   child: Scrollbar(
                     child: ListView.builder(
                         itemCount: snapshot.data!.length,

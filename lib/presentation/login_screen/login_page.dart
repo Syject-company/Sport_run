@@ -33,10 +33,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final RoundedLoadingButtonController signInController =
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
               } else if (state is NavigatedToHome) {
                 await loginApi
                     .loginEmail(AccessUserModel(
-                  email: emailController.text,
+                  email: emailController.text.trim(),
                   password: passwordController.text,
                 ))
                     .then((Response value) async {

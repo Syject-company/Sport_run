@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/active_detail_page.dart';
-import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/signal_r.dart';
 

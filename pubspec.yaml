@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none'
 
-version: 1.0.0+3
+version: 1.0.0+4
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -36,6 +36,7 @@ dependencies:
   firebase_core: ^1.6.0
   firebase_analytics: "^8.3.0"
   intl: ^0.17.0
+  share_plus: ^2.1.4
   signal_r:
     path: signalr_client
 

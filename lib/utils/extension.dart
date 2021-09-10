@@ -225,4 +225,16 @@ extension UserData on void {
     }
     return null;
   }
+
+  bool getIfOpponentCreatedTheBattle({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id != currentUserId) {
+      return model.battleUsers[0].isCreater;
+    }
+
+    return model.battleUsers[1].isCreater;
+  }
+
 }
