@@ -78,8 +78,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                 nickName: _nameController.text,
                 pace: _currentPaceValue / 60,
                 weeklyDistance: _isKM
-                    ? double.parse(
-                        _currentWeeklyDistanceValue.toStringAsFixed(0))
+                    ? double.parse(_currentWeeklyDistanceValue.toStringAsFixed(0))
                     : double.parse(
                         _currentWeeklyDistanceValue.toStringAsFixed(1)),
                 isMetric: _isKM,

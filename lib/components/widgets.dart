@@ -3251,7 +3251,7 @@ Widget userCardMain({
                       title: 'Weekly Distance',
                       icon: weeklyDistanceIcon,
                       value:
-                          '${model.weeklyDistance} ${model.isMetric ? 'km' : 'mile'}',
+                          '${model.isMetric ? double.parse(model.weeklyDistance.toStringAsFixed(0)) : double.parse(model.weeklyDistance.toStringAsFixed(1))} ${model.isMetric ? 'km' : 'mile'}',
                     ),
                   ),
                   SizedBox(
