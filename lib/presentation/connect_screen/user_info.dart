@@ -147,7 +147,7 @@ class UserInfo extends StatelessWidget {
                     title: 'Weekly Distance',
                     icon: weeklyDistanceIcon,
                     value:
-                        '${userModel.weeklyDistance} ${userModel.isMetric ? 'km' : 'mile'}',
+                        '${userModel.isMetric ? double.parse(userModel.weeklyDistance.toStringAsFixed(0)) : double.parse(userModel.weeklyDistance.toStringAsFixed(1))} ${userModel.isMetric ? 'km' : 'mile'}',
                   ),
                 ),
                 SizedBox(

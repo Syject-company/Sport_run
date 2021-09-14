@@ -370,9 +370,9 @@ class LoginPageState extends State<LoginPage> {
       ],
         webAuthenticationOptions: WebAuthenticationOptions(
           // TODO: Set the `clientId` and `redirectUri` arguments to the values you entered in the Apple Developer portal during the setup
-          clientId: 'com.one2one.one2oneRun',
+          clientId: 'com.one2one.one2oneRun.signin',
           redirectUri: Uri.parse(
-            'https://flutter-sign-in-with-apple-example.glitch.me/callbacks/sign_in_with_apple',
+            'https://one2onerunapp.firebaseapp.com/__/auth/handler',
           ),
         )
     ).then((AuthorizationCredentialAppleID value) async {
