@@ -21,7 +21,8 @@ import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
-import 'package:one2one_run/utils/extension.dart' show EmailValidator;
+import 'package:one2one_run/utils/extension.dart'
+    show EmailValidator, Authorization;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -128,8 +129,8 @@ class RegisterPageState extends State<RegisterPage> {
 
               if (!_registerBloc.isClosed) {
                 BlocProvider.of<RegisterBloc>(context).add(
-                                register_bloc.UpdateState(),
-                              );
+                  register_bloc.UpdateState(),
+                );
               }
             },
             child: BlocBuilder<RegisterBloc, RegisterState>(builder:
@@ -259,7 +260,20 @@ class RegisterPageState extends State<RegisterPage> {
                           height: 40.h,
                           onPressed: () async {
                             if (await isUserPassedToContinue()) {
-                              await signInWithApple(context: context);
+                              await signInWithApple(
+                                  context: context,
+                                  onSuccess: (String token) async {
+                                    await registerApi
+                                        .registerApple(RegisterGoogleAppleModel(
+                                      accessToken: token,
+                                    ))
+                                        .then((RegisterResponseGoogleAppleModel?
+                                            value) {
+                                      BlocProvider.of<RegisterBloc>(context)
+                                          .add(register_bloc.SignInApple(
+                                              token: value!.token));
+                                    });
+                                  });
                             }
                           },
                         ),
@@ -272,7 +286,20 @@ class RegisterPageState extends State<RegisterPage> {
                           height: 40.h,
                           onPressed: () async {
                             if (await isUserPassedToContinue()) {
-                              await signInWithGoogle(context: context);
+                              await signInWithGoogle(
+                                  context: context,
+                                  onSuccess: (String token) async {
+                                    final RegisterResponseGoogleAppleModel?
+                                        userToken =
+                                        await registerApi.registerGoogle(
+                                            RegisterGoogleAppleModel(
+                                      accessToken: token,
+                                    ));
+
+                                    BlocProvider.of<RegisterBloc>(context).add(
+                                        register_bloc.SignInGoogle(
+                                            token: userToken!.token));
+                                  });
                             }
                           },
                         ),
@@ -387,59 +414,6 @@ class RegisterPageState extends State<RegisterPage> {
     }
 
     return emailError == null && passwordError == null;
-  }
-
-  Future<void> signInWithGoogle({required BuildContext context}) async {
-    await _googleSignIn.signIn().then((GoogleSignInAccount? result) {
-      result?.authentication.then((GoogleSignInAuthentication googleKey) async {
-        print(googleKey.accessToken);
-        print(_googleSignIn.currentUser?.displayName);
-        final String? token = googleKey.accessToken;
-        if (token != null) {
-          final RegisterResponseGoogleAppleModel? userToken =
-              await registerApi.registerGoogle(RegisterGoogleAppleModel(
-            accessToken: token,
-          ));
-
-          BlocProvider.of<RegisterBloc>(context)
-              .add(register_bloc.SignInGoogle(token: userToken!.token));
-        }
-      }).catchError((Object err) {
-        print('inner error');
-      });
-    }).catchError((Object err) async {
-      print('error occurred');
-      await Fluttertoast.showToast(
-          msg: 'Registration error',
-          fontSize: 16.0,
-          gravity: ToastGravity.CENTER);
-    });
-  }
-
-  Future<String?> signInWithApple({required BuildContext context}) async {
-    await SignInWithApple.getAppleIDCredential(
-      scopes: <AppleIDAuthorizationScopes>[
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-    ).then((AuthorizationCredentialAppleID value) async {
-      final String? token = value.identityToken;
-      if (token != null) {
-        final RegisterResponseGoogleAppleModel? userToken =
-            await registerApi.registerApple(RegisterGoogleAppleModel(
-          accessToken: token,
-        ));
-
-        BlocProvider.of<RegisterBloc>(context)
-            .add(register_bloc.SignInApple(token: userToken!.token));
-      }
-    }).catchError((Object err) async {
-      await Fluttertoast.showToast(
-          msg: 'Registration error',
-          fontSize: 16.0,
-          gravity: ToastGravity.CENTER);
-      return null;
-    });
   }
 
   @override

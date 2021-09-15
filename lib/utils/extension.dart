@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
+import 'package:one2one_run/data/models/register_response_google_appple_model.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import 'constants.dart';
 
 extension EmailValidator on String {
   bool isValidEmailInput() {
@@ -236,5 +241,51 @@ extension UserData on void {
 
     return model.battleUsers[1].isCreater;
   }
+}
 
+extension Authorization on void {
+  Future<void> signInWithApple(
+      {required BuildContext context,
+      required Function(String token) onSuccess}) async {
+    await SignInWithApple.getAppleIDCredential(
+        scopes: <AppleIDAuthorizationScopes>[
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        webAuthenticationOptions: WebAuthenticationOptions(
+          clientId: Constants.clientAppleServiceId,
+          redirectUri: Uri.parse(Constants.redirectAppleUri),
+        )).then((AuthorizationCredentialAppleID value) async {
+      final String? token = value.identityToken;
+      if (token != null) {
+        onSuccess(token);
+      }
+    }).catchError((Object err) async {
+      print('SignInWithApple: $err');
+      await Fluttertoast.showToast(
+          msg: 'Login error', fontSize: 16.0, gravity: ToastGravity.CENTER);
+    });
+  }
+
+  Future<void> signInWithGoogle(
+      {required BuildContext context,
+      required Function(String token) onSuccess}) async {
+    await GoogleSignIn().signIn().then((GoogleSignInAccount? result) {
+      result?.authentication.then((GoogleSignInAuthentication googleKey) async {
+        print(googleKey.accessToken);
+        final String? token = googleKey.accessToken;
+        if (token != null) {
+          onSuccess(token);
+        }
+      }).catchError((Object err) {
+        print('inner error');
+      });
+    }).catchError((Object err) async {
+      print('error occurred');
+      await Fluttertoast.showToast(
+          msg: 'Registration error',
+          fontSize: 16.0,
+          gravity: ToastGravity.CENTER);
+    });
+  }
 }

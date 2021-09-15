@@ -23,10 +23,10 @@ import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
-import 'package:one2one_run/utils/extension.dart' show EmailValidator;
+import 'package:one2one_run/utils/extension.dart'
+    show EmailValidator, Authorization;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 //NOte:'/login'
 class LoginPage extends StatefulWidget {
@@ -48,7 +48,6 @@ class LoginPageState extends State<LoginPage> {
   bool isSecureText = true;
 
   LoginApi loginApi = LoginApi();
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final LoginBloc _loginBloc = LoginBloc();
 
   @override
@@ -271,7 +270,20 @@ class LoginPageState extends State<LoginPage> {
                           icon: appleIcon,
                           height: 40.h,
                           onPressed: () async {
-                            await signInWithApple(context: context);
+                            await signInWithApple(
+                                context: context,
+                                onSuccess: (String token) async {
+                                  await loginApi
+                                      .registerApple(RegisterGoogleAppleModel(
+                                    accessToken: token,
+                                  ))
+                                      .then((RegisterResponseGoogleAppleModel?
+                                          value) {
+                                    BlocProvider.of<LoginBloc>(context).add(
+                                        login_bloc.SignInApple(
+                                            token: value!.token));
+                                  });
+                                });
                           },
                         ),
                         SizedBox(
@@ -282,7 +294,19 @@ class LoginPageState extends State<LoginPage> {
                           icon: googleIcon,
                           height: 40.h,
                           onPressed: () async {
-                            await signInWithGoogle(context: context);
+                            await signInWithGoogle(
+                                context: context,
+                                onSuccess: (String token) async {
+                                  final RegisterResponseGoogleAppleModel?
+                                      userToken = await loginApi.registerGoogle(
+                                          RegisterGoogleAppleModel(
+                                    accessToken: token,
+                                  ));
+
+                                  BlocProvider.of<LoginBloc>(context).add(
+                                      login_bloc.SignInGoogle(
+                                          token: userToken!.token));
+                                });
                           },
                         ),
                         SizedBox(
@@ -312,9 +336,7 @@ class LoginPageState extends State<LoginPage> {
       });
     } else {
       await Fluttertoast.showToast(
-          msg: 'Registration error',
-          fontSize: 16.0,
-          gravity: ToastGravity.CENTER);
+          msg: 'Login error', fontSize: 16.0, gravity: ToastGravity.CENTER);
     }
   }
 
@@ -332,68 +354,6 @@ class LoginPageState extends State<LoginPage> {
       passwordError = 'Password is empty';
     }
     return emailError == null && passwordError == null;
-  }
-
-  Future<void> signInWithGoogle({required BuildContext context}) async {
-    await _googleSignIn.signIn().then((GoogleSignInAccount? result) {
-      result?.authentication.then((GoogleSignInAuthentication googleKey) async {
-        print(googleKey.accessToken);
-        print(_googleSignIn.currentUser?.displayName);
-        final String? token = googleKey.accessToken;
-        if (token != null) {
-          final RegisterResponseGoogleAppleModel? userToken =
-              await loginApi.registerGoogle(RegisterGoogleAppleModel(
-            accessToken: token,
-          ));
-
-          BlocProvider.of<LoginBloc>(context)
-              .add(login_bloc.SignInGoogle(token: userToken!.token));
-        }
-      }).catchError((Object err) {
-        print('inner error');
-      });
-    }).catchError((Object err) async {
-      print('error occurred');
-      await Fluttertoast.showToast(
-          msg: 'Registration error',
-          fontSize: 16.0,
-          gravity: ToastGravity.CENTER);
-    });
-  }
-
-  // TODO: need to complete
-  Future<String?> signInWithApple({required BuildContext context}) async {
-    await SignInWithApple.getAppleIDCredential(
-      scopes: <AppleIDAuthorizationScopes>[
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-        webAuthenticationOptions: WebAuthenticationOptions(
-          // TODO: Set the `clientId` and `redirectUri` arguments to the values you entered in the Apple Developer portal during the setup
-          clientId: 'com.one2one.one2oneRun.signin',
-          redirectUri: Uri.parse(
-            'https://one2onerunapp.firebaseapp.com/__/auth/handler',
-          ),
-        )
-    ).then((AuthorizationCredentialAppleID value) async {
-      final String? token = value.identityToken;
-      if (token != null) {
-        final RegisterResponseGoogleAppleModel? userToken =
-            await loginApi.registerApple(RegisterGoogleAppleModel(
-          accessToken: token,
-        ));
-
-        BlocProvider.of<LoginBloc>(context)
-            .add(login_bloc.SignInApple(token: userToken!.token));
-      }
-    }).catchError((Object err) async {
-      print('SignInWithApple: $err');
-      await Fluttertoast.showToast(
-          msg: 'Registration error',
-          fontSize: 16.0,
-          gravity: ToastGravity.CENTER);
-      return null;
-    });
   }
 
   @override
