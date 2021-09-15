@@ -682,6 +682,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     });
   }
 
+  // TODO(Issa): will be changes
   Widget _homeDrawer(
       {required BuildContext context,
       required double height,
@@ -774,7 +775,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       SizedBox(
                         height: 15.h,
                       ),
-                      _drawerItem(
+                      drawerItem(
                         label: 'Connect',
                         icon: connectIcon,
                         iconColor: _selectedDrawerItem == DrawerItems.Connect
@@ -791,7 +792,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               .add(home_bloc.NavigateToPage(pageIndex: 0));
                         },
                       ),
-                      _drawerItem(
+                      drawerItem(
                         label: 'Interact',
                         icon: interactIcon,
                         iconColor: _selectedDrawerItem == DrawerItems.Interact
@@ -808,7 +809,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               .add(home_bloc.NavigateToPage(pageIndex: 1));
                         },
                       ),
-                      _drawerItem(
+                      drawerItem(
                         label: 'Enjoy',
                         icon: enjoyIcon,
                         width: 24.0,
@@ -827,7 +828,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               .add(home_bloc.NavigateToPage(pageIndex: 2));
                         },
                       ),
-                      _drawerItem(
+                      drawerItem(
                         label: 'Profile',
                         icon: profileIcon,
                         iconColor: _selectedDrawerItem == DrawerItems.Profile
@@ -844,7 +845,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               .add(home_bloc.NavigateToPage(pageIndex: 3));
                         },
                       ),
-                      _drawerItem(
+                      drawerItem(
                         label: 'Settings',
                         icon: settingsIcon,
                         iconColor: _selectedDrawerItem == DrawerItems.Settings
@@ -877,51 +878,6 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _drawerItem({
-    required String label,
-    required String icon,
-    required VoidCallback onPressed,
-    double height = 22.0,
-    double width = 22.0,
-    Color iconColor = const Color(0xff9F9F9F),
-    Color selectedItemColor = Colors.transparent,
-  }) {
-    return Container(
-      color: selectedItemColor,
-      margin: const EdgeInsets.symmetric(vertical: 5.0),
-      child: Padding(
-        padding: EdgeInsets.only(left: width * 0.04),
-        child: TextButton(
-          onPressed: onPressed,
-          child: SizedBox(
-            child: Row(
-              children: <Widget>[
-                Image.asset(
-                  icon,
-                  height: height,
-                  width: width,
-                  fit: BoxFit.fill,
-                  color: iconColor,
-                ),
-                const SizedBox(
-                  width: 10.0,
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14.sp,
-                      fontFamily: 'roboto',
-                      fontWeight: FontWeight.w700),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _battleOfferOnNotification(
       {required BuildContext context,
       required BattleRespondModel model,
@@ -932,15 +888,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             context: context,
             width: width,
             height: height,
-            userName: model.battleUsers[0].applicationUser.id != _currentUserId
-                ? model.battleUsers[0].applicationUser.nickName
-                : model.battleUsers[1].applicationUser.nickName,
-            userPhoto: model.battleUsers[0].applicationUser.id != _currentUserId
-                ? model.battleUsers[0].applicationUser.photoLink
-                : model.battleUsers[1].applicationUser.photoLink,
-            userRank: model.battleUsers[0].applicationUser.id != _currentUserId
-                ? model.battleUsers[0].applicationUser.rank.toString()
-                : model.battleUsers[1].applicationUser.rank.toString(),
+            userName:
+                getOpponentName(currentUserId: _currentUserId, model: model),
+            userPhoto:
+                getOpponentPhoto(currentUserId: _currentUserId, model: model),
+            userRank:
+                getOpponentRank(currentUserId: _currentUserId, model: model),
             onTapCancelBattle: () {
               BlocProvider.of<HomeBloc>(context)
                   .add(home_bloc.OpenCloseNewConditionsBattleDrawer());

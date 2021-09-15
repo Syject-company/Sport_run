@@ -1192,3 +1192,48 @@ Widget messageToOpponentDrawer({
     ),
   );
 }
+
+Widget drawerItem({
+  required String label,
+  required String icon,
+  required VoidCallback onPressed,
+  double height = 22.0,
+  double width = 22.0,
+  Color iconColor = const Color(0xff9F9F9F),
+  Color selectedItemColor = Colors.transparent,
+}) {
+  return Container(
+    color: selectedItemColor,
+    margin: const EdgeInsets.symmetric(vertical: 5.0),
+    child: Padding(
+      padding: EdgeInsets.only(left: width * 0.04),
+      child: TextButton(
+        onPressed: onPressed,
+        child: SizedBox(
+          child: Row(
+            children: <Widget>[
+              Image.asset(
+                icon,
+                height: height,
+                width: width,
+                fit: BoxFit.fill,
+                color: iconColor,
+              ),
+              const SizedBox(
+                width: 10.0,
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14.sp,
+                    fontFamily: 'roboto',
+                    fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
