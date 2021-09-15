@@ -39,14 +39,22 @@
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<key>CFBundleURLTypes</key>
     <array>
-    	<dict>
-    		<key>CFBundleTypeRole</key>
-    		<string>Editor</string>
-    		<key>CFBundleURLSchemes</key>
-    		<array>
-    			<string>com.googleusercontent.apps.57127894563-e7i7vsnfksa2708o7eool5f3lh1hu77p</string>
-    		</array>
-    	</dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.one2one.one2oneRun</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.googleusercontent.apps.57127894563-e7i7vsnfksa2708o7eool5f3lh1hu77p</string>
+            </array>
+        </dict>
     </array>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
