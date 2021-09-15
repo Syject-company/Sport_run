@@ -94,7 +94,6 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                     .sendRunnerData(state.runnerDataModel)
                     .then((bool value) async {
                   if (value) {
-                    goController.reset();
                     await _pageController
                         .animateToPage(3,
                             duration: const Duration(milliseconds: 1),
@@ -515,6 +514,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                       textColor: Colors.white,
                       backColor: redColor,
                       onTap: () async {
+                        goController.reset();
                         BlocProvider.of<RunnerDataBloc>(context)
                             .add(runner_data_bloc.NavigateToHome(
                           RunnerDataModel(
