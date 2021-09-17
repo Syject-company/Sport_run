@@ -201,6 +201,53 @@ Widget buttonWithIcon(
   );
 }
 
+Widget buttonWithIconWithOutShadow(
+    {required VoidCallback onPressed,
+    required double height,
+    double width = double.maxFinite,
+    double iconSize = 20.0,
+    Color titleColor = Colors.black,
+    Color buttonColor = Colors.white,
+    Color? iconColor,
+    required String icon,
+    required String title}) {
+  return Center(
+    child: ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        minimumSize: Size(width, height),
+        primary: buttonColor,
+        shadowColor: Colors.transparent,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Image.asset(
+            icon,
+            height: iconSize,
+            width: iconSize,
+            color: iconColor,
+          ),
+          const SizedBox(
+            width: 20.0,
+          ),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.w600,
+              color: titleColor,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 Widget buttonWithIconAndTitleBelow({
   required VoidCallback onPressed,
   required double height,

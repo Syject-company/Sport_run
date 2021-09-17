@@ -78,6 +78,10 @@ String get noProofsIcon => 'assets/icons/no_proofs.png';
 
 String get addIcon => 'assets/icons/add.png';
 
+String get configurationIcon => 'assets/icons/configuration.png';
+
+String get helpIcon => 'assets/icons/help.png';
+
 String get startChatImage => 'assets/images/start_chat.png';
 
 //region F.A.Q.

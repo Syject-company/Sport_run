@@ -10,6 +10,7 @@ class Constants {
   static const String passwordRoute = '/password';
   static const String editProfileRoute = '/editProfile';
   static const String faqHelperRoute = '/faqHelper';
+  static const String configurationRoute = '/configuration';
 
   //Api urls:
   static const String registerUrl = '/api/Account/registration';

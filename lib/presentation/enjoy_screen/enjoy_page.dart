@@ -73,7 +73,7 @@ class EnjoyPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: height - (height * 0.133),
+                  height: height - (height * 0.214),
                   child: Scrollbar(
                     child: ListView.builder(
                         itemCount: snapshot.data!.length,
