@@ -9,16 +9,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   Stream<SettingsState> mapEventToState(SettingsEvent event) async* {
     if (event is UpdateState) {
       yield StateUpdated();
-    } else if (event is SwitchIsNeedBattleUpdate) {
-      yield SwitchedIsNeedBattleUpdate(
-          isNeedBattleUpdate: event.isNeedBattleUpdate);
-    } else if (event is SwitchIsNeedChatMessage) {
-      yield SwitchedIsNeedChatMessage(
-          isNeedChatMessage: event.isNeedChatMessage);
-    } else if (event is EnableNotification) {
-      yield NotificationEnabled(
-          enableBattleUpdate: event.enableBattleUpdate,
-          enableChatMessage: event.enableChatMessage);
+    }else if (event is UpdateUserData) {
+      yield UserDataUpdated();
     }
   }
 }

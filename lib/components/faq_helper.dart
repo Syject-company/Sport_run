@@ -90,7 +90,8 @@ class FAQHelperPage extends StatelessWidget {
   void onClick({required BuildContext context}) {
     if (faqHelperState == FAQHelperState.LoginState) {
       Navigator.of(context).pushReplacementNamed(Constants.homeRoute);
-    } else if (faqHelperState == FAQHelperState.InteractState) {
+    } else if (faqHelperState == FAQHelperState.InteractState ||
+        faqHelperState == FAQHelperState.HelpState) {
       Navigator.of(context).pop();
     }
   }

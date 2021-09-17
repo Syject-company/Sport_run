@@ -18,19 +18,16 @@ import 'package:one2one_run/data/models/change_battle_conditions_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_page.dart';
-import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_page.dart';
 import 'package:one2one_run/presentation/enjoy_screen/enjoy_page.dart';
 import 'package:one2one_run/presentation/home_screen/home_bloc/bloc.dart'
     as home_bloc;
 import 'package:one2one_run/presentation/home_screen/home_bloc/home_bloc.dart';
 import 'package:one2one_run/presentation/home_screen/home_bloc/home_state.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_page.dart';
-import 'package:one2one_run/presentation/profile_screen/profile_page.dart';
 import 'package:one2one_run/presentation/settings_screen/settings_page.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
-import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
     show DateTimeExtension, ToastExtension, UserData;
@@ -357,52 +354,20 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       fontWeight: FontWeight.w600),
                 ),
                 backgroundColor: colorPrimary,
-                actions: _selectedDrawerItem == DrawerItems.Profile
+                actions: _selectedDrawerItem == DrawerItems.Connect
                     ? appBarButtons(
-                        isNeedSecondButton: true,
-                        firstButtonIcon: const Icon(Icons.edit),
+                        isNeedSecondButton: false,
+                        firstButtonIcon: const Icon(Icons.filter_alt_outlined),
                         onTapFirstButton: () async {
-                          await navigateToEditProfile(context: context);
-                        },
-                        secondButtonIcon: const Icon(Icons.logout),
-                        onTapSecondButton: () {
-                          dialog(
-                              context: context,
-                              //title: 'Logout',
-                              text: 'Are you sure you want to logout?',
-                              applyButtonText: 'Logout',
-                              cancelButtonText: 'Cancel',
-                              onApplyPressed: () async {
-                                await PreferenceUtils.setIsUserAuthenticated(
-                                        false)
-                                    .then((_) {
-                                  PreferenceUtils.setPageRout('Register');
-                                  Navigator.of(context).pushReplacementNamed(
-                                      Constants.registerRoute);
-                                });
-                              });
+                          if (_keyScaffold.currentState != null &&
+                              !_keyScaffold.currentState!.isEndDrawerOpen) {
+                            _keyScaffold.currentState!.openEndDrawer();
+                          }
                         },
                       )
-                    : _selectedDrawerItem == DrawerItems.Connect
-                        ? appBarButtons(
-                            isNeedSecondButton: false,
-                            firstButtonIcon:
-                                const Icon(Icons.filter_alt_outlined),
-                            onTapFirstButton: () async {
-                              if (_keyScaffold.currentState != null &&
-                                  !_keyScaffold.currentState!.isEndDrawerOpen) {
-                                _keyScaffold.currentState!.openEndDrawer();
-                              }
-                            },
-                          )
-                        : _selectedDrawerItem == DrawerItems.Interact
-                            ? <Widget>[Container()]
-                            : null,
-              ),
-              drawer: _homeDrawer(
-                context: context,
-                width: width,
-                height: height,
+                    : _selectedDrawerItem == DrawerItems.Interact
+                        ? <Widget>[Container()]
+                        : null,
               ),
               endDrawer: _selectedDrawerItem == DrawerItems.Connect ||
                       _selectedDrawerItem == DrawerItems.Interact
@@ -464,136 +429,232 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     )
                   : null,
               body: SafeArea(
-                child: Container(
-                  width: width,
-                  height: height,
-                  color: Colors.white,
-                  child: ScrollConfiguration(
-                    behavior: NoGlowScrollBehavior(),
-                    child: PageView(
-                      controller: _pageController,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: <Widget>[
-                        FutureBuilder<List<ConnectUsersModel>?>(
-                            future: _users,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<List<ConnectUsersModel>?>
-                                    snapshot) {
-                              if (snapshot.hasData && snapshot.data != null) {
-                                return snapshot.data!.isNotEmpty
-                                    ? ConnectPage(
-                                        users: snapshot.data!,
-                                        onBattleTap:
-                                            (ConnectUsersModel userModel) {
-                                          BlocProvider.of<HomeBloc>(context)
-                                              .add(home_bloc.OpenBattleDrawer(
-                                                  userModel));
-                                        },
-                                      )
-                                    : Container(
-                                        height: height,
-                                        width: width,
-                                        alignment: Alignment.bottomCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                              noFiltersBackground,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: width,
+                      height: height - kToolbarHeight,
+                      color: Colors.white,
+                      child: ScrollConfiguration(
+                        behavior: NoGlowScrollBehavior(),
+                        child: PageView(
+                          controller: _pageController,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: <Widget>[
+                            FutureBuilder<List<ConnectUsersModel>?>(
+                                future: _users,
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<List<ConnectUsersModel>?>
+                                        snapshot) {
+                                  if (snapshot.hasData &&
+                                      snapshot.data != null) {
+                                    return snapshot.data!.isNotEmpty
+                                        ? ConnectPage(
+                                            users: snapshot.data!,
+                                            onBattleTap:
+                                                (ConnectUsersModel userModel) {
+                                              BlocProvider.of<HomeBloc>(context)
+                                                  .add(home_bloc
+                                                      .OpenBattleDrawer(
+                                                          userModel));
+                                            },
+                                          )
+                                        : Container(
+                                            height: height,
+                                            width: width,
+                                            alignment: Alignment.bottomCenter,
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: AssetImage(
+                                                  noFiltersBackground,
+                                                ),
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              buildRoundedButton(
-                                                label: 'Refresh'.toUpperCase(),
-                                                width: width,
-                                                height: 40.h,
-                                                buttonTextSize: 14.0,
-                                                controller: _refreshController,
-                                                textColor: Colors.white,
-                                                backColor: redColor,
-                                                onTap: () async {
-                                                  BlocProvider.of<HomeBloc>(
-                                                          context)
-                                                      .add(home_bloc
-                                                          .SelectConnectFilters(
-                                                    _isNeedFilter,
-                                                    _currentRangeValuesPace
-                                                        .start,
-                                                    _currentRangeValuesPace.end,
-                                                    _currentRangeValuesWeekly
-                                                        .start,
-                                                    _currentRangeValuesWeekly
-                                                        .end,
-                                                    _countOfRuns,
-                                                  ));
-                                                  _refreshController.reset();
-                                                },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(16),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  buildRoundedButton(
+                                                    label:
+                                                        'Refresh'.toUpperCase(),
+                                                    width: width,
+                                                    height: 40.h,
+                                                    buttonTextSize: 14.0,
+                                                    controller:
+                                                        _refreshController,
+                                                    textColor: Colors.white,
+                                                    backColor: redColor,
+                                                    onTap: () async {
+                                                      BlocProvider.of<HomeBloc>(
+                                                              context)
+                                                          .add(home_bloc
+                                                              .SelectConnectFilters(
+                                                        _isNeedFilter,
+                                                        _currentRangeValuesPace
+                                                            .start,
+                                                        _currentRangeValuesPace
+                                                            .end,
+                                                        _currentRangeValuesWeekly
+                                                            .start,
+                                                        _currentRangeValuesWeekly
+                                                            .end,
+                                                        _countOfRuns,
+                                                      ));
+                                                      _refreshController
+                                                          .reset();
+                                                    },
+                                                  ),
+                                                  SizedBox(
+                                                    height: 15.h,
+                                                  ),
+                                                  buttonNoIcon(
+                                                    title: 'Disable filters'
+                                                        .toUpperCase(),
+                                                    color: Colors.transparent,
+                                                    height: 40.h,
+                                                    textColor: Colors.black,
+                                                    buttonTextSize: 14.0,
+                                                    shadowColor:
+                                                        Colors.transparent,
+                                                    onPressed: () {
+                                                      BlocProvider.of<HomeBloc>(
+                                                              context)
+                                                          .add(home_bloc
+                                                              .SwitchIsNeedFilter(
+                                                                  isNeedFilter:
+                                                                      false));
+                                                    },
+                                                  ),
+                                                ],
                                               ),
-                                              SizedBox(
-                                                height: 15.h,
-                                              ),
-                                              buttonNoIcon(
-                                                title: 'Disable filters'
-                                                    .toUpperCase(),
-                                                color: Colors.transparent,
-                                                height: 40.h,
-                                                textColor: Colors.black,
-                                                buttonTextSize: 14.0,
-                                                shadowColor: Colors.transparent,
-                                                onPressed: () {
-                                                  BlocProvider.of<HomeBloc>(
-                                                          context)
-                                                      .add(home_bloc
-                                                          .SwitchIsNeedFilter(
-                                                              isNeedFilter:
-                                                                  false));
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                              } else {
-                                return Container(
-                                  color: Colors.white,
-                                  width: width,
-                                  height: height,
-                                  child: progressIndicator(),
-                                );
-                              }
-                            }),
-                        SizedBox(
-                          width: width,
-                          height: height,
-                          child: InteractPage(
-                            signalR: _signalR,
-                            drawerItems: _selectedDrawerItem,
-                            onTapChange: (String id, BattleRespondModel model) {
-                              BlocProvider.of<HomeBloc>(context).add(
-                                  home_bloc.OpenChangeBattleDrawer(id, model));
-                            },
-                          ),
+                                            ),
+                                          );
+                                  } else {
+                                    return Container(
+                                      color: Colors.white,
+                                      width: width,
+                                      height: height,
+                                      child: progressIndicator(),
+                                    );
+                                  }
+                                }),
+                            SizedBox(
+                              width: width,
+                              height: height,
+                              child: InteractPage(
+                                signalR: _signalR,
+                                drawerItems: _selectedDrawerItem,
+                                onTapChange:
+                                    (String id, BattleRespondModel model) {
+                                  BlocProvider.of<HomeBloc>(context).add(
+                                      home_bloc.OpenChangeBattleDrawer(
+                                          id, model));
+                                },
+                              ),
+                            ),
+                            EnjoyPage(),
+                            SettingsPage(
+                              userDataListener: () {
+                                BlocProvider.of<HomeBloc>(context)
+                                    .add(home_bloc.UpdateUserData());
+                              },
+                            ),
+                          ],
                         ),
-                        EnjoyPage(),
-                        ProfilePage(
-                          userDataListener: () {
-                            BlocProvider.of<HomeBloc>(context)
-                                .add(home_bloc.UpdateUserData());
-                          },
-                        ),
-                        const SettingsPage(),
-                      ],
+                      ),
                     ),
-                  ),
+                    _bottomNavigationBar(
+                        context: context, width: width, height: height),
+                  ],
                 ),
               ),
             ),
           );
         }),
+      ),
+    );
+  }
+
+  Widget _bottomNavigationBar(
+      {required BuildContext context,
+      required double width,
+      required double height}) {
+    return Container(
+      width: width,
+      height: kToolbarHeight,
+      padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 2,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          drawerItem(
+            label: 'Connect',
+            icon: connectIcon,
+            selectedItemColor: _selectedDrawerItem == DrawerItems.Connect
+                ? Colors.red
+                : Colors.black,
+            onPressed: () {
+              _selectedDrawerItem = DrawerItems.Connect;
+              _pageTitle = 'Connect';
+              BlocProvider.of<HomeBloc>(context)
+                  .add(home_bloc.NavigateToPage(pageIndex: 0));
+            },
+          ),
+          drawerItem(
+            label: 'Interact',
+            icon: interactIcon,
+            selectedItemColor: _selectedDrawerItem == DrawerItems.Interact
+                ? Colors.red
+                : Colors.black,
+            onPressed: () {
+              _selectedDrawerItem = DrawerItems.Interact;
+              _pageTitle = 'Interact';
+              BlocProvider.of<HomeBloc>(context)
+                  .add(home_bloc.NavigateToPage(pageIndex: 1));
+            },
+          ),
+          drawerItem(
+            label: 'Enjoy',
+            icon: enjoyIcon,
+            width: 29.0,
+            height: 22.0,
+            selectedItemColor: _selectedDrawerItem == DrawerItems.Enjoy
+                ? Colors.red
+                : Colors.black,
+            onPressed: () {
+              _selectedDrawerItem = DrawerItems.Enjoy;
+              _pageTitle = 'Enjoy';
+              BlocProvider.of<HomeBloc>(context)
+                  .add(home_bloc.NavigateToPage(pageIndex: 2));
+            },
+          ),
+          drawerItem(
+            label: 'Settings',
+            icon: settingsIcon,
+            selectedItemColor: _selectedDrawerItem == DrawerItems.Settings
+                ? Colors.red
+                : Colors.black,
+            onPressed: () {
+              _selectedDrawerItem = DrawerItems.Settings;
+              _pageTitle = 'Settings';
+              BlocProvider.of<HomeBloc>(context)
+                  .add(home_bloc.NavigateToPage(pageIndex: 4));
+            },
+          ),
+        ],
       ),
     );
   }
@@ -659,222 +720,6 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Navigator.of(context).pop();
         }
       },
-    );
-  }
-
-  Future<void> navigateToEditProfile({required BuildContext context}) async {
-    await _homeApi.getUserModel().then((UserModel? userModel) async {
-      if (userModel != null) {
-        await Navigator.push<dynamic>(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (_) => EditProfilePage(
-                    userModel: userModel,
-                    userDataListener: () {
-                      BlocProvider.of<HomeBloc>(context)
-                          .add(home_bloc.UpdateUserData());
-                    },
-                  )),
-        );
-      } else {
-        await toastUnexpectedError();
-      }
-    });
-  }
-
-  // TODO(Issa): will be changes
-  Widget _homeDrawer(
-      {required BuildContext context,
-      required double height,
-      required double width}) {
-    return Container(
-      width: width,
-      margin: EdgeInsets.only(right: width * 0.15),
-      child: Drawer(
-        child: Container(
-          height: height,
-          color: Colors.white,
-          child: FutureBuilder<UserModel?>(
-              future: _userModel,
-              builder:
-                  (BuildContext context, AsyncSnapshot<UserModel?> snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        height: 172.h,
-                        width: width,
-                        color: const Color(0xff717171).withOpacity(0.7),
-                        child: Stack(
-                          children: <Widget>[
-                            ClipRRect(
-                              child: ImageFiltered(
-                                imageFilter:
-                                    ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                                child: snapshot.data!.photoLink != null
-                                    ? Image.network(
-                                        snapshot.data!.photoLink!,
-                                        height: 172.h,
-                                        width: width,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.asset(
-                                        defaultProfileImage,
-                                        height: 172.h,
-                                        width: width,
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: height * 0.05, left: width * 0.05),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    alignment: Alignment.topLeft,
-                                    child: SizedBox(
-                                      height: 64.h,
-                                      width: 64.h,
-                                      child: userAvatarPhoto(
-                                          photoUrl: snapshot.data!.photoLink),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        left: width * 0.03, top: height * 0.01),
-                                    child: Text(
-                                      snapshot.data!.nickName ?? 'Nickname',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontFamily: 'roboto',
-                                          fontSize: 15.sp,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        left: width * 0.03, top: 5),
-                                    child: Text(
-                                      snapshot.data!.email ?? 'email@gmail.com',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontFamily: 'roboto',
-                                          fontSize: 15.sp,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15.h,
-                      ),
-                      drawerItem(
-                        label: 'Connect',
-                        icon: connectIcon,
-                        iconColor: _selectedDrawerItem == DrawerItems.Connect
-                            ? Colors.red
-                            : const Color(0xff9F9F9F),
-                        selectedItemColor:
-                            _selectedDrawerItem == DrawerItems.Connect
-                                ? const Color(0xfffef0f0)
-                                : Colors.transparent,
-                        onPressed: () {
-                          _selectedDrawerItem = DrawerItems.Connect;
-                          _pageTitle = 'Connect';
-                          BlocProvider.of<HomeBloc>(context)
-                              .add(home_bloc.NavigateToPage(pageIndex: 0));
-                        },
-                      ),
-                      drawerItem(
-                        label: 'Interact',
-                        icon: interactIcon,
-                        iconColor: _selectedDrawerItem == DrawerItems.Interact
-                            ? Colors.red
-                            : const Color(0xff9F9F9F),
-                        selectedItemColor:
-                            _selectedDrawerItem == DrawerItems.Interact
-                                ? const Color(0xfffef0f0)
-                                : Colors.transparent,
-                        onPressed: () {
-                          _selectedDrawerItem = DrawerItems.Interact;
-                          _pageTitle = 'Interact';
-                          BlocProvider.of<HomeBloc>(context)
-                              .add(home_bloc.NavigateToPage(pageIndex: 1));
-                        },
-                      ),
-                      drawerItem(
-                        label: 'Enjoy',
-                        icon: enjoyIcon,
-                        width: 24.0,
-                        height: 24.0,
-                        iconColor: _selectedDrawerItem == DrawerItems.Enjoy
-                            ? Colors.red
-                            : const Color(0xff9F9F9F),
-                        selectedItemColor:
-                            _selectedDrawerItem == DrawerItems.Enjoy
-                                ? const Color(0xfffef0f0)
-                                : Colors.transparent,
-                        onPressed: () {
-                          _selectedDrawerItem = DrawerItems.Enjoy;
-                          _pageTitle = 'Enjoy';
-                          BlocProvider.of<HomeBloc>(context)
-                              .add(home_bloc.NavigateToPage(pageIndex: 2));
-                        },
-                      ),
-                      drawerItem(
-                        label: 'Profile',
-                        icon: profileIcon,
-                        iconColor: _selectedDrawerItem == DrawerItems.Profile
-                            ? Colors.red
-                            : const Color(0xff9F9F9F),
-                        selectedItemColor:
-                            _selectedDrawerItem == DrawerItems.Profile
-                                ? const Color(0xfffef0f0)
-                                : Colors.transparent,
-                        onPressed: () {
-                          _pageTitle = 'Profile';
-                          _selectedDrawerItem = DrawerItems.Profile;
-                          BlocProvider.of<HomeBloc>(context)
-                              .add(home_bloc.NavigateToPage(pageIndex: 3));
-                        },
-                      ),
-                      drawerItem(
-                        label: 'Settings',
-                        icon: settingsIcon,
-                        iconColor: _selectedDrawerItem == DrawerItems.Settings
-                            ? Colors.red
-                            : const Color(0xff9F9F9F),
-                        selectedItemColor:
-                            _selectedDrawerItem == DrawerItems.Settings
-                                ? const Color(0xfffef0f0)
-                                : Colors.transparent,
-                        onPressed: () {
-                          _selectedDrawerItem = DrawerItems.Settings;
-                          _pageTitle = 'Settings';
-                          BlocProvider.of<HomeBloc>(context)
-                              .add(home_bloc.NavigateToPage(pageIndex: 4));
-                        },
-                      ),
-                    ],
-                  );
-                } else {
-                  return Container(
-                    color: Colors.white,
-                    width: width,
-                    height: height,
-                    child: progressIndicator(),
-                  );
-                }
-              }),
-        ),
-      ),
     );
   }
 

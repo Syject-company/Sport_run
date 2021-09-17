@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:one2one_run/presentation/configuration_screen/configuration_page.dart';
 import 'package:one2one_run/presentation/home_screen/home_page.dart';
 import 'package:one2one_run/presentation/login_screen/login_page.dart';
 import 'package:one2one_run/presentation/password_screen/password_page.dart';
@@ -62,6 +63,8 @@ class OneTwoOne extends StatelessWidget {
           Constants.homeRoute: (BuildContext context) => const HomePage(),
           Constants.passwordRoute: (BuildContext context) =>
               const PasswordPage(),
+          Constants.configurationRoute: (BuildContext context) =>
+              const ConfigurationPage(),
         },
         home: const SplashScreen(),
       ),
