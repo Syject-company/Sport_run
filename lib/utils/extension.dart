@@ -43,10 +43,9 @@ extension DateTimeExtension on void {
 
 //0001-01-01T00:00:00
   String getFormattedTimeForServer({
-    required TimeOfDay time,
+    required String time,
   }) {
-    return DateFormat("yyyy-MM-dd'T'HH:mm:ss")
-        .format(DateTime(1, 1, 1, time.hour, time.minute).toLocal());
+    return '0001-01-01T$time';
   }
 
 //00:00
@@ -201,8 +200,9 @@ extension UserData on void {
     return model.battleUsers[1];
   }
 
+  //0001-01-01T00:00:00
   String getTimeWithOutDate({required String time}) {
-    return time.substring(11, 16);
+    return time.substring(11, 19);
   }
 
   String getDateWithOutTime({required String date}) {

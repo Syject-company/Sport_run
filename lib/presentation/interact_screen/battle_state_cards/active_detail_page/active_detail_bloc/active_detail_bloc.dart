@@ -13,8 +13,6 @@ class ActiveDetailBloc extends Bloc<ActiveDetailEvent, ActiveDetailState> {
       yield ResultBattlePrepared();
     } else if (event is ShowUploadResultPage) {
       yield UploadResultPageShown(isNeedResultPage: event.isNeedResultPage);
-    } else if (event is OpenTimePicker) {
-      yield TimePickerOpened();
     } else if (event is OpenGallery) {
       yield GalleryIsOpened();
     } else if (event is UploadResultBattle) {
@@ -32,6 +30,10 @@ class ActiveDetailBloc extends Bloc<ActiveDetailEvent, ActiveDetailState> {
     } else if (event is IsNeedToCheckOpponentResults) {
       yield OpponentResultsChecked(
         isNeed: event.isNeed,
+      );
+    } else if (event is IsDeleteKeyBoardPressed) {
+      yield DeleteKeyBoardIsPressed(
+        isDeletePressed: event.isDeletePressed,
       );
     }
   }

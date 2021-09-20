@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -49,6 +50,7 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
   final TextEditingController _chatController = TextEditingController();
   final RoundedLoadingButtonController _showUploadResultsPageController =
       RoundedLoadingButtonController();
+  final TextEditingController _timeResultController = TextEditingController();
 
   List<Messages> _messages = <Messages>[];
   final List<String> _resultPhotos = <String>[];
@@ -59,13 +61,12 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
   late BattleUsers _opponentBattleModel;
   late ApplicationUser _opponentAppUserModel;
 
-  String _resultTime = '01:30';
-  String _resultTimeForServer = '0001-01-01T01:30:00';
   String _messageText = '';
 
   bool _isUploadResultsPage = false;
   bool _isUploadingProgress = false;
   bool _isNeedToCheckOpponentResults = true;
+  bool _isDeleteKeyBoardPressed = false;
 
   final ImagePicker _imagePicker = ImagePicker();
   File? _imageFirst;
@@ -76,12 +77,19 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
   @override
   void initState() {
     super.initState();
+
+    prepareData();
+  }
+
+  void prepareData() {
     _currentUserModel = PreferenceUtils.getCurrentUserModel();
     _opponentBattleModel = getOpponentBattleModel(
         model: widget.activeModel, currentUserId: widget.currentUserId);
     _opponentAppUserModel = _opponentBattleModel.applicationUser;
     _isNeedToCheckOpponentResults =
         isNeedToCheckOpponentResults(model: _opponentBattleModel);
+
+    _timeResultController.text = '01:30:00';
   }
 
   @override
@@ -128,7 +136,8 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
                     await _interactApi.sendBattleResult(
                         model: BattleResultModel(
                           photos: _resultPhotos,
-                          time: _resultTimeForServer,
+                          time: getFormattedTimeForServer(
+                              time: _timeResultController.text),
                         ),
                         id: widget.activeModel.id);
                     _isUploadingProgress = false;
@@ -140,13 +149,6 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
                     FocusManager.instance.primaryFocus?.unfocus();
                     _isUploadResultsPage = state.isNeedResultPage;
                     _clearResultsData();
-                  } else if (state is TimePickerOpened) {
-                    final TimeOfDay? time = await getTime(context: context);
-                    if (time != null) {
-                      _resultTime = getFormattedTimeForUser(time: time);
-                      _resultTimeForServer =
-                          getFormattedTimeForServer(time: time);
-                    }
                   } else if (state is GalleryIsOpened) {
                     await _pickImage(context: context);
                   } else if (state is ImageZoomDialogIsOpened) {
@@ -188,6 +190,8 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
                   } else if (state is OpponentResultsChecked) {
                     widget.onNeedToRefreshActivePage();
                     _isNeedToCheckOpponentResults = !state.isNeed;
+                  } else if (state is DeleteKeyBoardIsPressed) {
+                    _isDeleteKeyBoardPressed = state.isDeletePressed;
                   }
                   if (!_activeDetailBloc.isClosed) {
                     BlocProvider.of<ActiveDetailBloc>(context)
@@ -269,12 +273,12 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
       opponentPhoto: _opponentAppUserModel.photoLink,
       opponentRank: _opponentAppUserModel.rank.toString(),
       isNeedToCheckOpponentResults: _isNeedToCheckOpponentResults,
-      myProofTime: _resultPhotos.isEmpty
+      myProofTime: _resultPhotos.isNotEmpty
           ? getMyProofTime(
               model: widget.activeModel,
               currentUserId: widget.currentUserId,
             )
-          : _resultTime,
+          : '00:00:00',
       myProofsPhoto: getMyProofPhotos(
         model: widget.activeModel,
         currentUserId: widget.currentUserId,
@@ -292,13 +296,29 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
     return uploadBattleResultDialog(
       width: width,
       height: height,
-      resultTime: _resultTime,
       imageFirst: _imageFirst,
       imageSecond: _imageSecond,
       isUploading: _isUploadingProgress,
-      onTimeTap: () {
-        BlocProvider.of<ActiveDetailBloc>(context)
-            .add(active_detail_bloc.OpenTimePicker());
+      timeController: _timeResultController,
+      resultValueChanged: (String value) {
+        if (value.length == 2 && !_isDeleteKeyBoardPressed) {
+          _timeResultController.text = '${_timeResultController.text}:';
+          _timeResultController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _timeResultController.text.length));
+        }
+        if (value.length == 5 && !_isDeleteKeyBoardPressed) {
+          _timeResultController.text = '${_timeResultController.text}:';
+          _timeResultController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _timeResultController.text.length));
+        }
+        BlocProvider.of<ActiveDetailBloc>(context).add(
+            active_detail_bloc.IsDeleteKeyBoardPressed(isDeletePressed: false));
+      },
+      onKey: (RawKeyEvent event) {
+        BlocProvider.of<ActiveDetailBloc>(context).add(
+            active_detail_bloc.IsDeleteKeyBoardPressed(
+                isDeletePressed:
+                    event.logicalKey == LogicalKeyboardKey.backspace));
       },
       onCancelTap: () {
         BlocProvider.of<ActiveDetailBloc>(context).add(
@@ -313,12 +333,13 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
             .add(active_detail_bloc.OpenGallery());
       },
       onUploadTap: () async {
-        if (_imageFirst != null) {
+        if (_imageFirst != null && _timeResultController.text.length == 8) {
           BlocProvider.of<ActiveDetailBloc>(context)
               .add(active_detail_bloc.PrepareResultBattle());
         } else {
           await Fluttertoast.showToast(
-              msg: 'Please, upload at least one photo!',
+              msg:
+                  'Please, check The time format or upload at least one photo!',
               fontSize: 16.0,
               gravity: ToastGravity.CENTER);
         }
@@ -387,15 +408,13 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
     if (!_isUploadResultsPage && _imageSecond != null) {
       _imageSecond = null;
     }
-
-    _resultTime = '01:30';
-    _resultTimeForServer = '0001-01-01T01:30:00';
   }
 
   @override
   void dispose() {
     _activeDetailBloc.close();
     _chatController.dispose();
+    _timeResultController.dispose();
     super.dispose();
   }
 }
