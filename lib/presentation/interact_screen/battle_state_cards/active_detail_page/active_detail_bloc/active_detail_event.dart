@@ -22,8 +22,6 @@ class ShowUploadResultPage extends ActiveDetailEvent {
   List<Object> get props => <Object>[isNeedResultPage];
 }
 
-class OpenTimePicker extends ActiveDetailEvent {}
-
 class OpenGallery extends ActiveDetailEvent {}
 
 class OpenImageZoomDialog extends ActiveDetailEvent {
@@ -66,4 +64,15 @@ class IsNeedToCheckOpponentResults extends ActiveDetailEvent {
 
   @override
   List<Object> get props => <Object>[isNeed];
+}
+
+class IsDeleteKeyBoardPressed extends ActiveDetailEvent {
+  IsDeleteKeyBoardPressed({
+    required this.isDeletePressed,
+  });
+
+  final bool isDeletePressed;
+
+  @override
+  List<Object> get props => <Object>[isDeletePressed];
 }

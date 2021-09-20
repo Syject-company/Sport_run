@@ -26,8 +26,6 @@ class UploadResultPageShown extends ActiveDetailState {
   List<Object> get props => <Object>[isNeedResultPage];
 }
 
-class TimePickerOpened extends ActiveDetailState {}
-
 class GalleryIsOpened extends ActiveDetailState {}
 
 class ImageZoomDialogIsOpened extends ActiveDetailState {
@@ -70,4 +68,15 @@ class OpponentResultsChecked extends ActiveDetailState {
 
   @override
   List<Object> get props => <Object>[isNeed];
+}
+
+class DeleteKeyBoardIsPressed extends ActiveDetailState {
+  const DeleteKeyBoardIsPressed({
+    required this.isDeletePressed,
+  });
+
+  final bool isDeletePressed;
+
+  @override
+  List<Object> get props => <Object>[isDeletePressed];
 }

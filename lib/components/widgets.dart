@@ -48,6 +48,7 @@ Widget inputTextField({
   double fontSize = 15.0,
   int maxLength = 6,
   TextInputType? keyboardType,
+  ValueChanged<String>?  valueChanged,
 }) {
   return TextFormField(
     controller: controller,
@@ -56,6 +57,7 @@ Widget inputTextField({
       fontSize: fontSize,
       fontWeight: FontWeight.bold,
     ),
+    onChanged: valueChanged,
     obscureText: obscureText,
     cursorColor: const Color(0xffFF1744),
     maxLength: isCounterShown ? maxLength : null,
@@ -2948,20 +2950,21 @@ Widget showEmptyListText({required double height, required double width}) {
 Widget uploadBattleResultDialog({
   required double width,
   required double height,
-  required String resultTime,
   required VoidCallback onCancelTap,
   required VoidCallback onUploadTap,
-  required VoidCallback onTimeTap,
   required VoidCallback onAddPhotoFirstTap,
   required VoidCallback onAddPhotoSecondTap,
   required File? imageFirst,
   required File? imageSecond,
   required bool isUploading,
+  required TextEditingController timeController,
+  required ValueChanged<RawKeyEvent>? onKey,
+  required ValueChanged<String>?  resultValueChanged,
 }) {
   return Center(
     child: Container(
       height: height * 0.67,
-      margin: EdgeInsets.all(width * 0.025),
+      margin: EdgeInsets.symmetric(horizontal: width * 0.025),
       padding: EdgeInsets.all(width * 0.05),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
@@ -3004,7 +3007,7 @@ Widget uploadBattleResultDialog({
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Time',
+              'My time',
               style: TextStyle(
                   color: const Color(0xff838383),
                   fontSize: 13.sp,
@@ -3014,27 +3017,17 @@ Widget uploadBattleResultDialog({
           ),
           SizedBox(
             width: width,
-            child: TextButton(
-              onPressed: onTimeTap,
-              style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero, alignment: Alignment.centerLeft),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    resultTime,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15.sp,
-                      fontFamily: 'roboto',
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Divider(
-                    height: 1,
-                    color: Colors.black,
-                  ),
-                ],
+            child: RawKeyboardListener(
+              focusNode: FocusNode(),
+              onKey: onKey,
+              child: inputTextField(
+                errorText: null,
+                controller: timeController,
+                hintText: 'Time format should be 00:00:00',
+                keyboardType: TextInputType.number,
+                maxLength: 8,
+                isCounterShown: true,
+                valueChanged: resultValueChanged,
               ),
             ),
           ),
