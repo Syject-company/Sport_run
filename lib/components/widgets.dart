@@ -48,7 +48,7 @@ Widget inputTextField({
   double fontSize = 15.0,
   int maxLength = 6,
   TextInputType? keyboardType,
-  ValueChanged<String>?  valueChanged,
+  ValueChanged<String>? valueChanged,
 }) {
   return TextFormField(
     controller: controller,
@@ -369,6 +369,8 @@ Widget buttonSquareNoIcon(
     required String underButtonTitle,
     required Color color,
     required Color textColor,
+    required double height,
+    required double width,
     required VoidCallback onPressed}) {
   return Column(
     children: <Widget>[
@@ -379,14 +381,14 @@ Widget buttonSquareNoIcon(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
-            minimumSize: Size(140.w, 80.h),
+            minimumSize: Size(width - 20, height * 0.055),
             primary: color,
           ),
           child: Text(
             title.toUpperCase(),
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 17.0,
+              fontSize: 14.0,
               color: textColor,
               fontWeight: FontWeight.bold,
             ),
@@ -394,15 +396,15 @@ Widget buttonSquareNoIcon(
         ),
       ),
       const SizedBox(
-        height: 10.0,
+        height: 5.0,
       ),
       Text(
         underButtonTitle,
         textAlign: TextAlign.center,
         style: const TextStyle(
-          fontSize: 17.0,
+          fontSize: 14.0,
           color: Colors.grey,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w500,
         ),
       ),
     ],
@@ -414,7 +416,7 @@ Widget seekBarPace({
   required BuildContext context,
   required String dialogTitle,
   required String dialogText,
-  required double timePerKM,
+  required String timePerKM,
   required double kmPerHour,
   required double sliderValue,
   required double minValue,
@@ -496,7 +498,7 @@ Widget seekBarPace({
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Text(
-                  '${timePerKM ~/ 60} min/$unit',
+                  timePerKM,
                   style: TextStyle(
                       color: Colors.red,
                       fontFamily: 'roboto',
@@ -534,8 +536,8 @@ Widget rangeSeekBarPace({
   required BuildContext context,
   required String dialogTitle,
   required String dialogText,
-  required double endTimePerKM,
-  required double startTimePerKM,
+  required String endTimePerKM,
+  required String startTimePerKM,
   required double kmPerHour,
   required double minValue,
   required double maxValue,
@@ -616,7 +618,7 @@ Widget rangeSeekBarPace({
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Text(
-                  '${startTimePerKM ~/ 60} - ${endTimePerKM ~/ 60} min/$unit',
+                  '$startTimePerKM - $endTimePerKM min/$unit',
                   style: TextStyle(
                       color: Colors.red,
                       fontFamily: 'roboto',
@@ -1430,7 +1432,7 @@ Widget interactListItem({
               child: cardItem(
                 height: height,
                 width: width + width * 0.7,
-                title: 'Time left',
+                title: 'Battle date',
                 icon: weeklyDistanceIcon,
                 value: model.timeLeft.toString(),
               ),
@@ -2959,7 +2961,7 @@ Widget uploadBattleResultDialog({
   required bool isUploading,
   required TextEditingController timeController,
   required ValueChanged<RawKeyEvent>? onKey,
-  required ValueChanged<String>?  resultValueChanged,
+  required ValueChanged<String>? resultValueChanged,
 }) {
   return Center(
     child: Container(
@@ -3275,7 +3277,7 @@ Widget userCardMain({
                         width: width,
                         title: 'Runs',
                         icon: runsIcon,
-                        value: '${model.workoutsPerWeek}+ times/week',
+                        value: '${model.workoutsPerWeek} times/week',
                       ),
                     ],
                   ),

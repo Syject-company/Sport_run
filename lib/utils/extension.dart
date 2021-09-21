@@ -56,6 +56,23 @@ extension DateTimeExtension on void {
             DateTime.now().month, DateTime.now().day, time.hour, time.minute)
         .toLocal());
   }
+
+  String getTimeStringFromDouble(double value) {
+    final int flooredValue = value.floor();
+    final double decimalValue = value - flooredValue;
+    final String hourValue = getHourString(flooredValue);
+    final String minuteString = getMinuteString(decimalValue);
+
+    return '$hourValue.$minuteString';
+  }
+
+  String getMinuteString(double decimalValue) {
+    return '${(decimalValue * 60).toInt()}'.padLeft(2, '0');
+  }
+
+  String getHourString(int flooredValue) {
+    return '${flooredValue % 24}'.padLeft(2, '0');
+  }
 }
 
 extension ToastExtension on void {

@@ -17,6 +17,9 @@ class RunnerDataBloc extends Bloc<RunnerDataEvents, RunnerDataState> {
       yield TimesPerWeekIsSelected(event.timesPerWeek);
     } else if (event is NavigateToHome) {
       yield ToHomeIsNavigated(event.runnerDataModel);
+    } else if (event is SelectRunnerType) {
+      yield RunnerTypeIsSelected(
+          event.isUserBeginnerSelected, event.isUserHaveRunSelected);
     }
   }
 }

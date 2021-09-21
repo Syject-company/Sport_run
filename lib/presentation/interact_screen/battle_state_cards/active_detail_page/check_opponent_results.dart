@@ -5,6 +5,7 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/check_opponent_results_model.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
+import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class CheckOpponentResultsPage extends StatelessWidget {
@@ -137,41 +138,50 @@ class CheckOpponentResultsPage extends StatelessWidget {
                     height: height * 0.011,
                   ),
                   SizedBox(
-                    height: height * 0.47,
+                    height: height * 0.40,
                     width: width,
                     child: Center(
                       child: SingleChildScrollView(
                         child: Column(
                           children: <Widget>[
-                            CachedNetworkImage(
-                              imageUrl: model.battlePhotos[0],
-                              fit: BoxFit.fill,
-                              placeholder: (BuildContext context, String url) =>
-                                  Container(
-                                width: 60,
-                                height: 60,
-                                color: Colors.transparent,
-                                child: Center(child: progressIndicator()),
+                            PinchZoomImage(
+                              image: CachedNetworkImage(
+                                imageUrl: model.battlePhotos[0],
+                                fit: BoxFit.fill,
+                                placeholder:
+                                    (BuildContext context, String url) =>
+                                        Container(
+                                  width: 60,
+                                  height: 60,
+                                  color: Colors.transparent,
+                                  child: Center(child: progressIndicator()),
+                                ),
                               ),
+                              zoomedBackgroundColor:
+                                  const Color.fromRGBO(240, 240, 240, 1.0),
                             ),
                             Visibility(
                               visible: model.battlePhotos.length > 1,
                               child: Container(
                                 margin: EdgeInsets.only(
                                     top: height * 0.02, bottom: height * 0.05),
-                                child: CachedNetworkImage(
-                                  imageUrl: model.battlePhotos.length > 1
-                                      ? model.battlePhotos[1]
-                                      : '',
-                                  fit: BoxFit.fill,
-                                  placeholder:
-                                      (BuildContext context, String url) =>
-                                          Container(
-                                    width: 60,
-                                    height: 60,
-                                    color: Colors.transparent,
-                                    child: Center(child: progressIndicator()),
+                                child: PinchZoomImage(
+                                  image: CachedNetworkImage(
+                                    imageUrl: model.battlePhotos.length > 1
+                                        ? model.battlePhotos[1]
+                                        : '',
+                                    fit: BoxFit.fill,
+                                    placeholder:
+                                        (BuildContext context, String url) =>
+                                            Container(
+                                      width: 60,
+                                      height: 60,
+                                      color: Colors.transparent,
+                                      child: Center(child: progressIndicator()),
+                                    ),
                                   ),
+                                  zoomedBackgroundColor:
+                                      const Color.fromRGBO(240, 240, 240, 1.0),
                                 ),
                               ),
                             ),
@@ -206,7 +216,7 @@ class CheckOpponentResultsPage extends StatelessWidget {
                           ),
                         ),
                         SizedBox(
-                          height: 15.h,
+                          height: 10.h,
                         ),
                         Align(
                           alignment: Alignment.bottomCenter,
@@ -220,7 +230,8 @@ class CheckOpponentResultsPage extends StatelessWidget {
                             onPressed: () {
                               dialog(
                                   context: context,
-                                  title: "Are you sure you want to reject the opponent's results?",
+                                  title:
+                                      "Are you sure you want to reject the opponent's results?",
                                   text: 'You can open chat for discussion.',
                                   applyButtonText: 'REJECT',
                                   cancelButtonText: 'CANCEL',
@@ -229,6 +240,23 @@ class CheckOpponentResultsPage extends StatelessWidget {
                                     onTapResults(false);
                                     Navigator.pop(context);
                                   });
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: buttonNoIcon(
+                            title: 'CANCEL',
+                            color: Colors.transparent,
+                            height: 40.h,
+                            textColor: Colors.grey,
+                            buttonTextSize: 14.0,
+                            shadowColor: Colors.transparent,
+                            onPressed: () {
+                              Navigator.pop(context);
                             },
                           ),
                         ),

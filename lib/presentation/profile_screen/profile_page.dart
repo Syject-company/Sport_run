@@ -18,7 +18,8 @@ import 'package:one2one_run/presentation/profile_screen/profile_bloc/profile_sta
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
-import 'package:one2one_run/utils/extension.dart' show ToastExtension;
+import 'package:one2one_run/utils/extension.dart'
+    show DateTimeExtension, ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 
 //NOte:'/profile'
@@ -265,8 +266,11 @@ class ProfilePageState extends State<ProfilePage> {
                                       children: <Widget>[
                                         _userPaceDistance(
                                           title: 'Pace',
-                                          value:
-                                              '${snapshot.data!.pace.floor() /*~/ 60*/}:00 min/${snapshot.data!.isMetric ? 'km' : 'mile'}',
+                                          value: snapshot.data!.isMetric
+                                              ? '${getTimeStringFromDouble(snapshot.data!.pace.toDouble())} min/km'
+                                              : '${(snapshot.data!.pace).toStringAsFixed(2)} min/mile',
+                                          /*   value:
+                                              '${snapshot.data!.pace.floor() */ /*~/ 60*/ /*}:00 min/${snapshot.data!.isMetric ? 'km' : 'mile'}',*/
                                         ),
                                         SizedBox(
                                           width: width * 0.2,

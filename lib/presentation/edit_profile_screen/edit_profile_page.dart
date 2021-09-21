@@ -12,7 +12,7 @@ import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/e
 import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/edit_profile_state.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/strings.dart';
-import 'package:one2one_run/utils/extension.dart' show ToastExtension;
+import 'package:one2one_run/utils/extension.dart' show DateTimeExtension, ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -78,7 +78,8 @@ class EditProfilePageState extends State<EditProfilePage> {
                 nickName: _nameController.text,
                 pace: _currentPaceValue / 60,
                 weeklyDistance: _isKM
-                    ? double.parse(_currentWeeklyDistanceValue.toStringAsFixed(0))
+                    ? double.parse(
+                        _currentWeeklyDistanceValue.toStringAsFixed(0))
                     : double.parse(
                         _currentWeeklyDistanceValue.toStringAsFixed(1)),
                 isMetric: _isKM,
@@ -248,6 +249,8 @@ class EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+
+
   Widget _additionalInformation(
       {required BuildContext context,
       required double height,
@@ -259,13 +262,23 @@ class EditProfilePageState extends State<EditProfilePage> {
           context: context,
           dialogTitle: 'Pace',
           dialogText: paceText,
-          timePerKM: _currentPaceValue.toDouble(),
+          timePerKM: _isKM
+              ? '${getTimeStringFromDouble(_currentPaceValue.toDouble() / 60)} min/km'
+              : '${(_currentPaceValue.toDouble() / 60).toStringAsFixed(2)} min/mile',
           unit: _isKM ? 'km' : 'mile',
           kmPerHour: (60 * 60) / _currentPaceValue,
           minValue: (_isKM ? 2 : 3) * 60,
           maxValue: (_isKM ? 11 : 18) * 60,
           sliderValue: _currentPaceValue.toDouble(),
           onChanged: (double value) {
+            /*          if(value > _currentPaceValue  && (value / 60).toString().contains('.6')){
+              _currentPaceValue = value + 24;
+            }  if( value < _currentPaceValue  && (value / 60).toString().contains('.9') || (value / 60).toString().contains('.8') || (value / 60).toString().contains('.7')){
+              _currentPaceValue = value - 24;
+            } else {
+
+              _currentPaceValue = value;
+            }*/
             setState(() {
               _currentPaceValue = value;
             });
