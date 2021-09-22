@@ -55,6 +55,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield FilterRangeWeeklyChanged(event.values);
     }else if (event is ChangeDistanceValue) {
       yield DistanceValueChanged(event.value);
+    }else if (event is ChangeDropMenuDistanceValue) {
+      yield DropMenuDistanceValueChanged(event.value);
     }
   }
 }

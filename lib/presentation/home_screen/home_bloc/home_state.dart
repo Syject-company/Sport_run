@@ -170,3 +170,12 @@ class DistanceValueChanged extends HomeState {
   @override
   List<Object> get props => <Object>[value];
 }
+
+class DropMenuDistanceValueChanged extends HomeState {
+  const DropMenuDistanceValueChanged(this.value);
+
+  final String value;
+
+  @override
+  List<Object> get props => <Object>[value];
+}

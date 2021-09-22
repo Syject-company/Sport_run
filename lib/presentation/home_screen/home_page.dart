@@ -28,6 +28,7 @@ import 'package:one2one_run/presentation/settings_screen/settings_page.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
+import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
     show DateTimeExtension, ToastExtension, UserData;
@@ -62,6 +63,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       RoundedLoadingButtonController();
   final TextEditingController _battleNameController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
+  final TextEditingController _weeklyDistanceCustomController =
+      TextEditingController();
 
   DrawerItems _selectedDrawerItem = DrawerItems.Connect;
   DrawersType _selectedDrawersType = DrawersType.FilterDrawer;
@@ -77,6 +80,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   String _token = '';
   late String _dateAndTimeForUser;
   late String _currentUserId;
+  String _distanceMenuValue = Constants.filterMenuThree;
 
   ConnectUsersModel? _userBattleModel;
   late Future<UserModel?> _userModelApi;
@@ -97,7 +101,6 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _selectedMessageIndex = 1000;
 
   double _currentDistanceValue = 5;
-
   late SignalR _signalR;
 
   @override
@@ -169,21 +172,23 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           } else if (state is TimesPerWeekIsSelected) {
             _countOfRuns = state.timesPerWeek;
           } else if (state is SelectedConnectFilters) {
-            _users = getUsers(
-              isFilterIncluded: state.isFilterIncluded,
-              paceFrom: state.paceFrom / 60,
-              paceTo: state.paceTo / 60,
-              weeklyDistanceFrom: _isKM
-                  ? double.parse(state.weeklyDistanceFrom.toStringAsFixed(0))
-                  : double.parse(state.weeklyDistanceFrom.toStringAsFixed(1)),
-              weeklyDistanceTo: _isKM
-                  ? double.parse(state.weeklyDistanceTo.toStringAsFixed(0))
-                  : double.parse(state.weeklyDistanceTo.toStringAsFixed(1)),
-              workoutsPerWeek: state.workoutsPerWeek,
-            );
-            if (_keyScaffold.currentState != null &&
-                _keyScaffold.currentState!.isEndDrawerOpen) {
-              Navigator.of(context).pop();
+            if (isFieldsChecked()) {
+              _users = getUsers(
+                isFilterIncluded: state.isFilterIncluded,
+                paceFrom: state.paceFrom / 60,
+                paceTo: state.paceTo / 60,
+                weeklyDistanceFrom: _isKM
+                    ? double.parse(state.weeklyDistanceFrom.toStringAsFixed(0))
+                    : double.parse(state.weeklyDistanceFrom.toStringAsFixed(1)),
+                weeklyDistanceTo: _isKM
+                    ? double.parse(state.weeklyDistanceTo.toStringAsFixed(0))
+                    : double.parse(state.weeklyDistanceTo.toStringAsFixed(1)),
+                workoutsPerWeek: state.workoutsPerWeek,
+              );
+              if (_keyScaffold.currentState != null &&
+                  _keyScaffold.currentState!.isEndDrawerOpen) {
+                Navigator.of(context).pop();
+              }
             }
           } else if (state is FilterDrawerIsOpen) {
             _selectedDrawersType = DrawersType.FilterDrawer;
@@ -317,6 +322,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             _currentRangeValuesWeekly = state.values;
           } else if (state is DistanceValueChanged) {
             _currentDistanceValue = state.value;
+          } else if (state is DropMenuDistanceValueChanged) {
+            _distanceMenuValue = state.value;
           }
 
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
@@ -324,9 +331,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (final BuildContext context, final HomeState state) {
           getBattleDataFromFirebaseMessaging(context: context);
-
           startWebSockets(context: context);
-
           return WillPopScope(
             onWillPop: _onWillPop,
             child: FutureBuilder<UserModel?>(
@@ -341,6 +346,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     return Scaffold(
                       key: _keyScaffold,
                       backgroundColor: homeBackground,
+                      resizeToAvoidBottomInset: false,
                       onEndDrawerChanged: (bool value) {
                         if (!value &&
                             _selectedDrawersType != DrawersType.FilterDrawer) {
@@ -527,10 +533,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                                                     .start,
                                                                 _currentRangeValuesPace
                                                                     .end,
-                                                                _currentRangeValuesWeekly
-                                                                    .start,
-                                                                _currentRangeValuesWeekly
-                                                                    .end,
+                                                                getWeeklyDistance() -
+                                                                    10,
+                                                                getWeeklyDistance() +
+                                                                    10,
                                                                 _countOfRuns,
                                                               ));
                                                               _refreshController
@@ -737,6 +743,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         BlocProvider.of<HomeBloc>(context)
             .add(home_bloc.ChangeFilterRangeWeekly(values));
       },
+      //////////////////////
+      distanceMenuValue: _distanceMenuValue,
+      onChangedDistanceMenu: (String? value) {
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.ChangeDropMenuDistanceValue(value ?? '3'));
+      },
+      weeklyDistanceCustomController: _weeklyDistanceCustomController,
+      ///////////////////
       onTapMinusRuns: () {
         if (_countOfRuns > 1) {
           BlocProvider.of<HomeBloc>(context)
@@ -756,8 +770,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           _isNeedFilter,
           _currentRangeValuesPace.start,
           _currentRangeValuesPace.end,
-          _currentRangeValuesWeekly.start,
-          _currentRangeValuesWeekly.end,
+          getWeeklyDistance() - 10,
+          getWeeklyDistance() + 10,
           _countOfRuns,
         ));
         _applyController.reset();
@@ -967,9 +981,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     _currentRangeValuesPace =
         RangeValues(getUserPaceStartFilter() * 60, getUserPaceEndFilter() * 60);
-
+    ///////////TODO(Issa): need to remove
     _currentRangeValuesWeekly =
         RangeValues(getUserWeeklyStartFilter(), getUserWeeklyEndFilter());
+    ////////////
   }
 
   double getUserPaceStartFilter() {
@@ -1161,6 +1176,28 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         false;
   }
 
+  double getWeeklyDistance() {
+    return getFilterDistanceMenuValue(
+        value: _distanceMenuValue,
+        customValue: _weeklyDistanceCustomController.text.isNotEmpty
+            ? double.parse(_weeklyDistanceCustomController.text)
+            : 100);
+  }
+
+  bool isFieldsChecked() {
+    if (_distanceMenuValue == Constants.filterMenuCustom &&
+        _weeklyDistanceCustomController.text.isEmpty) {
+      Fluttertoast.showToast(
+          msg: 'Custom distance field is empty!',
+          fontSize: 16.0,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER);
+
+      return false;
+    }
+    return true;
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _isAppInForeground = state == AppLifecycleState.resumed;
@@ -1172,6 +1209,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _pageController.dispose();
     _battleNameController.dispose();
     _messageController.dispose();
+    _weeklyDistanceCustomController.dispose();
     if (_signalR != null) {
       _signalR.stopConnection();
     }

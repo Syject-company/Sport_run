@@ -6,6 +6,7 @@ import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
+import 'package:one2one_run/utils/constants.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 Widget changeBattleDrawer({
@@ -574,6 +575,9 @@ Widget filterDrawer({
   required RoundedLoadingButtonController applyController,
   required VoidCallback onTapApply,
   required VoidCallback onTapCancel,
+  required String distanceMenuValue,
+  required Function(String? value) onChangedDistanceMenu,
+  required TextEditingController weeklyDistanceCustomController,
 }) {
   return Container(
     width: width,
@@ -638,18 +642,195 @@ Widget filterDrawer({
                       rangeValue: currentRangeValuesPace,
                       onRangeChanged: onRangePaceChanged,
                     ),
-                    rangeSeekBarWeekly(
-                      title: 'Weekly distance',
-                      context: context,
-                      dialogTitle: 'Weekly distance',
-                      dialogText: weeklyDistanceText,
-                      startTimePerKM: valueWeeklyStart,
-                      endTimePerKM: valueWeeklyEnd,
-                      unit: isKM ? 'km' : 'mile',
-                      minValue: isKM ? 4 : 2.5,
-                      maxValue: isKM ? 150 : 94,
-                      rangeValue: currentRangeValuesWeekly,
-                      onChanged: onRangeWeeklyChanged,
+                    SizedBox(
+                      height: height * 0.01,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 13.0),
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            'Frequent distances',
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontFamily: 'roboto',
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.info_outline_rounded,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              showDialog<dynamic>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                      'Weekly distance',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: 'roboto',
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                    content: Text(
+                                      weeklyDistanceText,
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: 'roboto',
+                                          fontSize: 13.sp,
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                    actions: <Widget>[
+                                      Center(
+                                        child: Container(
+                                          width: 80.0,
+                                          height: 50.0,
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 10.0),
+                                          child: buttonNoIcon(
+                                            title: 'Ok',
+                                            color: redColor,
+                                            height: 40.h,
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          distanceIcon,
+                          height: height * 0.02,
+                          width: height * 0.02,
+                          fit: BoxFit.fill,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(
+                          width: 7.0,
+                        ),
+                        Text(
+                          'Distance',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12.sp,
+                              fontFamily: 'roboto',
+                              fontWeight: FontWeight.w700),
+                        ),
+                        SizedBox(
+                          width: width * 0.05,
+                        ),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: width * 0.03),
+                          height: height * 0.05,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: DropdownButton<String>(
+                            alignment: AlignmentDirectional.center,
+                            value: distanceMenuValue,
+                            icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                            underline: const Divider(
+                              color: Colors.transparent,
+                            ),
+                            elevation: 8,
+                            borderRadius: BorderRadius.circular(5),
+                            style: const TextStyle(color: Colors.black),
+                            iconEnabledColor: Colors.red,
+                            items: <String>[
+                              Constants.filterMenuThree,
+                              Constants.filterMenuFive,
+                              Constants.filterMenuTen,
+                              Constants.filterMenuHalfMarathon,
+                              Constants.filterMenuMarathon,
+                              Constants.filterMenuCustom,
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                alignment: AlignmentDirectional.center,
+                                child: Text(
+                                  value,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              );
+                            }).toList(),
+                            hint: Text(
+                              'Select',
+                              style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            onChanged: onChangedDistanceMenu,
+                          ),
+                        ),
+                        SizedBox(
+                          width: width * 0.05,
+                        ),
+                        Text(
+                          isKM ? 'km' : 'mile',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12.sp,
+                              fontFamily: 'roboto',
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                    Visibility(
+                      visible: distanceMenuValue == Constants.filterMenuCustom,
+                      child: Container(
+                        height: height * 0.08,
+                        width: width * 0.35,
+                        margin: EdgeInsets.only(
+                          top: height * 0.01,
+                          left: width * 0.115,
+                        ),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.03, vertical: height * 0.01),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: inputTextField(
+                          controller: weeklyDistanceCustomController,
+                          errorText: null,
+                          hintText: 'Custom value',
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
                     ),
                     SizedBox(
                       height: 25.h,
@@ -725,7 +906,7 @@ Widget filterDrawer({
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                      margin: EdgeInsets.only(top: height * 0.25),
+                      margin: EdgeInsets.only(top: height * 0.2),
                       alignment: Alignment.bottomCenter,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,

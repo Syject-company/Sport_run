@@ -4,7 +4,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
-import 'package:one2one_run/data/models/register_response_google_appple_model.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -257,6 +256,24 @@ extension UserData on void {
     }
 
     return model.battleUsers[1].isCreater;
+  }
+
+  double getFilterDistanceMenuValue(
+      {required String value, required double customValue}) {
+    if (Constants.filterMenuThree == value) {
+      return 3.0;
+    } else if (Constants.filterMenuFive == value) {
+      return 5.0;
+    } else if (Constants.filterMenuTen == value) {
+      return 10.0;
+    } else if (Constants.filterMenuHalfMarathon == value) {
+      return 21;
+    } else if (Constants.filterMenuMarathon == value) {
+      return 42;
+    } else if (Constants.filterMenuCustom == value) {
+      return customValue;
+    }
+    return 3.0;
   }
 }
 

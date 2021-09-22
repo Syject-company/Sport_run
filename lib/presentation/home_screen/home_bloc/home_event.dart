@@ -161,3 +161,12 @@ class ChangeDistanceValue extends HomeEvent {
   @override
   List<Object> get props => <Object>[value];
 }
+
+class ChangeDropMenuDistanceValue extends HomeEvent {
+  ChangeDropMenuDistanceValue(this.value);
+
+  final String value;
+
+  @override
+  List<Object> get props => <Object>[value];
+}

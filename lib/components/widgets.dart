@@ -20,13 +20,13 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 TextStyle get hintTextStyle => const TextStyle(
       color: Color(0xff8E8E93),
       fontSize: 14,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w500,
     );
 
 TextStyle get errorTextStyle => const TextStyle(
       color: Colors.red,
       fontSize: 15,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w500,
     );
 
 TextStyle get errorTextStyleSmall => const TextStyle(

@@ -40,8 +40,14 @@ class Constants {
   static const String socketReceiveBattleNotification = 'ReceiveBattleNotification';
   static const String socketReceiveMessage = 'ReceiveMessage';
   static const String socketSendMessage = 'SendMessage';
-
   static const String redirectAppleUri = 'https://fluoridated-married-aristosuchus.glitch.me/callbacks/sign_in_with_apple';
   static const String clientAppleServiceId = 'com.one2one.one2oneRun.signin';
+
+  static const String filterMenuThree = '3';
+  static const String filterMenuFive = '5';
+  static const String filterMenuTen = '10';
+  static const String filterMenuHalfMarathon = 'Half Marathon';
+  static const String filterMenuMarathon = 'Marathon';
+  static const String filterMenuCustom = 'Custom';
 
 }
