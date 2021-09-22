@@ -267,18 +267,10 @@ class EditProfilePageState extends State<EditProfilePage> {
               : '${(_currentPaceValue.toDouble() / 60).toStringAsFixed(2)} min/mile',
           unit: _isKM ? 'km' : 'mile',
           kmPerHour: (60 * 60) / _currentPaceValue,
-          minValue: (_isKM ? 2 : 3) * 60,
+          minValue: (_isKM ? 2.01 : 3) * 60,
           maxValue: (_isKM ? 11 : 18) * 60,
           sliderValue: _currentPaceValue.toDouble(),
           onChanged: (double value) {
-            /*          if(value > _currentPaceValue  && (value / 60).toString().contains('.6')){
-              _currentPaceValue = value + 24;
-            }  if( value < _currentPaceValue  && (value / 60).toString().contains('.9') || (value / 60).toString().contains('.8') || (value / 60).toString().contains('.7')){
-              _currentPaceValue = value - 24;
-            } else {
-
-              _currentPaceValue = value;
-            }*/
             setState(() {
               _currentPaceValue = value;
             });

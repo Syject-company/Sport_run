@@ -633,7 +633,7 @@ Widget filterDrawer({
                       endTimePerKM: valuePaceEnd,
                       unit: isKM ? 'km' : 'mile',
                       kmPerHour: (60 * 60) / valuePaceEndValue,
-                      minValue: (isKM ? 2 : 3) * 60,
+                      minValue: (isKM ? 2.01 : 3) * 60,
                       maxValue: (isKM ? 11 : 18) * 60,
                       rangeValue: currentRangeValuesPace,
                       onRangeChanged: onRangePaceChanged,

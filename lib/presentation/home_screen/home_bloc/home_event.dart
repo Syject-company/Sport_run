@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 
@@ -132,4 +133,31 @@ class OpenChangeBattleDrawer extends HomeEvent {
 
   @override
   List<Object> get props => <Object>[battleId, model];
+}
+
+class ChangeFilterRangePace extends HomeEvent {
+  ChangeFilterRangePace(this.values);
+
+  final RangeValues values;
+
+  @override
+  List<Object> get props => <Object>[values];
+}
+
+class ChangeFilterRangeWeekly extends HomeEvent {
+  ChangeFilterRangeWeekly(this.values);
+
+  final RangeValues values;
+
+  @override
+  List<Object> get props => <Object>[values];
+}
+
+class ChangeDistanceValue extends HomeEvent {
+  ChangeDistanceValue(this.value);
+
+  final double value;
+
+  @override
+  List<Object> get props => <Object>[value];
 }

@@ -371,7 +371,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                   : '${(_currentPaceValue / 60).toStringAsFixed(2)} min/mile',
               unit: isKM ? 'km' : 'mile',
               kmPerHour: (60 * 60) / _currentPaceValue,
-              minValue: (isKM ? 2 : 3) * 60,
+              minValue: (isKM ? 2.01 : 3) * 60,
               maxValue: (isKM ? 11 : 18) * 60,
               sliderValue: _currentPaceValue,
               onChanged: (double value) {

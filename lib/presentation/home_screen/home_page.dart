@@ -124,12 +124,6 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     _userModelApi = _homeApi.getUserModel();
 
-/*    _userModelApi.then((UserModel? value) {
-      if (value != null) {
-        PreferenceUtils.setCurrentUserModel(value);
-        _currentUserId = value.id;
-      }
-    });*/
     _users = getUsers(isFilterIncluded: _isNeedFilter);
   }
 
@@ -138,220 +132,213 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
     final double width = MediaQuery.of(context).size.width;
-    return FutureBuilder<UserModel?>(
-        future: _userModelApi,
-        builder: (BuildContext context, AsyncSnapshot<UserModel?> snapshot) {
-          if (snapshot.hasData && snapshot.data != null) {
-            PreferenceUtils.setCurrentUserModel(snapshot.data!);
-            _currentUserId = snapshot.data!.id;
-            _userModel = snapshot.data!;
-            updateRangeValuesAndUnit();
-            return BlocProvider<HomeBloc>(
-              create: (final BuildContext context) => HomeBloc(),
-              child: BlocListener<HomeBloc, HomeState>(
-                listener:
-                    (final BuildContext context, final HomeState state) async {
-                  if (state is NavigatedToPage) {
-                    if (_keyScaffold.currentState != null &&
-                        _keyScaffold.currentState!.isDrawerOpen) {
-                      Navigator.of(context).pop();
-                    }
-                    await _pageController
-                        .animateToPage(state.pageIndex,
-                            duration: const Duration(milliseconds: 400),
-                            curve: Curves.easeIn)
-                        .then(
-                          (_) => BlocProvider.of<HomeBloc>(context).add(
-                              home_bloc.SwitchIsNeedFilter(
-                                  isNeedFilter: false)),
-                        );
-                  } else if (state is UserDataUpdated) {
-                    updateRangeValuesAndUnit();
-                    _userModelApi = _homeApi.getUserModel();
-                  } else if (state is SwitchedIsNeedFilter) {
-                    _isNeedFilter = state.isNeedFilter;
-                    if (!_isNeedFilter) {
-                      _users = getUsers(isFilterIncluded: _isNeedFilter);
-                    }
-                  } else if (state is BattleDrawerIsOpen) {
-                    _dateAndTimeForUser = getFormattedDateForUser(
-                        date: DateTime.now(), time: TimeOfDay.now());
-                    _userBattleModel = state.userModel;
-                    _selectedDrawersType = DrawersType.BattleDrawer;
-                    if (_keyScaffold.currentState != null &&
-                        !_keyScaffold.currentState!.isEndDrawerOpen) {
-                      _keyScaffold.currentState!.openEndDrawer();
-                    }
-                  } else if (state is TimesPerWeekIsSelected) {
-                    _countOfRuns = state.timesPerWeek;
-                  } else if (state is SelectedConnectFilters) {
-                    _users = getUsers(
-                      isFilterIncluded: state.isFilterIncluded,
-                      paceFrom: state.paceFrom / 60,
-                      paceTo: state.paceTo / 60,
-                      weeklyDistanceFrom: _isKM
-                          ? double.parse(
-                              state.weeklyDistanceFrom.toStringAsFixed(0))
-                          : double.parse(
-                              state.weeklyDistanceFrom.toStringAsFixed(1)),
-                      weeklyDistanceTo: _isKM
-                          ? double.parse(
-                              state.weeklyDistanceTo.toStringAsFixed(0))
-                          : double.parse(
-                              state.weeklyDistanceTo.toStringAsFixed(1)),
-                      workoutsPerWeek: state.workoutsPerWeek,
-                    );
-                    if (_keyScaffold.currentState != null &&
-                        _keyScaffold.currentState!.isEndDrawerOpen) {
-                      Navigator.of(context).pop();
-                    }
-                  } else if (state is FilterDrawerIsOpen) {
-                    _selectedDrawersType = DrawersType.FilterDrawer;
-                  } else if (state is GotDatePicker) {
-                    await getDate(context: context)
-                        .then((DateTime? date) async {
-                      if (date != null) {
-                        final TimeOfDay? time = await getTime(context: context);
-                        if (time != null) {
-                          _dateAndTime =
-                              getFormattedDate(date: date, time: time);
-                          _dateAndTimeForUser =
-                              getFormattedDateForUser(date: date, time: time);
-                          print('Date: $_dateAndTime');
-                        }
-                      }
-                    });
-                  } else if (state is MessageDrawerIsOpenOrClose) {
-                    _isNeedToOpenMessageDrawer = !_isNeedToOpenMessageDrawer;
-                    _selectedMessageIndex = 1000;
-                    _messageController.text = '';
-                  } else if (state is MessageToOpponentDrawerIsSent) {
-                    _applyMessageController.reset();
-                    _messageToOpponent = state.message;
-                    BlocProvider.of<HomeBloc>(context)
-                        .add(home_bloc.OpenCloseMessageDrawer());
-                  } else if (state is SelectedMessageToOpponent) {
-                    _selectedMessageIndex = state.messageIndex;
-                  } else if (state is BattleCreated) {
-                    await _homeApi
-                        .createBattle(
-                            model: BattleRequestModel(
+
+    return BlocProvider<HomeBloc>(
+      create: (final BuildContext context) => HomeBloc(),
+      child: BlocListener<HomeBloc, HomeState>(
+        listener: (final BuildContext context, final HomeState state) async {
+          if (state is NavigatedToPage) {
+            if (_keyScaffold.currentState != null &&
+                _keyScaffold.currentState!.isDrawerOpen) {
+              Navigator.of(context).pop();
+            }
+            await _pageController
+                .animateToPage(state.pageIndex,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeIn)
+                .then(
+                  (_) => BlocProvider.of<HomeBloc>(context)
+                      .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: false)),
+                );
+          } else if (state is UserDataUpdated) {
+            _userModelApi = _homeApi.getUserModel();
+          } else if (state is SwitchedIsNeedFilter) {
+            _isNeedFilter = state.isNeedFilter;
+            if (!_isNeedFilter) {
+              _users = getUsers(isFilterIncluded: _isNeedFilter);
+            }
+          } else if (state is BattleDrawerIsOpen) {
+            _dateAndTimeForUser = getFormattedDateForUser(
+                date: DateTime.now(), time: TimeOfDay.now());
+            _userBattleModel = state.userModel;
+            _selectedDrawersType = DrawersType.BattleDrawer;
+            if (_keyScaffold.currentState != null &&
+                !_keyScaffold.currentState!.isEndDrawerOpen) {
+              _keyScaffold.currentState!.openEndDrawer();
+            }
+          } else if (state is TimesPerWeekIsSelected) {
+            _countOfRuns = state.timesPerWeek;
+          } else if (state is SelectedConnectFilters) {
+            _users = getUsers(
+              isFilterIncluded: state.isFilterIncluded,
+              paceFrom: state.paceFrom / 60,
+              paceTo: state.paceTo / 60,
+              weeklyDistanceFrom: _isKM
+                  ? double.parse(state.weeklyDistanceFrom.toStringAsFixed(0))
+                  : double.parse(state.weeklyDistanceFrom.toStringAsFixed(1)),
+              weeklyDistanceTo: _isKM
+                  ? double.parse(state.weeklyDistanceTo.toStringAsFixed(0))
+                  : double.parse(state.weeklyDistanceTo.toStringAsFixed(1)),
+              workoutsPerWeek: state.workoutsPerWeek,
+            );
+            if (_keyScaffold.currentState != null &&
+                _keyScaffold.currentState!.isEndDrawerOpen) {
+              Navigator.of(context).pop();
+            }
+          } else if (state is FilterDrawerIsOpen) {
+            _selectedDrawersType = DrawersType.FilterDrawer;
+          } else if (state is GotDatePicker) {
+            await getDate(context: context).then((DateTime? date) async {
+              if (date != null) {
+                final TimeOfDay? time = await getTime(context: context);
+                if (time != null) {
+                  _dateAndTime = getFormattedDate(date: date, time: time);
+                  _dateAndTimeForUser =
+                      getFormattedDateForUser(date: date, time: time);
+                  print('Date: $_dateAndTime');
+                }
+              }
+            });
+          } else if (state is MessageDrawerIsOpenOrClose) {
+            _isNeedToOpenMessageDrawer = !_isNeedToOpenMessageDrawer;
+            _selectedMessageIndex = 1000;
+            _messageController.text = '';
+          } else if (state is MessageToOpponentDrawerIsSent) {
+            _applyMessageController.reset();
+            _messageToOpponent = state.message;
+            BlocProvider.of<HomeBloc>(context)
+                .add(home_bloc.OpenCloseMessageDrawer());
+          } else if (state is SelectedMessageToOpponent) {
+            _selectedMessageIndex = state.messageIndex;
+          } else if (state is BattleCreated) {
+            await _homeApi
+                .createBattle(
+                    model: BattleRequestModel(
+              dateTime: _dateAndTime,
+              battleName: _battleNameController.text.isNotEmpty
+                  ? _battleNameController.text
+                  : null,
+              distance: _isKM
+                  ? double.parse(_currentDistanceValue.toStringAsFixed(0))
+                  : double.parse(_currentDistanceValue.toStringAsFixed(1)),
+              message: _messageToOpponent,
+              opponentId: _userBattleModel!.id,
+            ))
+                .then((bool value) async {
+              if (value) {
+                final UserModel currentUserModel =
+                    PreferenceUtils.getCurrentUserModel();
+                if (_keyScaffold.currentState != null &&
+                    _keyScaffold.currentState!.isEndDrawerOpen) {
+                  Navigator.of(context).pop();
+                }
+                battleCreated(
+                  context: context,
+                  height: height,
+                  width: width,
+                  currentUserName: currentUserModel.nickName ?? 'NickName',
+                  currentUserPhoto: currentUserModel.photoLink,
+                  opponentUserName: _userBattleModel?.nickName ?? 'NickName',
+                  opponentUserPhoto: _userBattleModel?.photoLink,
+                );
+
+                Timer(const Duration(seconds: 1), () {
+                  Navigator.of(context).pop();
+                });
+              } else {
+                await toastUnexpectedError();
+              }
+            });
+            _applyBattleController.reset();
+          } else if (state is BattleOnNotificationDrawerIsOpen) {
+            _battleRespondModel = state.model;
+            if (_keyScaffold.currentState != null &&
+                !_keyScaffold.currentState!.isEndDrawerOpen) {
+              _keyScaffold.currentState!.openEndDrawer();
+            }
+          } else if (state is NewConditionsBattleDrawerIsOpenClose) {
+            _isNeedToOpenChangeBattleDrawer = !_isNeedToOpenChangeBattleDrawer;
+            _changeBattleDrawerTitle = 'Offer new conditions';
+          } else if (state is BattleOnNotificationIsAccepted) {
+            _acceptBattleController.success();
+            await _homeApi
+                .acceptBattle(battleId: state.battleId)
+                .then((bool value) async {
+              if (value) {
+                if (_keyScaffold.currentState != null &&
+                    _keyScaffold.currentState!.isEndDrawerOpen) {
+                  Navigator.of(context).pop();
+                }
+              } else {
+                await toastUnexpectedError();
+              }
+            });
+            _acceptBattleController.reset();
+          } else if (state is ApplyBattleIsChanged) {
+            // _isNeedToOpenChangeBattleDrawer = false;
+            await _homeApi
+                .applyBattleChanges(
+                    model: ChangeBattleConditionsModel(
                       dateTime: _dateAndTime,
-                      battleName: _battleNameController.text.isNotEmpty
-                          ? _battleNameController.text
-                          : null,
                       distance: _isKM
                           ? double.parse(
                               _currentDistanceValue.toStringAsFixed(0))
                           : double.parse(
                               _currentDistanceValue.toStringAsFixed(1)),
-                      message: _messageToOpponent,
-                      opponentId: _userBattleModel!.id,
-                    ))
-                        .then((bool value) async {
-                      if (value) {
-                        final UserModel currentUserModel =
-                            PreferenceUtils.getCurrentUserModel();
-                        if (_keyScaffold.currentState != null &&
-                            _keyScaffold.currentState!.isEndDrawerOpen) {
-                          Navigator.of(context).pop();
-                        }
-                        battleCreated(
-                          context: context,
-                          height: height,
-                          width: width,
-                          currentUserName:
-                              currentUserModel.nickName ?? 'NickName',
-                          currentUserPhoto: currentUserModel.photoLink,
-                          opponentUserName:
-                              _userBattleModel?.nickName ?? 'NickName',
-                          opponentUserPhoto: _userBattleModel?.photoLink,
-                        );
+                    ),
+                    battleId: state.battleId)
+                .then((bool value) async {
+              if (value) {
+                if (_keyScaffold.currentState != null &&
+                    _keyScaffold.currentState!.isEndDrawerOpen) {
+                  Navigator.of(context).pop();
+                }
+              } else {
+                await toastUnexpectedError();
+              }
+            });
+            _isNeedToOpenChangeBattleDrawer = false;
+          } else if (state is ChangeBattleDrawerIsOpened) {
+            _battleId = state.battleId;
+            _battleRespondModel = state.model;
+            _currentDistanceValue =
+                getDistance(distance: state.model.distance).toDouble();
+            _changeBattleDrawerTitle = 'Change battle';
+            _dateAndTimeForUser = getFormattedDateForUser(
+                date: DateTime.now(), time: TimeOfDay.now());
+            _selectedDrawersType = DrawersType.ChangeBattleDrawer;
+            if (_keyScaffold.currentState != null &&
+                !_keyScaffold.currentState!.isEndDrawerOpen) {
+              _keyScaffold.currentState!.openEndDrawer();
+            }
+          } else if (state is FilterRangePaceChanged) {
+            _currentRangeValuesPace = state.values;
+          } else if (state is FilterRangeWeeklyChanged) {
+            _currentRangeValuesWeekly = state.values;
+          } else if (state is DistanceValueChanged) {
+            _currentDistanceValue = state.value;
+          }
 
-                        Timer(const Duration(seconds: 1), () {
-                          Navigator.of(context).pop();
-                        });
-                      } else {
-                        await toastUnexpectedError();
-                      }
-                    });
-                    _applyBattleController.reset();
-                  } else if (state is BattleOnNotificationDrawerIsOpen) {
-                    _battleRespondModel = state.model;
-                    if (_keyScaffold.currentState != null &&
-                        !_keyScaffold.currentState!.isEndDrawerOpen) {
-                      _keyScaffold.currentState!.openEndDrawer();
-                    }
-                  } else if (state is NewConditionsBattleDrawerIsOpenClose) {
-                    _isNeedToOpenChangeBattleDrawer =
-                        !_isNeedToOpenChangeBattleDrawer;
-                    _changeBattleDrawerTitle = 'Offer new conditions';
-                  } else if (state is BattleOnNotificationIsAccepted) {
-                    _acceptBattleController.success();
-                    await _homeApi
-                        .acceptBattle(battleId: state.battleId)
-                        .then((bool value) async {
-                      if (value) {
-                        if (_keyScaffold.currentState != null &&
-                            _keyScaffold.currentState!.isEndDrawerOpen) {
-                          Navigator.of(context).pop();
-                        }
-                      } else {
-                        await toastUnexpectedError();
-                      }
-                    });
-                    _acceptBattleController.reset();
-                  } else if (state is ApplyBattleIsChanged) {
-                    // _isNeedToOpenChangeBattleDrawer = false;
-                    await _homeApi
-                        .applyBattleChanges(
-                            model: ChangeBattleConditionsModel(
-                              dateTime: _dateAndTime,
-                              distance: _isKM
-                                  ? double.parse(
-                                      _currentDistanceValue.toStringAsFixed(0))
-                                  : double.parse(
-                                      _currentDistanceValue.toStringAsFixed(1)),
-                            ),
-                            battleId: state.battleId)
-                        .then((bool value) async {
-                      if (value) {
-                        if (_keyScaffold.currentState != null &&
-                            _keyScaffold.currentState!.isEndDrawerOpen) {
-                          Navigator.of(context).pop();
-                        }
-                      } else {
-                        await toastUnexpectedError();
-                      }
-                    });
-                    _isNeedToOpenChangeBattleDrawer = false;
-                  } else if (state is ChangeBattleDrawerIsOpened) {
-                    _battleId = state.battleId;
-                    _battleRespondModel = state.model;
-                    _currentDistanceValue =
-                        getDistance(distance: state.model.distance).toDouble();
-                    _changeBattleDrawerTitle = 'Change battle';
-                    _dateAndTimeForUser = getFormattedDateForUser(
-                        date: DateTime.now(), time: TimeOfDay.now());
-                    _selectedDrawersType = DrawersType.ChangeBattleDrawer;
-                    if (_keyScaffold.currentState != null &&
-                        !_keyScaffold.currentState!.isEndDrawerOpen) {
-                      _keyScaffold.currentState!.openEndDrawer();
-                    }
-                  }
+          BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
+        },
+        child: BlocBuilder<HomeBloc, HomeState>(
+            builder: (final BuildContext context, final HomeState state) {
+          getBattleDataFromFirebaseMessaging(context: context);
 
-                  BlocProvider.of<HomeBloc>(context)
-                      .add(home_bloc.UpdateState());
-                },
-                child: BlocBuilder<HomeBloc, HomeState>(builder:
-                    (final BuildContext context, final HomeState state) {
-                  getBattleDataFromFirebaseMessaging(context: context);
+          startWebSockets(context: context);
 
-                  startWebSockets(context: context);
-
-                  return WillPopScope(
-                    onWillPop: _onWillPop,
-                    child: Scaffold(
+          return WillPopScope(
+            onWillPop: _onWillPop,
+            child: FutureBuilder<UserModel?>(
+                future: _userModelApi,
+                builder:
+                    (BuildContext context, AsyncSnapshot<UserModel?> snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    PreferenceUtils.setCurrentUserModel(snapshot.data!);
+                    _currentUserId = snapshot.data!.id;
+                    _userModel = snapshot.data!;
+                    updateRangeValuesAndUnit();
+                    return Scaffold(
                       key: _keyScaffold,
                       backgroundColor: homeBackground,
                       onEndDrawerChanged: (bool value) {
@@ -619,20 +606,20 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           ],
                         ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    return Container(
+                      width: width,
+                      height: height,
+                      color: const Color(0xffF5F5F5),
+                      child: Center(child: progressIndicator()),
+                    );
+                  }
                 }),
-              ),
-            );
-          } else {
-            return Container(
-              width: width,
-              height: height,
-              color: const Color(0xffF5F5F5),
-              child: Center(child: progressIndicator()),
-            );
-          }
-        });
+          );
+        }),
+      ),
+    );
   }
 
   Widget _bottomNavigationBar(
@@ -740,17 +727,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       isKM: _isKM,
       currentRangeValuesPace: _currentRangeValuesPace,
       onRangePaceChanged: (RangeValues values) {
-        setState(() {
-          _currentRangeValuesPace = values;
-        });
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.ChangeFilterRangePace(values));
       },
       valueWeeklyStart: _currentRangeValuesWeekly.start,
       valueWeeklyEnd: _currentRangeValuesWeekly.end,
       currentRangeValuesWeekly: _currentRangeValuesWeekly,
       onRangeWeeklyChanged: (RangeValues values) {
-        setState(() {
-          _currentRangeValuesWeekly = values;
-        });
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.ChangeFilterRangeWeekly(values));
       },
       onTapMinusRuns: () {
         if (_countOfRuns > 1) {
@@ -864,9 +849,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       isKM: _isKM,
       currentDistanceValue: _currentDistanceValue,
       onSeekChanged: (double value) {
-        setState(() {
-          _currentDistanceValue = value;
-        });
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.ChangeDistanceValue(value));
       },
       onTapApplyBattle: () {
         BlocProvider.of<HomeBloc>(context)
@@ -898,9 +882,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               currentDistanceValue: _currentDistanceValue,
               isKM: _isKM,
               onSeekChanged: (double value) {
-                setState(() {
-                  _currentDistanceValue = value;
-                });
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.ChangeDistanceValue(value));
               },
               onTapGetDatePicker: () {
                 BlocProvider.of<HomeBloc>(context)
@@ -980,7 +963,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   void updateRangeValuesAndUnit() {
     _isKM = PreferenceUtils.getIsUserUnitInKM();
-    print('${_userModel}');
+    print('$_userModel');
 
     _currentRangeValuesPace =
         RangeValues(getUserPaceStartFilter() * 60, getUserPaceEndFilter() * 60);
@@ -990,20 +973,20 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   double getUserPaceStartFilter() {
-    if (_isKM && _userModel.pace >= 2.10) {
-      return _userModel.pace - 0.10;
+    if (_isKM && _userModel.pace >= 2.16) {
+      return _userModel.pace - 0.16;
     }
 
     if (!_isKM && _userModel.pace >= 3.10) {
       return _userModel.pace - 0.10;
     }
 
-    return _isKM ? 2 : 3;
+    return _isKM ? 2.01 : 3;
   }
 
   double getUserPaceEndFilter() {
-    if (_isKM && _userModel.pace <= 10.90) {
-      return _userModel.pace + 0.10;
+    if (_isKM && _userModel.pace <= 10.96) {
+      return _userModel.pace + 0.17;
     }
     if (!_isKM && _userModel.pace <= 17.90) {
       return _userModel.pace + 0.10;
