@@ -111,7 +111,7 @@ class SettingsPageState extends State<SettingsPage> {
                               ),
                               Positioned(
                                 top: 90.h / 1.5,
-                                left: width / 4,
+                                left: width / 3,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: <Widget>[
@@ -121,7 +121,11 @@ class SettingsPageState extends State<SettingsPage> {
                                         height: 74.h,
                                         width: 74.h,
                                         child: userAvatarPhoto(
-                                            photoUrl: snapshot.data!.photoLink),
+                                          photoUrl: snapshot.data!.photoLink,
+                                          height: height,
+                                          width: width,
+                                          context: context,
+                                        ),
                                       ),
                                     ),
                                     Padding(

@@ -73,7 +73,12 @@ class CheckOpponentResultsPage extends StatelessWidget {
                           width: height * 0.08,
                           margin:
                               EdgeInsets.symmetric(horizontal: width * 0.05),
-                          child: userAvatarPhoto(photoUrl: model.userPhoto),
+                          child: userAvatarPhoto(
+                            photoUrl: model.userPhoto,
+                            height: height,
+                            width: width,
+                            context: context,
+                          ),
                         ),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,

@@ -90,7 +90,12 @@ Widget changeBattleDrawer({
                     height: height * 0.08,
                     width: height * 0.08,
                     margin: EdgeInsets.symmetric(horizontal: width * 0.05),
-                    child: userAvatarPhoto(photoUrl: userPhoto),
+                    child: userAvatarPhoto(
+                      photoUrl: userPhoto,
+                      height: height,
+                      width: width,
+                      context: context,
+                    ),
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -314,7 +319,12 @@ Widget battleOfferOnNotificationDrawer({
                     height: height * 0.08,
                     width: height * 0.08,
                     margin: EdgeInsets.symmetric(horizontal: width * 0.05),
-                    child: userAvatarPhoto(photoUrl: secondUserModel.photoLink),
+                    child: userAvatarPhoto(
+                      photoUrl: secondUserModel.photoLink,
+                      height: height,
+                      width: width,
+                      context: context,
+                    ),
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -824,10 +834,11 @@ Widget filterDrawer({
                             ),
                           ],
                         ),
-                        child: inputTextField(
+                        child: inputFilterTextField(
                           controller: weeklyDistanceCustomController,
                           errorText: null,
                           hintText: 'Custom value',
+                          maxLength: 6,
                           keyboardType: TextInputType.number,
                         ),
                       ),
@@ -1039,7 +1050,12 @@ Widget battleDrawer({
                   height: height * 0.08,
                   width: height * 0.08,
                   margin: EdgeInsets.symmetric(horizontal: width * 0.05),
-                  child: userAvatarPhoto(photoUrl: model?.photoLink),
+                  child: userAvatarPhoto(
+                    photoUrl: model?.photoLink,
+                    height: height,
+                    width: width,
+                    context: context,
+                  ),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1379,8 +1395,8 @@ Widget drawerItem({
   required String label,
   required String icon,
   required VoidCallback onPressed,
-  double height = 22.0,
-  double width = 22.0,
+  required double height,
+  required double width,
   required Color selectedItemColor,
 }) {
   return Container(

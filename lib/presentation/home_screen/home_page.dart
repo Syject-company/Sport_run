@@ -84,7 +84,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   ConnectUsersModel? _userBattleModel;
   late Future<UserModel?> _userModelApi;
-  late UserModel _userModel;
+  UserModel? _userModel;
   late Future<List<ConnectUsersModel>?> _users;
   late FirebaseMessaging _messaging;
   late RangeValues _currentRangeValuesPace;
@@ -121,9 +121,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       print('Firebase token: $token');
     });
     _dateAndTimeForUser =
-        getFormattedDateForUser(date: DateTime.now(), time: TimeOfDay.now());
+        getFormattedDateForUser(date: DateTime.now()/*, time: TimeOfDay.now()*/);
     _dateAndTime =
-        getFormattedDate(date: DateTime.now(), time: TimeOfDay.now());
+        getFormattedDate(date: DateTime.now(), time: const TimeOfDay(hour: 23,minute: 59,));
 
     _userModelApi = _homeApi.getUserModel();
 
@@ -162,7 +162,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             }
           } else if (state is BattleDrawerIsOpen) {
             _dateAndTimeForUser = getFormattedDateForUser(
-                date: DateTime.now(), time: TimeOfDay.now());
+                date: DateTime.now()/*, time: TimeOfDay.now()*/);
             _userBattleModel = state.userModel;
             _selectedDrawersType = DrawersType.BattleDrawer;
             if (_keyScaffold.currentState != null &&
@@ -195,13 +195,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           } else if (state is GotDatePicker) {
             await getDate(context: context).then((DateTime? date) async {
               if (date != null) {
-                final TimeOfDay? time = await getTime(context: context);
-                if (time != null) {
-                  _dateAndTime = getFormattedDate(date: date, time: time);
+                //final TimeOfDay? time = await getTime(context: context);
+               // if (time != null) {
+                  _dateAndTime = getFormattedDate(date: date, time: const TimeOfDay(hour: 23,minute: 59,));
+                  print('_dateAndTime $_dateAndTime');
                   _dateAndTimeForUser =
-                      getFormattedDateForUser(date: date, time: time);
+                      getFormattedDateForUser(date: date/*, time: time*/);
                   print('Date: $_dateAndTime');
-                }
+               // }
               }
             });
           } else if (state is MessageDrawerIsOpenOrClose) {
@@ -310,7 +311,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 getDistance(distance: state.model.distance).toDouble();
             _changeBattleDrawerTitle = 'Change battle';
             _dateAndTimeForUser = getFormattedDateForUser(
-                date: DateTime.now(), time: TimeOfDay.now());
+                date: DateTime.now()/*, time: TimeOfDay.now()*/);
             _selectedDrawersType = DrawersType.ChangeBattleDrawer;
             if (_keyScaffold.currentState != null &&
                 !_keyScaffold.currentState!.isEndDrawerOpen) {
@@ -339,10 +340,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 builder:
                     (BuildContext context, AsyncSnapshot<UserModel?> snapshot) {
                   if (snapshot.hasData && snapshot.data != null) {
-                    PreferenceUtils.setCurrentUserModel(snapshot.data!);
-                    _currentUserId = snapshot.data!.id;
-                    _userModel = snapshot.data!;
-                    updateRangeValuesAndUnit();
+                    if (!identical(_userModel, snapshot.data)) {
+                      PreferenceUtils.setCurrentUserModel(snapshot.data!);
+                      _currentUserId = snapshot.data!.id;
+                      _userModel = snapshot.data;
+                      updateRangeValuesAndUnit();
+                    }
                     return Scaffold(
                       key: _keyScaffold,
                       backgroundColor: homeBackground,
@@ -460,7 +463,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           children: <Widget>[
                             Container(
                               width: width,
-                              height: height - kToolbarHeight,
+                              height: height - height * 0.084,
                               color: Colors.white,
                               child: ScrollConfiguration(
                                 behavior: NoGlowScrollBehavior(),
@@ -634,7 +637,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       required double height}) {
     return Container(
       width: width,
-      height: kToolbarHeight,
+      height:  height * 0.084,
+      //height:  height * 0.075,
       padding: EdgeInsets.symmetric(horizontal: width * 0.03),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -654,6 +658,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           drawerItem(
             label: 'Connect',
             icon: connectIcon,
+            width: width * 0.06,
+            height: height * 0.033,
             selectedItemColor: _selectedDrawerItem == DrawerItems.Connect
                 ? Colors.red
                 : Colors.black,
@@ -667,6 +673,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           drawerItem(
             label: 'Interact',
             icon: interactIcon,
+            width: width * 0.06,
+            height: height * 0.033,
             selectedItemColor: _selectedDrawerItem == DrawerItems.Interact
                 ? Colors.red
                 : Colors.black,
@@ -680,8 +688,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           drawerItem(
             label: 'Enjoy',
             icon: enjoyIcon,
-            width: 29.0,
-            height: 22.0,
+            width: width * 0.08,
+            height: height * 0.033,
             selectedItemColor: _selectedDrawerItem == DrawerItems.Enjoy
                 ? Colors.red
                 : Colors.black,
@@ -695,6 +703,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           drawerItem(
             label: 'Settings',
             icon: settingsIcon,
+            width: width * 0.06,
+            height: height * 0.033,
             selectedItemColor: _selectedDrawerItem == DrawerItems.Settings
                 ? Colors.red
                 : Colors.black,
@@ -988,46 +998,46 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   double getUserPaceStartFilter() {
-    if (_isKM && _userModel.pace >= 2.16) {
-      return _userModel.pace - 0.16;
+    if (_isKM && _userModel!.pace >= 2.16) {
+      return _userModel!.pace - 0.16;
     }
 
-    if (!_isKM && _userModel.pace >= 3.10) {
-      return _userModel.pace - 0.10;
+    if (!_isKM && _userModel!.pace >= 3.10) {
+      return _userModel!.pace - 0.10;
     }
 
     return _isKM ? 2.01 : 3;
   }
 
   double getUserPaceEndFilter() {
-    if (_isKM && _userModel.pace <= 10.96) {
-      return _userModel.pace + 0.17;
+    if (_isKM && _userModel!.pace <= 10.96) {
+      return _userModel!.pace + 0.17;
     }
-    if (!_isKM && _userModel.pace <= 17.90) {
-      return _userModel.pace + 0.10;
+    if (!_isKM && _userModel!.pace <= 17.90) {
+      return _userModel!.pace + 0.10;
     }
 
     return _isKM ? 11 : 18;
   }
 
   double getUserWeeklyStartFilter() {
-    if (_isKM && _userModel.weeklyDistance >= 14) {
-      return _userModel.weeklyDistance - 10;
+    if (_isKM && _userModel!.weeklyDistance >= 14) {
+      return _userModel!.weeklyDistance - 10;
     }
 
-    if (!_isKM && _userModel.weeklyDistance >= 12.5) {
-      return _userModel.weeklyDistance - 10;
+    if (!_isKM && _userModel!.weeklyDistance >= 12.5) {
+      return _userModel!.weeklyDistance - 10;
     }
 
     return _isKM ? 4 : 2.5;
   }
 
   double getUserWeeklyEndFilter() {
-    if (_isKM && _userModel.weeklyDistance <= 140) {
-      return _userModel.weeklyDistance + 10;
+    if (_isKM && _userModel!.weeklyDistance <= 140) {
+      return _userModel!.weeklyDistance + 10;
     }
-    if (!_isKM && _userModel.weeklyDistance <= 84) {
-      return _userModel.weeklyDistance + 10;
+    if (!_isKM && _userModel!.weeklyDistance <= 84) {
+      return _userModel!.weeklyDistance + 10;
     }
 
     return _isKM ? 150 : 94;

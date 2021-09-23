@@ -33,10 +33,10 @@ extension DateTimeExtension on void {
 
   String getFormattedDateForUser({
     required DateTime date,
-    required TimeOfDay time,
+   /* required TimeOfDay time,*/
   }) {
-    return DateFormat('yyyy-MM-dd HH:mm').format(
-        DateTime(date.year, date.month, date.day, time.hour, time.minute)
+    return DateFormat('yyyy-MM-dd').format(
+        DateTime(date.year, date.month, date.day)
             .toLocal());
   }
 

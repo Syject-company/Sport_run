@@ -46,7 +46,12 @@ class UserInfo extends StatelessWidget {
                     SizedBox(
                         height: height * 0.12,
                         width: height * 0.12,
-                        child: userAvatarPhoto(photoUrl: userModel.photoLink)),
+                        child: userAvatarPhoto(
+                          photoUrl: userModel.photoLink,
+                          height: height,
+                          width: width,
+                          context: context,
+                        )),
                     SizedBox(
                       width: width * 0.04,
                     ),
