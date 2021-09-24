@@ -33,11 +33,10 @@ extension DateTimeExtension on void {
 
   String getFormattedDateForUser({
     required DateTime date,
-   /* required TimeOfDay time,*/
+    /* required TimeOfDay time,*/
   }) {
-    return DateFormat('yyyy-MM-dd').format(
-        DateTime(date.year, date.month, date.day)
-            .toLocal());
+    return DateFormat('yyyy-MM-dd')
+        .format(DateTime(date.year, date.month, date.day).toLocal());
   }
 
 //0001-01-01T00:00:00
@@ -86,18 +85,18 @@ extension ToastExtension on void {
 extension UserData on void {
   num getDistance({required num distance}) {
     if (PreferenceUtils.getIsUserUnitInKM()) {
-      if (distance > 11) {
-        return 11.0;
+      if (distance > 150) {
+        return 150;
       }
-      if (distance < 2) {
-        return 2.0;
+      if (distance < 4) {
+        return 4.0;
       }
     } else {
-      if (distance > 18) {
-        return 18.0;
+      if (distance > 94) {
+        return 94.0;
       }
-      if (distance < 3) {
-        return 3.0;
+      if (distance < 2.5) {
+        return 2.5;
       }
     }
 
@@ -258,7 +257,7 @@ extension UserData on void {
     return model.battleUsers[1].isCreater;
   }
 
-  double getFilterDistanceMenuValue(
+  double getCreateBattleDistanceMenuValue(
       {required String value, required double customValue}) {
     if (Constants.filterMenuThree == value) {
       return 3.0;

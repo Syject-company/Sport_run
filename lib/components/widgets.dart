@@ -1986,7 +1986,8 @@ Widget pendingFinishedBattleDetailsCard({
                           ),
                   ),
                   const Divider(
-                    height: 5,thickness: 2,
+                    height: 5,
+                    thickness: 2,
                   ),
                   inputTextChatField(
                     controller: chatController,
@@ -2413,7 +2414,8 @@ Widget finishedBattleDetailsCard({
                           ),
                   ),
                   const Divider(
-                    height: 5,thickness: 2,
+                    height: 5,
+                    thickness: 2,
                   ),
                   inputTextChatField(
                     controller: chatController,
@@ -2465,58 +2467,11 @@ Widget battleDetailsCard({
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: <Widget>[
-            //NOTE: check an opponent's results button
-            Visibility(
-              visible: isNeedToCheckOpponentResults,
-              child: Container(
-                height: height * 0.08,
-                width: width,
-                margin: EdgeInsets.only(
-                  top: height * 0.015,
-                  left: width * 0.025,
-                  right: width * 0.025,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 1,
-                      blurRadius: 2,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: buttonNoIcon(
-                  title: "Check an opponent's results".toUpperCase(),
-                  color: redColor,
-                  height: height * 0.055,
-                  width: width * 0.2,
-                  textColor: Colors.white,
-                  buttonTextSize: 14.0,
-                  shadowColor: Colors.transparent,
-                  onPressed: () {
-                    onTapOpponentResults(
-                      CheckOpponentResultsModel(
-                        name: opponentName,
-                        userPhoto: opponentPhoto,
-                        rank: opponentRank,
-                        time: opponentProofTime,
-                        distance: distance,
-                        battlePhotos: opponentProofPhotos!,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
             //NOTE: Battle details
             Container(
               height: height * 0.49,
               width: width,
               color: Colors.transparent,
-              margin: EdgeInsets.only(top: height * 0.01),
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
@@ -2726,6 +2681,52 @@ Widget battleDetailsCard({
                 ],
               ),
             ),
+            //NOTE: check an opponent's results button
+            Visibility(
+              visible: isNeedToCheckOpponentResults,
+              child: Container(
+                height: height * 0.08,
+                width: width,
+                margin: EdgeInsets.only(
+                  left: width * 0.025,
+                  right: width * 0.025,
+                  bottom: height * 0.01,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: buttonNoIcon(
+                  title: "Check an opponent's results".toUpperCase(),
+                  color: redColor,
+                  height: height * 0.055,
+                  width: width * 0.2,
+                  textColor: Colors.white,
+                  buttonTextSize: 14.0,
+                  shadowColor: Colors.transparent,
+                  onPressed: () {
+                    onTapOpponentResults(
+                      CheckOpponentResultsModel(
+                        name: opponentName,
+                        userPhoto: opponentPhoto,
+                        rank: opponentRank,
+                        time: opponentProofTime,
+                        distance: distance,
+                        battlePhotos: opponentProofPhotos!,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
             //NOTE: Chat title
             Container(
               margin: EdgeInsets.only(left: width * 0.04, top: height * 0.01),
@@ -2893,7 +2894,8 @@ Widget battleDetailsCard({
                           ),
                   ),
                   const Divider(
-                    height: 5,thickness: 2,
+                    height: 5,
+                    thickness: 2,
                   ),
                   inputTextChatField(
                     controller: chatController,
@@ -3484,7 +3486,7 @@ Widget userCardMain({
                         title: 'Pace',
                         icon: paceIcon,
                         value:
-                            '${model.pace} min/${model.isMetric ? 'km' : 'mile'}',
+                            '${model.pace.toStringAsFixed(1)} min/${model.isMetric ? 'km' : 'mile'}',
                       ),
                       SizedBox(
                         width: height * 0.02,
@@ -3614,6 +3616,7 @@ Widget userCardEnjoy({
   required double height,
   required EnjoyResponseModel model,
   required BuildContext context,
+  required String distance,
 }) {
   return Center(
     child: Container(
@@ -3713,8 +3716,7 @@ Widget userCardEnjoy({
                     width: width + 120,
                     title: 'Weekly Distance',
                     icon: weeklyDistanceIcon,
-                    value:
-                        '${model.weeklyDistance} ${model.isMetric ? 'km' : 'mile'}',
+                    value: distance,
                   ),
                 ),
                 SizedBox(

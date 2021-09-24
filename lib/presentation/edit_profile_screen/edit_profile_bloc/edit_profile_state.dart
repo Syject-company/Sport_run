@@ -30,3 +30,21 @@ class TimesPerWeekIsSelected extends EditProfileState {
 }
 
 class UserDataSaved extends EditProfileState {}
+
+class DistanceValueChanged extends EditProfileState {
+  const DistanceValueChanged(this.value);
+
+  final double value;
+
+  @override
+  List<Object> get props => <Object>[value];
+}
+
+class PaceValueChanged extends EditProfileState {
+  const PaceValueChanged(this.value);
+
+  final double value;
+
+  @override
+  List<Object> get props => <Object>[value];
+}

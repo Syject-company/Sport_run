@@ -12,17 +12,18 @@ import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/e
 import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/edit_profile_state.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/strings.dart';
-import 'package:one2one_run/utils/extension.dart' show DateTimeExtension, ToastExtension;
+import 'package:one2one_run/utils/extension.dart'
+    show DateTimeExtension, ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //NOte:'/editProfile'
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage(
-      {Key? key, this.userModel, required this.userDataListener})
+      {Key? key, required this.userModel, required this.userDataListener})
       : super(key: key);
 
-  final UserModel? userModel;
+  final UserModel userModel;
   final VoidCallback userDataListener;
 
   @override
@@ -49,7 +50,14 @@ class EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    _setUserData(data: widget.userModel!);
+    _setUserData(data: widget.userModel);
+
+    if (widget.userModel.pace != null) {
+      _currentPaceValue = widget.userModel.pace * 60;
+    }
+    if (widget.userModel.weeklyDistance != null) {
+      _currentWeeklyDistanceValue = widget.userModel.weeklyDistance;
+    }
   }
 
   @override
@@ -65,7 +73,6 @@ class EditProfilePageState extends State<EditProfilePage> {
               (final BuildContext context, final EditProfileState state) async {
             if (state is KmOrMileIsSelected) {
               _isKM = state.isKM;
-              await PreferenceUtils.setIsUserUnitInKM(_isKM);
               _isKM ? _currentPaceValue = 300 : _currentPaceValue = 480;
               _isKM
                   ? _currentWeeklyDistanceValue = 30
@@ -73,6 +80,7 @@ class EditProfilePageState extends State<EditProfilePage> {
             } else if (state is TimesPerWeekIsSelected) {
               _countOfRuns = state.timesPerWeek;
             } else if (state is UserDataSaved) {
+              await PreferenceUtils.setIsUserUnitInKM(_isKM);
               final UserProfileRequestModel model = UserProfileRequestModel(
                 moto: _mottoController.text,
                 nickName: _nameController.text,
@@ -98,6 +106,10 @@ class EditProfilePageState extends State<EditProfilePage> {
                   await toastUnexpectedError();
                 }
               });
+            } else if (state is PaceValueChanged) {
+              _currentPaceValue = state.value;
+            } else if (state is DistanceValueChanged) {
+              _currentWeeklyDistanceValue = state.value;
             }
             BlocProvider.of<EditProfileBloc>(context)
                 .add(edit_profile_bloc.UpdateState());
@@ -249,8 +261,6 @@ class EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-
-
   Widget _additionalInformation(
       {required BuildContext context,
       required double height,
@@ -271,9 +281,8 @@ class EditProfilePageState extends State<EditProfilePage> {
           maxValue: (_isKM ? 11 : 18) * 60,
           sliderValue: _currentPaceValue.toDouble(),
           onChanged: (double value) {
-            setState(() {
-              _currentPaceValue = value;
-            });
+            BlocProvider.of<EditProfileBloc>(context)
+                .add(edit_profile_bloc.ChangePaceValue(value));
           },
         ),
         seekBarWeekly(
@@ -287,9 +296,8 @@ class EditProfilePageState extends State<EditProfilePage> {
           maxValue: _isKM ? 150 : 94,
           sliderValue: _currentWeeklyDistanceValue.toDouble(),
           onChanged: (double value) {
-            setState(() {
-              _currentWeeklyDistanceValue = value;
-            });
+            BlocProvider.of<EditProfileBloc>(context)
+                .add(edit_profile_bloc.ChangeDistanceValue(value));
           },
         ),
         SizedBox(

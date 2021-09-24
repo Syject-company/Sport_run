@@ -19,7 +19,7 @@ import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/extension.dart'
-    show DateTimeExtension, ToastExtension;
+    show DateTimeExtension, ToastExtension, UserData;
 import 'package:one2one_run/utils/preference_utils.dart';
 
 //NOte:'/profile'
@@ -277,8 +277,9 @@ class ProfilePageState extends State<ProfilePage> {
                                         ),
                                         _userPaceDistance(
                                           title: 'Weekly Distance',
-                                          value:
-                                              '${snapshot.data!.weeklyDistance} ${snapshot.data!.isMetric ? 'km' : 'mile'}',
+
+                                          value:   '${snapshot.data!.weeklyDistance.toStringAsFixed(snapshot.data!.isMetric ? 0 : 1)} ${snapshot.data!.isMetric ? 'km' : 'mile'}',
+
                                         ),
                                       ],
                                     ),

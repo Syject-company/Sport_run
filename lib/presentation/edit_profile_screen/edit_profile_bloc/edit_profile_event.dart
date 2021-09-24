@@ -26,3 +26,21 @@ class SelectTimesPerWeek extends EditProfileEvent {
 }
 
 class SaveUserData extends EditProfileEvent {}
+
+class ChangeDistanceValue extends EditProfileEvent {
+  ChangeDistanceValue(this.value);
+
+  final double value;
+
+  @override
+  List<Object> get props => <Object>[value];
+}
+
+class ChangePaceValue extends EditProfileEvent {
+  ChangePaceValue(this.value);
+
+  final double value;
+
+  @override
+  List<Object> get props => <Object>[value];
+}
