@@ -4,6 +4,7 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
+import 'package:one2one_run/utils/extension.dart';
 
 //NOte: '/userInfo'
 class UserInfo extends StatelessWidget {
@@ -46,7 +47,12 @@ class UserInfo extends StatelessWidget {
                     SizedBox(
                         height: height * 0.12,
                         width: height * 0.12,
-                        child: userAvatarPhoto(photoUrl: userModel.photoLink)),
+                        child: userAvatarPhoto(
+                          photoUrl: userModel.photoLink,
+                          height: height,
+                          width: width,
+                          context: context,
+                        )),
                     SizedBox(
                       width: width * 0.04,
                     ),
@@ -122,7 +128,7 @@ class UserInfo extends StatelessWidget {
                       title: 'Pace',
                       icon: paceIcon,
                       value:
-                          '${userModel.pace} min/${userModel.isMetric ? 'km' : 'mile'}',
+                          '${userModel.pace.toStringAsFixed(1)} min/${userModel.isMetric ? 'km' : 'mile'}',
                     ),
                     SizedBox(
                       width: height * 0.02,
@@ -132,7 +138,7 @@ class UserInfo extends StatelessWidget {
                       width: width + 10,
                       title: 'Runs',
                       icon: runsIcon,
-                      value: '${userModel.workoutsPerWeek}+ times/week',
+                      value: '${userModel.workoutsPerWeek} times/week',
                     ),
                   ],
                 ),

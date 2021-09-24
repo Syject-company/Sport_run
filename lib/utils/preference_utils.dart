@@ -53,12 +53,12 @@ mixin PreferenceUtils {
 
   static UserModel getCurrentUserModel() {
     return UserModel.fromJson(
-        json.decode(_prefsInstance?.getString(userModel) ?? '')
+        json.decode(_prefsInstance?.getString(userModelKey) ?? '')
             as Map<String, dynamic>);
   }
 
   static Future<void> setCurrentUserModel(UserModel value) async {
-    await _prefsInstance?.setString(userModel, json.encode(value));
+    await _prefsInstance?.setString(userModelKey, json.encode(value));
   }
 
   static bool getIsLoginFAQHelperShown() {
@@ -88,7 +88,7 @@ String get userNickName => 'user_nickname';
 
 String get userUnit => 'user_unit';
 
-String get userModel => 'user_model';
+String get userModelKey => 'user_model';
 
 String get loginFAQHelper => 'login_faq_helper';
 

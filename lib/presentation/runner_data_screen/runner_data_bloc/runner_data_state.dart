@@ -40,3 +40,15 @@ class ToHomeIsNavigated extends RunnerDataState {
   @override
   List<Object> get props => <Object>[runnerDataModel];
 }
+
+class RunnerTypeIsSelected extends RunnerDataState {
+  const RunnerTypeIsSelected(
+      this.isUserBeginnerSelected, this.isUserHaveRunSelected);
+
+  final bool isUserBeginnerSelected;
+  final bool isUserHaveRunSelected;
+
+  @override
+  List<Object> get props =>
+      <Object>[isUserBeginnerSelected, isUserHaveRunSelected];
+}

@@ -17,7 +17,8 @@ import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
-import 'package:one2one_run/utils/extension.dart' show ToastExtension;
+import 'package:one2one_run/utils/extension.dart'
+    show DateTimeExtension, ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -50,6 +51,8 @@ class RunnerDataPageState extends State<RunnerDataPage> {
   double _currentWeeklyDistanceValue = 30;
 
   bool isKM = true;
+  bool _isUserBeginnerSelected = false;
+  bool _isUserHaveRunSelected = false;
 
   @override
   void initState() {
@@ -99,7 +102,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                             duration: const Duration(milliseconds: 1),
                             curve: Curves.easeIn)
                         .then((_) {
-                      Timer(const Duration(seconds: 3), () async {
+                      Timer(const Duration(seconds: 1), () async {
                         await PreferenceUtils.setIsUserAuthenticated(true);
                         if (!PreferenceUtils.getIsLoginFAQHelperShown()) {
                           PreferenceUtils.setIsLoginFAQHelperShown(true);
@@ -121,6 +124,9 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                     await toastUnexpectedError();
                   }
                 });
+              } else if (state is RunnerTypeIsSelected) {
+                _isUserBeginnerSelected = state.isUserBeginnerSelected;
+                _isUserHaveRunSelected = state.isUserHaveRunSelected;
               }
 
               if (!_runnerDataBloc.isClosed) {
@@ -139,7 +145,11 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   children: <Widget>[
                     _nickNameInput(context: context, width: width),
-                    _newRunning(context: context),
+                    _newRunning(
+                      context: context,
+                      height: height,
+                      width: width,
+                    ),
                     _additionalInformation(
                       context: context,
                       height: height,
@@ -217,15 +227,19 @@ class RunnerDataPageState extends State<RunnerDataPage> {
     );
   }
 
-  Widget _newRunning({required BuildContext context}) {
+  Widget _newRunning({
+    required BuildContext context,
+    required double height,
+    required double width,
+  }) {
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.symmetric(vertical: 30.h),
+      padding: EdgeInsets.symmetric(vertical: 10.h),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Container(
-            height: 400.h,
+            height: 300.h,
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
@@ -237,60 +251,73 @@ class RunnerDataPageState extends State<RunnerDataPage> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            margin: const EdgeInsets.only(bottom: 5.0),
             child: Text(
               'Are you new to running?',
               style: TextStyle(
                   color: Colors.black,
                   fontFamily: 'roboto',
-                  fontSize: 24.sp,
+                  fontSize: 22.sp,
                   fontWeight: FontWeight.w900),
             ),
           ),
+          buttonSquareNoIcon(
+            height: height,
+            width: width,
+            onPressed: () {
+              BlocProvider.of<RunnerDataBloc>(context)
+                  .add(runner_data_bloc.SelectRunnerType(true, false));
+            },
+            color: _isUserBeginnerSelected ? redColor : Colors.white,
+            title: 'Yes, I am a beginner',
+            underButtonTitle: 'All the required data will be filled for you',
+            textColor: _isUserBeginnerSelected ? Colors.white : Colors.black,
+          ),
+          buttonSquareNoIcon(
+            height: height,
+            width: width,
+            onPressed: () {
+              BlocProvider.of<RunnerDataBloc>(context)
+                  .add(runner_data_bloc.SelectRunnerType(false, true));
+            },
+            color: _isUserHaveRunSelected ? redColor : Colors.white,
+            title: 'Nope, I have run before',
+            underButtonTitle: 'You will be asked to provide some running data',
+            textColor: _isUserHaveRunSelected ? Colors.white : Colors.black,
+          ),
           SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  buttonSquareNoIcon(
-                    onPressed: () async {
-                      await PreferenceUtils.setIsUserUnitInKM(isKM);
-                      BlocProvider.of<RunnerDataBloc>(context)
-                          .add(runner_data_bloc.NavigateToHome(
-                        RunnerDataModel(
-                          nickName: _nickNameController.text.isNotEmpty
-                              ? _nickNameController.text
-                              : PreferenceUtils.getUserNickName(),
-                          isMetric: isKM,
-                          pace: 8.0,
-                          weeklyDistance: 5.0,
-                          workoutsPerWeek: 2,
-                        ),
-                      ));
-                    },
-                    color: redColor,
-                    title: 'Yes, I am a\nbeginner',
-                    underButtonTitle: 'All the required data will be\n'
-                        'filled for you. It can be changed\n'
-                        'later in your profile',
-                    textColor: Colors.white,
-                  ),
-                  buttonSquareNoIcon(
-                    onPressed: () async {
-                      await PreferenceUtils.setPageRout('NewRunner');
-                      await _pageController.animateToPage(2,
-                          duration: const Duration(milliseconds: 1),
-                          curve: Curves.ease);
-                    },
-                    color: grayColor,
-                    title: 'Nope, I have run\nbefore',
-                    underButtonTitle:
-                        'You will be asked to provide\nsome running data\n',
-                    textColor: Colors.black,
-                  ),
-                ],
+            height: height * 0.1,
+            child: Visibility(
+              visible: _isUserBeginnerSelected || _isUserHaveRunSelected,
+              child: buttonSquareNoIcon(
+                height: height,
+                width: width * 0.2,
+                onPressed: () async {
+                  if (_isUserBeginnerSelected) {
+                    await PreferenceUtils.setIsUserUnitInKM(isKM);
+                    BlocProvider.of<RunnerDataBloc>(context)
+                        .add(runner_data_bloc.NavigateToHome(
+                      RunnerDataModel(
+                        nickName: _nickNameController.text.isNotEmpty
+                            ? _nickNameController.text
+                            : PreferenceUtils.getUserNickName(),
+                        isMetric: isKM,
+                        pace: 8.0,
+                        weeklyDistance: 5.0,
+                        workoutsPerWeek: 2,
+                      ),
+                    ));
+                  } else if (_isUserHaveRunSelected) {
+                    await PreferenceUtils.setPageRout('NewRunner');
+                    await _pageController.animateToPage(2,
+                        duration: const Duration(milliseconds: 1),
+                        curve: Curves.ease);
+                  }
+                },
+                color: redColor,
+                title: 'NEXT   ->',
+                underButtonTitle: '',
+                textColor: Colors.white,
               ),
             ),
           ),
@@ -339,10 +366,12 @@ class RunnerDataPageState extends State<RunnerDataPage> {
               context: context,
               dialogTitle: 'Pace',
               dialogText: paceText,
-              timePerKM: _currentPaceValue,
+              timePerKM: isKM
+                  ? '${getTimeStringFromDouble(_currentPaceValue / 60)} min/km'
+                  : '${(_currentPaceValue / 60).toStringAsFixed(2)} min/mile',
               unit: isKM ? 'km' : 'mile',
               kmPerHour: (60 * 60) / _currentPaceValue,
-              minValue: (isKM ? 2 : 3) * 60,
+              minValue: (isKM ? 2.01 : 3) * 60,
               maxValue: (isKM ? 11 : 18) * 60,
               sliderValue: _currentPaceValue,
               onChanged: (double value) {

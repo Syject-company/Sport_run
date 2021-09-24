@@ -20,13 +20,13 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 TextStyle get hintTextStyle => const TextStyle(
       color: Color(0xff8E8E93),
       fontSize: 14,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w500,
     );
 
 TextStyle get errorTextStyle => const TextStyle(
       color: Colors.red,
       fontSize: 15,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w500,
     );
 
 TextStyle get errorTextStyleSmall => const TextStyle(
@@ -48,7 +48,7 @@ Widget inputTextField({
   double fontSize = 15.0,
   int maxLength = 6,
   TextInputType? keyboardType,
-  ValueChanged<String>?  valueChanged,
+  ValueChanged<String>? valueChanged,
 }) {
   return TextFormField(
     controller: controller,
@@ -105,6 +105,48 @@ Widget inputTextField({
   );
 }
 
+Widget inputFilterTextField({
+  required TextEditingController controller,
+  required String hintText,
+  required String? errorText,
+  double fontSize = 15.0,
+  required int maxLength,
+  TextInputType? keyboardType,
+  ValueChanged<String>? valueChanged,
+}) {
+  return TextFormField(
+    controller: controller,
+    style: TextStyle(
+      color: Colors.black87,
+      fontSize: fontSize,
+      fontWeight: FontWeight.bold,
+    ),
+    onChanged: valueChanged,
+    cursorColor: const Color(0xffFF1744),
+    maxLength: maxLength,
+    keyboardType: keyboardType,
+    decoration: InputDecoration(
+      counterText: '',
+      border: InputBorder.none,
+      contentPadding: const EdgeInsets.only(
+        bottom: 5.0,
+        top: 5.0,
+      ),
+      alignLabelWithHint: false,
+      enabledBorder: InputBorder.none,
+      focusedBorder: InputBorder.none,
+      fillColor: Colors.transparent,
+      filled: true,
+      hintText: hintText,
+      hintStyle: hintTextStyle,
+      errorText: errorText,
+      errorStyle: errorTextStyleSmall,
+      labelText: hintText,
+      labelStyle: hintTextStyle,
+    ),
+  );
+}
+
 Widget inputTextChatField({
   required TextEditingController controller,
   required double width,
@@ -135,7 +177,7 @@ Widget inputTextChatField({
             focusedBorder: InputBorder.none,
             fillColor: Colors.transparent,
             filled: true,
-            hintText: 'Message',
+            hintText: 'Type here',
             hintStyle: hintTextStyle,
           ),
         ),
@@ -147,13 +189,13 @@ Widget inputTextChatField({
             borderRadius: BorderRadius.circular(15.0),
           ),
           minimumSize: Size(width * 0.05, height * 0.065),
-          primary: const Color(0xfff6f6f6),
+          primary: Colors.red,
           shadowColor: Colors.grey[200],
           onPrimary: redColor,
         ),
         child: const Icon(
           Icons.send,
-          color: Color(0xffCDCDCD),
+          color: Colors.white,
         ),
       ),
     ],
@@ -369,6 +411,8 @@ Widget buttonSquareNoIcon(
     required String underButtonTitle,
     required Color color,
     required Color textColor,
+    required double height,
+    required double width,
     required VoidCallback onPressed}) {
   return Column(
     children: <Widget>[
@@ -379,14 +423,14 @@ Widget buttonSquareNoIcon(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
-            minimumSize: Size(140.w, 80.h),
+            minimumSize: Size(width - 20, height * 0.055),
             primary: color,
           ),
           child: Text(
             title.toUpperCase(),
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 17.0,
+              fontSize: 14.0,
               color: textColor,
               fontWeight: FontWeight.bold,
             ),
@@ -394,15 +438,15 @@ Widget buttonSquareNoIcon(
         ),
       ),
       const SizedBox(
-        height: 10.0,
+        height: 5.0,
       ),
       Text(
         underButtonTitle,
         textAlign: TextAlign.center,
         style: const TextStyle(
-          fontSize: 17.0,
+          fontSize: 14.0,
           color: Colors.grey,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w500,
         ),
       ),
     ],
@@ -414,7 +458,7 @@ Widget seekBarPace({
   required BuildContext context,
   required String dialogTitle,
   required String dialogText,
-  required double timePerKM,
+  required String timePerKM,
   required double kmPerHour,
   required double sliderValue,
   required double minValue,
@@ -496,7 +540,7 @@ Widget seekBarPace({
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Text(
-                  '${timePerKM ~/ 60} min/$unit',
+                  timePerKM,
                   style: TextStyle(
                       color: Colors.red,
                       fontFamily: 'roboto',
@@ -520,7 +564,7 @@ Widget seekBarPace({
         value: sliderValue,
         min: minValue,
         max: maxValue,
-        divisions: 90,
+        divisions: 54,
         onChanged: onChanged,
         activeColor: Colors.red,
         inactiveColor: const Color(0xffF6C3C3),
@@ -534,8 +578,8 @@ Widget rangeSeekBarPace({
   required BuildContext context,
   required String dialogTitle,
   required String dialogText,
-  required double endTimePerKM,
-  required double startTimePerKM,
+  required String endTimePerKM,
+  required String startTimePerKM,
   required double kmPerHour,
   required double minValue,
   required double maxValue,
@@ -616,7 +660,7 @@ Widget rangeSeekBarPace({
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Text(
-                  '${startTimePerKM ~/ 60} - ${endTimePerKM ~/ 60} min/$unit',
+                  '$startTimePerKM - $endTimePerKM min/$unit',
                   style: TextStyle(
                       color: Colors.red,
                       fontFamily: 'roboto',
@@ -640,7 +684,7 @@ Widget rangeSeekBarPace({
         values: rangeValue,
         min: minValue,
         max: maxValue,
-        divisions: 90,
+        divisions: 54,
         onChanged: onRangeChanged,
         activeColor: Colors.red,
         inactiveColor: const Color(0xffF6C3C3),
@@ -1149,6 +1193,9 @@ Widget _userCreatedBattleInfo({
             margin: EdgeInsets.only(bottom: height * 0.01),
             child: userAvatarPhoto(
               photoUrl: userPhoto,
+              height: height,
+              width: width,
+              context: context,
             ),
           ),
           Container(
@@ -1376,7 +1423,12 @@ Widget interactListItem({
                 margin: EdgeInsets.only(
                   right: width * 0.02,
                 ),
-                child: userAvatarPhoto(photoUrl: opponentPhoto),
+                child: userAvatarPhoto(
+                  photoUrl: opponentPhoto,
+                  height: height,
+                  width: width,
+                  context: context,
+                ),
               ),
               Text(
                 'Opponent',
@@ -1430,7 +1482,7 @@ Widget interactListItem({
               child: cardItem(
                 height: height,
                 width: width + width * 0.7,
-                title: 'Time left',
+                title: 'Battle date',
                 icon: weeklyDistanceIcon,
                 value: model.timeLeft.toString(),
               ),
@@ -1648,7 +1700,11 @@ Widget pendingFinishedBattleDetailsCard({
                                     height: height * 0.1,
                                     width: height * 0.1,
                                     child: userAvatarPhoto(
-                                        photoUrl: currentUserModel.photoLink),
+                                      photoUrl: currentUserModel.photoLink,
+                                      height: height,
+                                      width: width,
+                                      context: context,
+                                    ),
                                   ),
                                   SizedBox(
                                     height: height * 0.01,
@@ -1730,7 +1786,11 @@ Widget pendingFinishedBattleDetailsCard({
                                     height: height * 0.1,
                                     width: height * 0.1,
                                     child: userAvatarPhoto(
-                                        photoUrl: opponentPhoto),
+                                      photoUrl: opponentPhoto,
+                                      height: height,
+                                      width: width,
+                                      context: context,
+                                    ),
                                   ),
                                   SizedBox(
                                     height: height * 0.01,
@@ -1809,64 +1869,109 @@ Widget pendingFinishedBattleDetailsCard({
                                   Visibility(
                                     visible: currentUserModel.id ==
                                         messages[index].applicationUserId,
-                                    child: Wrap(children: <Widget>[
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: height * 0.008),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              bottomLeft: Radius.circular(10.0),
-                                              topLeft: Radius.circular(10.0),
-                                              topRight: Radius.circular(10.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Wrap(children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: height * 0.008),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    const BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(10.0),
+                                                  topLeft:
+                                                      Radius.circular(10.0),
+                                                  topRight:
+                                                      Radius.circular(10.0),
+                                                ),
+                                                color: redColor,
+                                              ),
+                                              child: Text(
+                                                messages[index].text ?? '.',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontFamily: 'roboto',
+                                                    fontSize: 12.sp,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
                                             ),
-                                            color: redColor,
                                           ),
+                                        ]),
+                                        Align(
+                                          alignment: Alignment.centerRight,
                                           child: Text(
-                                            messages[index].text ?? '.',
+                                            messages[index]
+                                                .dateTime
+                                                .substring(0, 19)
+                                                .replaceAll('T', ' '),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: Colors.grey[400],
                                                 fontFamily: 'roboto',
-                                                fontSize: 12.sp,
+                                                fontSize: 10.sp,
                                                 fontWeight: FontWeight.w600),
                                           ),
                                         ),
-                                      ),
-                                    ]),
+                                      ],
+                                    ),
                                   ),
                                   Visibility(
                                     visible: currentUserModel.id !=
                                         messages[index].applicationUserId,
-                                    child: Wrap(children: <Widget>[
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: height * 0.008),
-                                          decoration: const BoxDecoration(
-                                            borderRadius: BorderRadius.only(
-                                              bottomRight:
-                                                  Radius.circular(10.0),
-                                              topLeft: Radius.circular(10.0),
-                                              topRight: Radius.circular(10.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Wrap(children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: height * 0.008),
+                                              decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.only(
+                                                  bottomRight:
+                                                      Radius.circular(10.0),
+                                                  topLeft:
+                                                      Radius.circular(10.0),
+                                                  topRight:
+                                                      Radius.circular(10.0),
+                                                ),
+                                                color: Color(0xffF5F5F5),
+                                              ),
+                                              child: Text(
+                                                messages[index].text ?? '.',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontFamily: 'roboto',
+                                                    fontSize: 12.sp,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
                                             ),
-                                            color: Color(0xffF5F5F5),
                                           ),
+                                        ]),
+                                        Align(
+                                          alignment: Alignment.centerLeft,
                                           child: Text(
-                                            messages[index].text ?? '.',
+                                            messages[index]
+                                                .dateTime
+                                                .substring(0, 19)
+                                                .replaceAll('T', ' '),
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: Colors.grey[400],
                                                 fontFamily: 'roboto',
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
+                                                fontSize: 10.sp,
+                                                fontWeight: FontWeight.w600),
                                           ),
                                         ),
-                                      ),
-                                    ]),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               );
@@ -1882,8 +1987,7 @@ Widget pendingFinishedBattleDetailsCard({
                   ),
                   const Divider(
                     height: 5,
-                    endIndent: 1.0,
-                    indent: 1.0,
+                    thickness: 2,
                   ),
                   inputTextChatField(
                     controller: chatController,
@@ -2024,7 +2128,11 @@ Widget finishedBattleDetailsCard({
                                     height: height * 0.1,
                                     width: height * 0.1,
                                     child: userAvatarPhoto(
-                                        photoUrl: currentUserModel.photoLink),
+                                      photoUrl: currentUserModel.photoLink,
+                                      height: height,
+                                      width: width,
+                                      context: context,
+                                    ),
                                   ),
                                   SizedBox(
                                     height: height * 0.01,
@@ -2106,7 +2214,11 @@ Widget finishedBattleDetailsCard({
                                     height: height * 0.1,
                                     width: height * 0.1,
                                     child: userAvatarPhoto(
-                                        photoUrl: opponentPhoto),
+                                      photoUrl: opponentPhoto,
+                                      height: height,
+                                      width: width,
+                                      context: context,
+                                    ),
                                   ),
                                   SizedBox(
                                     height: height * 0.01,
@@ -2185,64 +2297,109 @@ Widget finishedBattleDetailsCard({
                                   Visibility(
                                     visible: currentUserModel.id ==
                                         messages[index].applicationUserId,
-                                    child: Wrap(children: <Widget>[
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: height * 0.008),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              bottomLeft: Radius.circular(10.0),
-                                              topLeft: Radius.circular(10.0),
-                                              topRight: Radius.circular(10.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Wrap(children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: height * 0.008),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    const BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(10.0),
+                                                  topLeft:
+                                                      Radius.circular(10.0),
+                                                  topRight:
+                                                      Radius.circular(10.0),
+                                                ),
+                                                color: redColor,
+                                              ),
+                                              child: Text(
+                                                messages[index].text ?? '.',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontFamily: 'roboto',
+                                                    fontSize: 12.sp,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
                                             ),
-                                            color: redColor,
                                           ),
+                                        ]),
+                                        Align(
+                                          alignment: Alignment.centerRight,
                                           child: Text(
-                                            messages[index].text ?? '.',
+                                            messages[index]
+                                                .dateTime
+                                                .substring(0, 19)
+                                                .replaceAll('T', ' '),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: Colors.grey[400],
                                                 fontFamily: 'roboto',
-                                                fontSize: 12.sp,
+                                                fontSize: 10.sp,
                                                 fontWeight: FontWeight.w600),
                                           ),
                                         ),
-                                      ),
-                                    ]),
+                                      ],
+                                    ),
                                   ),
                                   Visibility(
                                     visible: currentUserModel.id !=
                                         messages[index].applicationUserId,
-                                    child: Wrap(children: <Widget>[
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: height * 0.008),
-                                          decoration: const BoxDecoration(
-                                            borderRadius: BorderRadius.only(
-                                              bottomRight:
-                                                  Radius.circular(10.0),
-                                              topLeft: Radius.circular(10.0),
-                                              topRight: Radius.circular(10.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Wrap(children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: height * 0.008),
+                                              decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.only(
+                                                  bottomRight:
+                                                      Radius.circular(10.0),
+                                                  topLeft:
+                                                      Radius.circular(10.0),
+                                                  topRight:
+                                                      Radius.circular(10.0),
+                                                ),
+                                                color: Color(0xffF5F5F5),
+                                              ),
+                                              child: Text(
+                                                messages[index].text ?? '.',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontFamily: 'roboto',
+                                                    fontSize: 12.sp,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
                                             ),
-                                            color: Color(0xffF5F5F5),
                                           ),
+                                        ]),
+                                        Align(
+                                          alignment: Alignment.centerLeft,
                                           child: Text(
-                                            messages[index].text ?? '.',
+                                            messages[index]
+                                                .dateTime
+                                                .substring(0, 19)
+                                                .replaceAll('T', ' '),
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: Colors.grey[400],
                                                 fontFamily: 'roboto',
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
+                                                fontSize: 10.sp,
+                                                fontWeight: FontWeight.w600),
                                           ),
                                         ),
-                                      ),
-                                    ]),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               );
@@ -2258,8 +2415,7 @@ Widget finishedBattleDetailsCard({
                   ),
                   const Divider(
                     height: 5,
-                    endIndent: 1.0,
-                    indent: 1.0,
+                    thickness: 2,
                   ),
                   inputTextChatField(
                     controller: chatController,
@@ -2311,58 +2467,11 @@ Widget battleDetailsCard({
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: <Widget>[
-            //NOTE: check an opponent's results button
-            Visibility(
-              visible: isNeedToCheckOpponentResults,
-              child: Container(
-                height: height * 0.08,
-                width: width,
-                margin: EdgeInsets.only(
-                  top: height * 0.015,
-                  left: width * 0.025,
-                  right: width * 0.025,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 1,
-                      blurRadius: 2,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: buttonNoIcon(
-                  title: "Check an opponent's results".toUpperCase(),
-                  color: redColor,
-                  height: height * 0.055,
-                  width: width * 0.2,
-                  textColor: Colors.white,
-                  buttonTextSize: 14.0,
-                  shadowColor: Colors.transparent,
-                  onPressed: () {
-                    onTapOpponentResults(
-                      CheckOpponentResultsModel(
-                        name: opponentName,
-                        userPhoto: opponentPhoto,
-                        rank: opponentRank,
-                        time: opponentProofTime,
-                        distance: distance,
-                        battlePhotos: opponentProofPhotos!,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
             //NOTE: Battle details
             Container(
               height: height * 0.49,
               width: width,
               color: Colors.transparent,
-              margin: EdgeInsets.only(top: height * 0.01),
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
@@ -2453,7 +2562,11 @@ Widget battleDetailsCard({
                                     height: height * 0.1,
                                     width: height * 0.1,
                                     child: userAvatarPhoto(
-                                        photoUrl: currentUserModel.photoLink),
+                                      photoUrl: currentUserModel.photoLink,
+                                      height: height,
+                                      width: width,
+                                      context: context,
+                                    ),
                                   ),
                                   SizedBox(
                                     height: height * 0.01,
@@ -2535,7 +2648,11 @@ Widget battleDetailsCard({
                                     height: height * 0.1,
                                     width: height * 0.1,
                                     child: userAvatarPhoto(
-                                        photoUrl: opponentPhoto),
+                                      photoUrl: opponentPhoto,
+                                      height: height,
+                                      width: width,
+                                      context: context,
+                                    ),
                                   ),
                                   SizedBox(
                                     height: height * 0.01,
@@ -2562,6 +2679,52 @@ Widget battleDetailsCard({
                     ),
                   ),
                 ],
+              ),
+            ),
+            //NOTE: check an opponent's results button
+            Visibility(
+              visible: isNeedToCheckOpponentResults,
+              child: Container(
+                height: height * 0.08,
+                width: width,
+                margin: EdgeInsets.only(
+                  left: width * 0.025,
+                  right: width * 0.025,
+                  bottom: height * 0.01,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: buttonNoIcon(
+                  title: "Check an opponent's results".toUpperCase(),
+                  color: redColor,
+                  height: height * 0.055,
+                  width: width * 0.2,
+                  textColor: Colors.white,
+                  buttonTextSize: 14.0,
+                  shadowColor: Colors.transparent,
+                  onPressed: () {
+                    onTapOpponentResults(
+                      CheckOpponentResultsModel(
+                        name: opponentName,
+                        userPhoto: opponentPhoto,
+                        rank: opponentRank,
+                        time: opponentProofTime,
+                        distance: distance,
+                        battlePhotos: opponentProofPhotos!,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             //NOTE: Chat title
@@ -2614,64 +2777,109 @@ Widget battleDetailsCard({
                                   Visibility(
                                     visible: currentUserModel.id ==
                                         messages[index].applicationUserId,
-                                    child: Wrap(children: <Widget>[
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: height * 0.008),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              bottomLeft: Radius.circular(10.0),
-                                              topLeft: Radius.circular(10.0),
-                                              topRight: Radius.circular(10.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Wrap(children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: height * 0.008),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    const BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(10.0),
+                                                  topLeft:
+                                                      Radius.circular(10.0),
+                                                  topRight:
+                                                      Radius.circular(10.0),
+                                                ),
+                                                color: redColor,
+                                              ),
+                                              child: Text(
+                                                messages[index].text ?? '.',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontFamily: 'roboto',
+                                                    fontSize: 12.sp,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
                                             ),
-                                            color: redColor,
                                           ),
+                                        ]),
+                                        Align(
+                                          alignment: Alignment.centerRight,
                                           child: Text(
-                                            messages[index].text ?? '.',
+                                            messages[index]
+                                                .dateTime
+                                                .substring(0, 19)
+                                                .replaceAll('T', ' '),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: Colors.grey[400],
                                                 fontFamily: 'roboto',
-                                                fontSize: 12.sp,
+                                                fontSize: 10.sp,
                                                 fontWeight: FontWeight.w600),
                                           ),
                                         ),
-                                      ),
-                                    ]),
+                                      ],
+                                    ),
                                   ),
                                   Visibility(
                                     visible: currentUserModel.id !=
                                         messages[index].applicationUserId,
-                                    child: Wrap(children: <Widget>[
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: height * 0.008),
-                                          decoration: const BoxDecoration(
-                                            borderRadius: BorderRadius.only(
-                                              bottomRight:
-                                                  Radius.circular(10.0),
-                                              topLeft: Radius.circular(10.0),
-                                              topRight: Radius.circular(10.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Wrap(children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: height * 0.008),
+                                              decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.only(
+                                                  bottomRight:
+                                                      Radius.circular(10.0),
+                                                  topLeft:
+                                                      Radius.circular(10.0),
+                                                  topRight:
+                                                      Radius.circular(10.0),
+                                                ),
+                                                color: Color(0xffF5F5F5),
+                                              ),
+                                              child: Text(
+                                                messages[index].text ?? '.',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontFamily: 'roboto',
+                                                    fontSize: 12.sp,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
                                             ),
-                                            color: Color(0xffF5F5F5),
                                           ),
+                                        ]),
+                                        Align(
+                                          alignment: Alignment.centerLeft,
                                           child: Text(
-                                            messages[index].text ?? '.',
+                                            messages[index]
+                                                .dateTime
+                                                .substring(0, 19)
+                                                .replaceAll('T', ' '),
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: Colors.grey[400],
                                                 fontFamily: 'roboto',
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
+                                                fontSize: 10.sp,
+                                                fontWeight: FontWeight.w600),
                                           ),
                                         ),
-                                      ),
-                                    ]),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               );
@@ -2687,8 +2895,7 @@ Widget battleDetailsCard({
                   ),
                   const Divider(
                     height: 5,
-                    endIndent: 1.0,
-                    indent: 1.0,
+                    thickness: 2,
                   ),
                   inputTextChatField(
                     controller: chatController,
@@ -2959,7 +3166,7 @@ Widget uploadBattleResultDialog({
   required bool isUploading,
   required TextEditingController timeController,
   required ValueChanged<RawKeyEvent>? onKey,
-  required ValueChanged<String>?  resultValueChanged,
+  required ValueChanged<String>? resultValueChanged,
 }) {
   return Center(
     child: Container(
@@ -3154,7 +3361,11 @@ Widget uploadBattleResultDialog({
   );
 }
 
-Widget userAvatarPhoto({required String? photoUrl}) {
+Widget userAvatarPhoto(
+    {required String? photoUrl,
+    required double width,
+    required double height,
+    required BuildContext context}) {
   return photoUrl == null
       ? CircleAvatar(
           backgroundColor: Colors.white,
@@ -3163,22 +3374,32 @@ Widget userAvatarPhoto({required String? photoUrl}) {
             defaultProfileImage,
           ),
         )
-      : CachedNetworkImage(
-          placeholder: (BuildContext context, String url) => Container(
-            width: 50,
-            height: 50,
-            color: Colors.transparent,
-            child: Center(child: progressIndicator()),
-          ),
-          imageUrl: photoUrl,
-          imageBuilder:
-              (BuildContext context, ImageProvider<Object> imageProvider) {
-            return CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 80,
-              backgroundImage: imageProvider,
+      : GestureDetector(
+          onTap: () {
+            dialogImageZoom(
+              context: context,
+              height: height,
+              width: width,
+              photos: <String>[photoUrl],
             );
           },
+          child: CachedNetworkImage(
+            placeholder: (BuildContext context, String url) => Container(
+              width: 50,
+              height: 50,
+              color: Colors.transparent,
+              child: Center(child: progressIndicator()),
+            ),
+            imageUrl: photoUrl,
+            imageBuilder:
+                (BuildContext context, ImageProvider<Object> imageProvider) {
+              return CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 80,
+                backgroundImage: imageProvider,
+              );
+            },
+          ),
         );
 }
 
@@ -3265,7 +3486,7 @@ Widget userCardMain({
                         title: 'Pace',
                         icon: paceIcon,
                         value:
-                            '${model.pace} min/${model.isMetric ? 'km' : 'mile'}',
+                            '${model.pace.toStringAsFixed(1)} min/${model.isMetric ? 'km' : 'mile'}',
                       ),
                       SizedBox(
                         width: height * 0.02,
@@ -3275,7 +3496,7 @@ Widget userCardMain({
                         width: width,
                         title: 'Runs',
                         icon: runsIcon,
-                        value: '${model.workoutsPerWeek}+ times/week',
+                        value: '${model.workoutsPerWeek} times/week',
                       ),
                     ],
                   ),
@@ -3349,7 +3570,12 @@ Widget userCardMain({
                 SizedBox(
                   height: height * 0.1,
                   width: height * 0.1,
-                  child: userAvatarPhoto(photoUrl: model.photoLink),
+                  child: userAvatarPhoto(
+                    photoUrl: model.photoLink,
+                    height: height,
+                    width: width,
+                    context: context,
+                  ),
                 ),
                 const SizedBox(
                   height: 5.0,
@@ -3390,6 +3616,7 @@ Widget userCardEnjoy({
   required double height,
   required EnjoyResponseModel model,
   required BuildContext context,
+  required String distance,
 }) {
   return Center(
     child: Container(
@@ -3464,7 +3691,7 @@ Widget userCardEnjoy({
                       title: 'Pace',
                       icon: paceIcon,
                       value:
-                          '${model.pace} min/${model.isMetric ? 'km' : 'mile'}',
+                          '${model.pace.toStringAsFixed(1)} min/${model.isMetric ? 'km' : 'mile'}',
                     ),
                     SizedBox(
                       width: height * 0.02,
@@ -3474,7 +3701,7 @@ Widget userCardEnjoy({
                       width: width,
                       title: 'Runs',
                       icon: runsIcon,
-                      value: '${model.workoutsPerWeek}+ times/week',
+                      value: '${model.workoutsPerWeek} times/week',
                     ),
                   ],
                 ),
@@ -3489,8 +3716,7 @@ Widget userCardEnjoy({
                     width: width + 120,
                     title: 'Weekly Distance',
                     icon: weeklyDistanceIcon,
-                    value:
-                        '${model.weeklyDistance} ${model.isMetric ? 'km' : 'mile'}',
+                    value: distance,
                   ),
                 ),
                 SizedBox(
@@ -3534,7 +3760,12 @@ Widget userCardEnjoy({
                 SizedBox(
                   height: height * 0.1,
                   width: height * 0.1,
-                  child: userAvatarPhoto(photoUrl: model.photoLink),
+                  child: userAvatarPhoto(
+                    photoUrl: model.photoLink,
+                    height: height,
+                    width: width,
+                    context: context,
+                  ),
                 ),
                 const SizedBox(
                   height: 5.0,

@@ -4,7 +4,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
-import 'package:one2one_run/data/models/register_response_google_appple_model.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -34,11 +33,10 @@ extension DateTimeExtension on void {
 
   String getFormattedDateForUser({
     required DateTime date,
-    required TimeOfDay time,
+    /* required TimeOfDay time,*/
   }) {
-    return DateFormat('yyyy-MM-dd HH:mm').format(
-        DateTime(date.year, date.month, date.day, time.hour, time.minute)
-            .toLocal());
+    return DateFormat('yyyy-MM-dd')
+        .format(DateTime(date.year, date.month, date.day).toLocal());
   }
 
 //0001-01-01T00:00:00
@@ -56,6 +54,23 @@ extension DateTimeExtension on void {
             DateTime.now().month, DateTime.now().day, time.hour, time.minute)
         .toLocal());
   }
+
+  String getTimeStringFromDouble(double value) {
+    final int flooredValue = value.floor();
+    final double decimalValue = value - flooredValue;
+    final String hourValue = getHourString(flooredValue);
+    final String minuteString = getMinuteString(decimalValue);
+
+    return '$hourValue.$minuteString';
+  }
+
+  String getMinuteString(double decimalValue) {
+    return '${(decimalValue * 60).toInt()}'.padLeft(2, '0');
+  }
+
+  String getHourString(int flooredValue) {
+    return '${flooredValue % 24}'.padLeft(2, '0');
+  }
 }
 
 extension ToastExtension on void {
@@ -70,18 +85,18 @@ extension ToastExtension on void {
 extension UserData on void {
   num getDistance({required num distance}) {
     if (PreferenceUtils.getIsUserUnitInKM()) {
-      if (distance > 11) {
-        return 11.0;
+      if (distance > 150) {
+        return 150;
       }
-      if (distance < 2) {
-        return 2.0;
+      if (distance < 4) {
+        return 4.0;
       }
     } else {
-      if (distance > 18) {
-        return 18.0;
+      if (distance > 94) {
+        return 94.0;
       }
-      if (distance < 3) {
-        return 3.0;
+      if (distance < 2.5) {
+        return 2.5;
       }
     }
 
@@ -240,6 +255,24 @@ extension UserData on void {
     }
 
     return model.battleUsers[1].isCreater;
+  }
+
+  double getCreateBattleDistanceMenuValue(
+      {required String value, required double customValue}) {
+    if (Constants.filterMenuThree == value) {
+      return 3.0;
+    } else if (Constants.filterMenuFive == value) {
+      return 5.0;
+    } else if (Constants.filterMenuTen == value) {
+      return 10.0;
+    } else if (Constants.filterMenuHalfMarathon == value) {
+      return 21;
+    } else if (Constants.filterMenuMarathon == value) {
+      return 42;
+    } else if (Constants.filterMenuCustom == value) {
+      return customValue;
+    }
+    return 3.0;
   }
 }
 

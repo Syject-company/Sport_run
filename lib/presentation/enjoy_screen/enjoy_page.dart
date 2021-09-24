@@ -5,6 +5,7 @@ import 'package:one2one_run/data/apis/enjoy_api.dart';
 import 'package:one2one_run/data/models/enjoy_response_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/resources/images.dart';
+import 'package:one2one_run/utils/extension.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 
 //NOte:'/enjoy'
@@ -84,6 +85,8 @@ class EnjoyPage extends StatelessWidget {
                             width: width,
                             height: height,
                             model: snapshot.data![index],
+                            distance:
+                                '${snapshot.data![index].weeklyDistance.toStringAsFixed(snapshot.data![index].isMetric ? 0 : 1)} ${snapshot.data![index].isMetric ? 'km' : 'mile'}',
                           );
                         }),
                   ),

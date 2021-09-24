@@ -28,6 +28,7 @@ import 'package:one2one_run/presentation/settings_screen/settings_page.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/resources/strings.dart';
+import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
     show DateTimeExtension, ToastExtension, UserData;
@@ -62,6 +63,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       RoundedLoadingButtonController();
   final TextEditingController _battleNameController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
+  final TextEditingController _weeklyDistanceCustomController =
+      TextEditingController();
 
   DrawerItems _selectedDrawerItem = DrawerItems.Connect;
   DrawersType _selectedDrawersType = DrawersType.FilterDrawer;
@@ -77,9 +80,11 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   String _token = '';
   late String _dateAndTimeForUser;
   late String _currentUserId;
+  String _distanceMenuValue = Constants.filterMenuThree;
 
   ConnectUsersModel? _userBattleModel;
-  late Future<UserModel?> _userModel;
+  late Future<UserModel?> _userModelApi;
+  UserModel? _userModel;
   late Future<List<ConnectUsersModel>?> _users;
   late FirebaseMessaging _messaging;
   late RangeValues _currentRangeValuesPace;
@@ -96,7 +101,6 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _selectedMessageIndex = 1000;
 
   double _currentDistanceValue = 5;
-
   late SignalR _signalR;
 
   @override
@@ -116,18 +120,17 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       _homeApi.sendFireBaseToken(tokenFireBase: token ?? '');
       print('Firebase token: $token');
     });
-    _dateAndTimeForUser =
-        getFormattedDateForUser(date: DateTime.now(), time: TimeOfDay.now());
-    _dateAndTime =
-        getFormattedDate(date: DateTime.now(), time: TimeOfDay.now());
-    updateRangeValuesAndUnit();
-    _userModel = _homeApi.getUserModel();
-    _userModel.then((UserModel? value) {
-      if (value != null) {
-        PreferenceUtils.setCurrentUserModel(value);
-        _currentUserId = value.id;
-      }
-    });
+    _dateAndTimeForUser = getFormattedDateForUser(
+        date: DateTime.now() /*, time: TimeOfDay.now()*/);
+    _dateAndTime = getFormattedDate(
+        date: DateTime.now(),
+        time: const TimeOfDay(
+          hour: 23,
+          minute: 59,
+        ));
+
+    _userModelApi = _homeApi.getUserModel();
+
     _users = getUsers(isFilterIncluded: _isNeedFilter);
   }
 
@@ -136,6 +139,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
     final double width = MediaQuery.of(context).size.width;
+
     return BlocProvider<HomeBloc>(
       create: (final BuildContext context) => HomeBloc(),
       child: BlocListener<HomeBloc, HomeState>(
@@ -154,16 +158,16 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: false)),
                 );
           } else if (state is UserDataUpdated) {
-            updateRangeValuesAndUnit();
-            _userModel = _homeApi.getUserModel();
+            _userModelApi = _homeApi.getUserModel();
           } else if (state is SwitchedIsNeedFilter) {
             _isNeedFilter = state.isNeedFilter;
             if (!_isNeedFilter) {
               _users = getUsers(isFilterIncluded: _isNeedFilter);
             }
           } else if (state is BattleDrawerIsOpen) {
+            _distanceMenuValue = Constants.filterMenuThree;
             _dateAndTimeForUser = getFormattedDateForUser(
-                date: DateTime.now(), time: TimeOfDay.now());
+                date: DateTime.now() /*, time: TimeOfDay.now()*/);
             _userBattleModel = state.userModel;
             _selectedDrawersType = DrawersType.BattleDrawer;
             if (_keyScaffold.currentState != null &&
@@ -192,15 +196,22 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           } else if (state is FilterDrawerIsOpen) {
             _selectedDrawersType = DrawersType.FilterDrawer;
           } else if (state is GotDatePicker) {
+            FocusManager.instance.primaryFocus?.unfocus();
             await getDate(context: context).then((DateTime? date) async {
               if (date != null) {
-                final TimeOfDay? time = await getTime(context: context);
-                if (time != null) {
-                  _dateAndTime = getFormattedDate(date: date, time: time);
-                  _dateAndTimeForUser =
-                      getFormattedDateForUser(date: date, time: time);
-                  print('Date: $_dateAndTime');
-                }
+                //final TimeOfDay? time = await getTime(context: context);
+                // if (time != null) {
+                _dateAndTime = getFormattedDate(
+                    date: date,
+                    time: const TimeOfDay(
+                      hour: 23,
+                      minute: 59,
+                    ));
+                print('_dateAndTime $_dateAndTime');
+                _dateAndTimeForUser =
+                    getFormattedDateForUser(date: date /*, time: time*/);
+                print('Date: $_dateAndTime');
+                // }
               }
             });
           } else if (state is MessageDrawerIsOpenOrClose) {
@@ -215,44 +226,44 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           } else if (state is SelectedMessageToOpponent) {
             _selectedMessageIndex = state.messageIndex;
           } else if (state is BattleCreated) {
-            await _homeApi
-                .createBattle(
-                    model: BattleRequestModel(
-              dateTime: _dateAndTime,
-              battleName: _battleNameController.text.isNotEmpty
-                  ? _battleNameController.text
-                  : null,
-              distance: _isKM
-                  ? double.parse(_currentDistanceValue.toStringAsFixed(0))
-                  : double.parse(_currentDistanceValue.toStringAsFixed(1)),
-              message: _messageToOpponent,
-              opponentId: _userBattleModel!.id,
-            ))
-                .then((bool value) async {
-              if (value) {
-                final UserModel currentUserModel =
-                    PreferenceUtils.getCurrentUserModel();
-                if (_keyScaffold.currentState != null &&
-                    _keyScaffold.currentState!.isEndDrawerOpen) {
-                  Navigator.of(context).pop();
-                }
-                battleCreated(
-                  context: context,
-                  height: height,
-                  width: width,
-                  currentUserName: currentUserModel.nickName ?? 'NickName',
-                  currentUserPhoto: currentUserModel.photoLink,
-                  opponentUserName: _userBattleModel?.nickName ?? 'NickName',
-                  opponentUserPhoto: _userBattleModel?.photoLink,
-                );
+            if (isFieldsChecked()) {
+              await _homeApi
+                  .createBattle(
+                      model: BattleRequestModel(
+                dateTime: _dateAndTime,
+                battleName: _battleNameController.text.isNotEmpty
+                    ? _battleNameController.text
+                    : null,
+                distance: getWeeklyDistance(),
+                message: _messageToOpponent,
+                opponentId: _userBattleModel!.id,
+              ))
+                  .then((bool value) async {
+                if (value) {
+                  final UserModel currentUserModel =
+                      PreferenceUtils.getCurrentUserModel();
+                  if (_keyScaffold.currentState != null &&
+                      _keyScaffold.currentState!.isEndDrawerOpen) {
+                    Navigator.of(context).pop();
+                  }
+                  battleCreated(
+                    context: context,
+                    height: height,
+                    width: width,
+                    currentUserName: currentUserModel.nickName ?? 'NickName',
+                    currentUserPhoto: currentUserModel.photoLink,
+                    opponentUserName: _userBattleModel?.nickName ?? 'NickName',
+                    opponentUserPhoto: _userBattleModel?.photoLink,
+                  );
 
-                Timer(const Duration(seconds: 3), () {
-                  Navigator.of(context).pop();
-                });
-              } else {
-                await toastUnexpectedError();
-              }
-            });
+                  Timer(const Duration(seconds: 1), () {
+                    Navigator.of(context).pop();
+                  });
+                } else {
+                  await toastUnexpectedError();
+                }
+              });
+            }
             _applyBattleController.reset();
           } else if (state is BattleOnNotificationDrawerIsOpen) {
             _battleRespondModel = state.model;
@@ -309,12 +320,20 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 getDistance(distance: state.model.distance).toDouble();
             _changeBattleDrawerTitle = 'Change battle';
             _dateAndTimeForUser = getFormattedDateForUser(
-                date: DateTime.now(), time: TimeOfDay.now());
+                date: DateTime.now() /*, time: TimeOfDay.now()*/);
             _selectedDrawersType = DrawersType.ChangeBattleDrawer;
             if (_keyScaffold.currentState != null &&
                 !_keyScaffold.currentState!.isEndDrawerOpen) {
               _keyScaffold.currentState!.openEndDrawer();
             }
+          } else if (state is FilterRangePaceChanged) {
+            _currentRangeValuesPace = state.values;
+          } else if (state is FilterRangeWeeklyChanged) {
+            _currentRangeValuesWeekly = state.values;
+          } else if (state is DistanceValueChanged) {
+            _currentDistanceValue = state.value;
+          } else if (state is DropMenuDistanceValueChanged) {
+            _distanceMenuValue = state.value;
           }
 
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
@@ -322,255 +341,299 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (final BuildContext context, final HomeState state) {
           getBattleDataFromFirebaseMessaging(context: context);
-
           startWebSockets(context: context);
-
           return WillPopScope(
             onWillPop: _onWillPop,
-            child: Scaffold(
-              key: _keyScaffold,
-              backgroundColor: homeBackground,
-              onEndDrawerChanged: (bool value) {
-                if (!value &&
-                    _selectedDrawersType != DrawersType.FilterDrawer) {
-                  _isNeedToOpenMessageDrawer = false;
-                  _isNeedToOpenChangeBattleDrawer = false;
-                  _currentDistanceValue = 5;
-                  _battleNameController.text = '';
-                  Timer(const Duration(milliseconds: 300), () {
-                    BlocProvider.of<HomeBloc>(context)
-                        .add(home_bloc.OpenFilterDrawer());
-                  });
-                }
-              },
-              appBar: AppBar(
-                shadowColor: Colors.transparent,
-                title: Text(
-                  _pageTitle,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'roboto',
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600),
-                ),
-                backgroundColor: colorPrimary,
-                actions: _selectedDrawerItem == DrawerItems.Connect
-                    ? appBarButtons(
-                        isNeedSecondButton: false,
-                        firstButtonIcon: const Icon(Icons.filter_alt_outlined),
-                        onTapFirstButton: () async {
-                          if (_keyScaffold.currentState != null &&
-                              !_keyScaffold.currentState!.isEndDrawerOpen) {
-                            _keyScaffold.currentState!.openEndDrawer();
-                          }
-                        },
-                      )
-                    : _selectedDrawerItem == DrawerItems.Interact
-                        ? <Widget>[Container()]
-                        : null,
-              ),
-              endDrawer: _selectedDrawerItem == DrawerItems.Connect ||
-                      _selectedDrawerItem == DrawerItems.Interact
-                  ? ConditionalSwitch.single<DrawersType>(
-                      context: context,
-                      valueBuilder: (BuildContext context) =>
-                          _selectedDrawersType,
-                      caseBuilders: <DrawersType,
-                          Widget Function(BuildContext)>{
-                        DrawersType.FilterDrawer: (BuildContext context) =>
-                            _connectFilterDrawer(
-                                context: context, width: width, height: height),
-                        DrawersType.BattleDrawer: (BuildContext context) {
-                          return _createBattleDrawer(
-                            context: context,
-                            model: _userBattleModel,
-                            width: width,
-                            height: height,
-                          );
-                        },
-                        DrawersType.BattleOnNotificationDrawer:
-                            (BuildContext context) {
-                          return _battleOfferOnNotification(
-                            context: context,
-                            model: _battleRespondModel,
-                            width: width,
-                            height: height,
-                          );
-                        },
-                        DrawersType.ChangeBattleDrawer: (BuildContext context) {
-                          return _changeBattle(
-                            context: context,
-                            width: width,
-                            height: height,
-                            onTapCancelBattle: () {
-                              if (_keyScaffold.currentState != null &&
-                                  _keyScaffold.currentState!.isEndDrawerOpen) {
-                                Navigator.of(context).pop();
-                              }
-                            },
-                            userName: getOpponentName(
-                              model: _battleRespondModel,
-                              currentUserId: _currentUserId,
-                            ),
-                            userPhoto: getOpponentPhoto(
-                              model: _battleRespondModel,
-                              currentUserId: _currentUserId,
-                            ),
-                            userRank: getOpponentRank(
-                              model: _battleRespondModel,
-                              currentUserId: _currentUserId,
-                            ),
-                          );
-                        },
+            child: FutureBuilder<UserModel?>(
+                future: _userModelApi,
+                builder:
+                    (BuildContext context, AsyncSnapshot<UserModel?> snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    if (!identical(_userModel, snapshot.data)) {
+                      PreferenceUtils.setCurrentUserModel(snapshot.data!);
+                      _currentUserId = snapshot.data!.id;
+                      _userModel = snapshot.data;
+                      updateRangeValuesAndUnit();
+                    }
+                    return Scaffold(
+                      key: _keyScaffold,
+                      backgroundColor: homeBackground,
+                      resizeToAvoidBottomInset: false,
+                      onEndDrawerChanged: (bool value) {
+                        if (!value &&
+                            _selectedDrawersType != DrawersType.FilterDrawer) {
+                          _isNeedToOpenMessageDrawer = false;
+                          _isNeedToOpenChangeBattleDrawer = false;
+                          _currentDistanceValue = 5;
+                          _battleNameController.text = '';
+                          Timer(const Duration(milliseconds: 300), () {
+                            BlocProvider.of<HomeBloc>(context)
+                                .add(home_bloc.OpenFilterDrawer());
+                          });
+                        }
                       },
-                      fallbackBuilder: (BuildContext context) =>
-                          _connectFilterDrawer(
-                              context: context, width: width, height: height),
-                    )
-                  : null,
-              body: SafeArea(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      width: width,
-                      height: height - kToolbarHeight,
-                      color: Colors.white,
-                      child: ScrollConfiguration(
-                        behavior: NoGlowScrollBehavior(),
-                        child: PageView(
-                          controller: _pageController,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: <Widget>[
-                            FutureBuilder<List<ConnectUsersModel>?>(
-                                future: _users,
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<List<ConnectUsersModel>?>
-                                        snapshot) {
-                                  if (snapshot.hasData &&
-                                      snapshot.data != null) {
-                                    return snapshot.data!.isNotEmpty
-                                        ? ConnectPage(
-                                            users: snapshot.data!,
-                                            onBattleTap:
-                                                (ConnectUsersModel userModel) {
-                                              BlocProvider.of<HomeBloc>(context)
-                                                  .add(home_bloc
-                                                      .OpenBattleDrawer(
-                                                          userModel));
-                                            },
-                                          )
-                                        : Container(
-                                            height: height,
+                      appBar: AppBar(
+                        shadowColor: Colors.transparent,
+                        title: Text(
+                          _pageTitle,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'roboto',
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        backgroundColor: colorPrimary,
+                        actions: _selectedDrawerItem == DrawerItems.Connect
+                            ? appBarButtons(
+                                isNeedSecondButton: false,
+                                firstButtonIcon:
+                                    const Icon(Icons.filter_alt_outlined),
+                                onTapFirstButton: () async {
+                                  if (_keyScaffold.currentState != null &&
+                                      !_keyScaffold
+                                          .currentState!.isEndDrawerOpen) {
+                                    _keyScaffold.currentState!.openEndDrawer();
+                                  }
+                                },
+                              )
+                            : _selectedDrawerItem == DrawerItems.Interact
+                                ? <Widget>[Container()]
+                                : null,
+                      ),
+                      endDrawer: _selectedDrawerItem == DrawerItems.Connect ||
+                              _selectedDrawerItem == DrawerItems.Interact
+                          ? ConditionalSwitch.single<DrawersType>(
+                              context: context,
+                              valueBuilder: (BuildContext context) =>
+                                  _selectedDrawersType,
+                              caseBuilders: <DrawersType,
+                                  Widget Function(BuildContext)>{
+                                DrawersType.FilterDrawer:
+                                    (BuildContext context) =>
+                                        _connectFilterDrawer(
+                                            context: context,
                                             width: width,
-                                            alignment: Alignment.bottomCenter,
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: AssetImage(
-                                                  noFiltersBackground,
-                                                ),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(16),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: <Widget>[
-                                                  buildRoundedButton(
-                                                    label:
-                                                        'Refresh'.toUpperCase(),
+                                            height: height),
+                                DrawersType.BattleDrawer:
+                                    (BuildContext context) {
+                                  return _createBattleDrawer(
+                                    context: context,
+                                    model: _userBattleModel,
+                                    width: width,
+                                    height: height,
+                                  );
+                                },
+                                DrawersType.BattleOnNotificationDrawer:
+                                    (BuildContext context) {
+                                  return _battleOfferOnNotification(
+                                    context: context,
+                                    model: _battleRespondModel,
+                                    width: width,
+                                    height: height,
+                                  );
+                                },
+                                DrawersType.ChangeBattleDrawer:
+                                    (BuildContext context) {
+                                  return _changeBattle(
+                                    context: context,
+                                    width: width,
+                                    height: height,
+                                    onTapCancelBattle: () {
+                                      if (_keyScaffold.currentState != null &&
+                                          _keyScaffold
+                                              .currentState!.isEndDrawerOpen) {
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                    userName: getOpponentName(
+                                      model: _battleRespondModel,
+                                      currentUserId: _currentUserId,
+                                    ),
+                                    userPhoto: getOpponentPhoto(
+                                      model: _battleRespondModel,
+                                      currentUserId: _currentUserId,
+                                    ),
+                                    userRank: getOpponentRank(
+                                      model: _battleRespondModel,
+                                      currentUserId: _currentUserId,
+                                    ),
+                                  );
+                                },
+                              },
+                              fallbackBuilder: (BuildContext context) =>
+                                  _connectFilterDrawer(
+                                      context: context,
+                                      width: width,
+                                      height: height),
+                            )
+                          : null,
+                      body: SafeArea(
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              width: width,
+                              height: height - height * 0.084,
+                              color: Colors.white,
+                              child: ScrollConfiguration(
+                                behavior: NoGlowScrollBehavior(),
+                                child: PageView(
+                                  controller: _pageController,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: <Widget>[
+                                    FutureBuilder<List<ConnectUsersModel>?>(
+                                        future: _users,
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<
+                                                    List<ConnectUsersModel>?>
+                                                snapshot) {
+                                          if (snapshot.hasData &&
+                                              snapshot.data != null) {
+                                            return snapshot.data!.isNotEmpty
+                                                ? ConnectPage(
+                                                    users: snapshot.data!,
+                                                    onBattleTap:
+                                                        (ConnectUsersModel
+                                                            userModel) {
+                                                      BlocProvider.of<HomeBloc>(
+                                                              context)
+                                                          .add(home_bloc
+                                                              .OpenBattleDrawer(
+                                                                  userModel));
+                                                    },
+                                                  )
+                                                : Container(
+                                                    height: height,
                                                     width: width,
-                                                    height: 40.h,
-                                                    buttonTextSize: 14.0,
-                                                    controller:
-                                                        _refreshController,
-                                                    textColor: Colors.white,
-                                                    backColor: redColor,
-                                                    onTap: () async {
-                                                      BlocProvider.of<HomeBloc>(
-                                                              context)
-                                                          .add(home_bloc
-                                                              .SelectConnectFilters(
-                                                        _isNeedFilter,
-                                                        _currentRangeValuesPace
-                                                            .start,
-                                                        _currentRangeValuesPace
-                                                            .end,
-                                                        _currentRangeValuesWeekly
-                                                            .start,
-                                                        _currentRangeValuesWeekly
-                                                            .end,
-                                                        _countOfRuns,
-                                                      ));
-                                                      _refreshController
-                                                          .reset();
-                                                    },
-                                                  ),
-                                                  SizedBox(
-                                                    height: 15.h,
-                                                  ),
-                                                  buttonNoIcon(
-                                                    title: 'Disable filters'
-                                                        .toUpperCase(),
-                                                    color: Colors.transparent,
-                                                    height: 40.h,
-                                                    textColor: Colors.black,
-                                                    buttonTextSize: 14.0,
-                                                    shadowColor:
-                                                        Colors.transparent,
-                                                    onPressed: () {
-                                                      BlocProvider.of<HomeBloc>(
-                                                              context)
-                                                          .add(home_bloc
-                                                              .SwitchIsNeedFilter(
-                                                                  isNeedFilter:
-                                                                      false));
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                  } else {
-                                    return Container(
-                                      color: Colors.white,
+                                                    alignment:
+                                                        Alignment.bottomCenter,
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: AssetImage(
+                                                          noFiltersBackground,
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: <Widget>[
+                                                          buildRoundedButton(
+                                                            label: 'Refresh'
+                                                                .toUpperCase(),
+                                                            width: width,
+                                                            height: 40.h,
+                                                            buttonTextSize:
+                                                                14.0,
+                                                            controller:
+                                                                _refreshController,
+                                                            textColor:
+                                                                Colors.white,
+                                                            backColor: redColor,
+                                                            onTap: () async {
+                                                              BlocProvider.of<
+                                                                          HomeBloc>(
+                                                                      context)
+                                                                  .add(home_bloc
+                                                                      .SelectConnectFilters(
+                                                                _isNeedFilter,
+                                                                _currentRangeValuesPace
+                                                                    .start,
+                                                                _currentRangeValuesPace
+                                                                    .end,
+                                                                _currentRangeValuesWeekly
+                                                                    .start,
+                                                                _currentRangeValuesWeekly
+                                                                    .end,
+                                                                _countOfRuns,
+                                                              ));
+                                                              _refreshController
+                                                                  .reset();
+                                                            },
+                                                          ),
+                                                          SizedBox(
+                                                            height: 15.h,
+                                                          ),
+                                                          buttonNoIcon(
+                                                            title: 'Disable filters'
+                                                                .toUpperCase(),
+                                                            color: Colors
+                                                                .transparent,
+                                                            height: 40.h,
+                                                            textColor:
+                                                                Colors.black,
+                                                            buttonTextSize:
+                                                                14.0,
+                                                            shadowColor: Colors
+                                                                .transparent,
+                                                            onPressed: () {
+                                                              BlocProvider.of<
+                                                                          HomeBloc>(
+                                                                      context)
+                                                                  .add(home_bloc
+                                                                      .SwitchIsNeedFilter(
+                                                                          isNeedFilter:
+                                                                              false));
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                          } else {
+                                            return Container(
+                                              color: Colors.white,
+                                              width: width,
+                                              height: height,
+                                              child: progressIndicator(),
+                                            );
+                                          }
+                                        }),
+                                    SizedBox(
                                       width: width,
                                       height: height,
-                                      child: progressIndicator(),
-                                    );
-                                  }
-                                }),
-                            SizedBox(
-                              width: width,
-                              height: height,
-                              child: InteractPage(
-                                signalR: _signalR,
-                                drawerItems: _selectedDrawerItem,
-                                onTapChange:
-                                    (String id, BattleRespondModel model) {
-                                  BlocProvider.of<HomeBloc>(context).add(
-                                      home_bloc.OpenChangeBattleDrawer(
-                                          id, model));
-                                },
+                                      child: InteractPage(
+                                        signalR: _signalR,
+                                        drawerItems: _selectedDrawerItem,
+                                        onTapChange: (String id,
+                                            BattleRespondModel model) {
+                                          BlocProvider.of<HomeBloc>(context)
+                                              .add(home_bloc
+                                                  .OpenChangeBattleDrawer(
+                                                      id, model));
+                                        },
+                                      ),
+                                    ),
+                                    EnjoyPage(),
+                                    SettingsPage(
+                                      userDataListener: () {
+                                        BlocProvider.of<HomeBloc>(context)
+                                            .add(home_bloc.UpdateUserData());
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            EnjoyPage(),
-                            SettingsPage(
-                              userDataListener: () {
-                                BlocProvider.of<HomeBloc>(context)
-                                    .add(home_bloc.UpdateUserData());
-                              },
-                            ),
+                            _bottomNavigationBar(
+                                context: context, width: width, height: height),
                           ],
                         ),
                       ),
-                    ),
-                    _bottomNavigationBar(
-                        context: context, width: width, height: height),
-                  ],
-                ),
-              ),
-            ),
+                    );
+                  } else {
+                    return Container(
+                      width: width,
+                      height: height,
+                      color: const Color(0xffF5F5F5),
+                      child: Center(child: progressIndicator()),
+                    );
+                  }
+                }),
           );
         }),
       ),
@@ -583,7 +646,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       required double height}) {
     return Container(
       width: width,
-      height: kToolbarHeight,
+      height: height * 0.084,
+      //height:  height * 0.075,
       padding: EdgeInsets.symmetric(horizontal: width * 0.03),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -603,6 +667,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           drawerItem(
             label: 'Connect',
             icon: connectIcon,
+            width: width * 0.06,
+            height: height * 0.033,
             selectedItemColor: _selectedDrawerItem == DrawerItems.Connect
                 ? Colors.red
                 : Colors.black,
@@ -616,6 +682,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           drawerItem(
             label: 'Interact',
             icon: interactIcon,
+            width: width * 0.06,
+            height: height * 0.033,
             selectedItemColor: _selectedDrawerItem == DrawerItems.Interact
                 ? Colors.red
                 : Colors.black,
@@ -629,8 +697,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           drawerItem(
             label: 'Enjoy',
             icon: enjoyIcon,
-            width: 29.0,
-            height: 22.0,
+            width: width * 0.08,
+            height: height * 0.033,
             selectedItemColor: _selectedDrawerItem == DrawerItems.Enjoy
                 ? Colors.red
                 : Colors.black,
@@ -644,6 +712,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           drawerItem(
             label: 'Settings',
             icon: settingsIcon,
+            width: width * 0.06,
+            height: height * 0.033,
             selectedItemColor: _selectedDrawerItem == DrawerItems.Settings
                 ? Colors.red
                 : Colors.black,
@@ -672,22 +742,25 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         BlocProvider.of<HomeBloc>(context)
             .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: value));
       },
-      valuePaceStart: _currentRangeValuesPace.start,
-      valuePaceEnd: _currentRangeValuesPace.end,
+      valuePaceStart: _isKM
+          ? getTimeStringFromDouble(_currentRangeValuesPace.start / 60)
+          : (_currentRangeValuesPace.start / 60).toStringAsFixed(2),
+      valuePaceEnd: _isKM
+          ? getTimeStringFromDouble(_currentRangeValuesPace.end / 60)
+          : (_currentRangeValuesPace.end / 60).toStringAsFixed(2),
+      valuePaceEndValue: _currentRangeValuesPace.end,
       isKM: _isKM,
       currentRangeValuesPace: _currentRangeValuesPace,
       onRangePaceChanged: (RangeValues values) {
-        setState(() {
-          _currentRangeValuesPace = values;
-        });
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.ChangeFilterRangePace(values));
       },
       valueWeeklyStart: _currentRangeValuesWeekly.start,
       valueWeeklyEnd: _currentRangeValuesWeekly.end,
       currentRangeValuesWeekly: _currentRangeValuesWeekly,
       onRangeWeeklyChanged: (RangeValues values) {
-        setState(() {
-          _currentRangeValuesWeekly = values;
-        });
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.ChangeFilterRangeWeekly(values));
       },
       onTapMinusRuns: () {
         if (_countOfRuns > 1) {
@@ -749,7 +822,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             width: width,
             context: context,
             distance: model.distance,
-            deadLineDate: model.deadlineTime.replaceFirst(RegExp('T'), '  '),
+            deadLineDate: model.deadlineTime
+                .substring(0, 10)
+                .replaceFirst(RegExp('T'), '  '),
             battleMessage: model.message,
             currentUserModel:
                 model.battleUsers[0].applicationUser.id == _currentUserId
@@ -801,9 +876,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       isKM: _isKM,
       currentDistanceValue: _currentDistanceValue,
       onSeekChanged: (double value) {
-        setState(() {
-          _currentDistanceValue = value;
-        });
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.ChangeDistanceValue(value));
       },
       onTapApplyBattle: () {
         BlocProvider.of<HomeBloc>(context)
@@ -832,13 +906,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               model: model,
               battleNameController: _battleNameController,
               context: context,
-              currentDistanceValue: _currentDistanceValue,
               isKM: _isKM,
-              onSeekChanged: (double value) {
-                setState(() {
-                  _currentDistanceValue = value;
-                });
+              distanceMenuValue: _distanceMenuValue,
+              onChangedDistanceMenu: (String? value) {
+                BlocProvider.of<HomeBloc>(context)
+                    .add(home_bloc.ChangeDropMenuDistanceValue(value ?? '3'));
               },
+              weeklyDistanceCustomController: _weeklyDistanceCustomController,
               onTapGetDatePicker: () {
                 BlocProvider.of<HomeBloc>(context)
                     .add(home_bloc.GetDatePicker());
@@ -917,9 +991,59 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   void updateRangeValuesAndUnit() {
     _isKM = PreferenceUtils.getIsUserUnitInKM();
+    print('$_userModel');
+
     _currentRangeValuesPace =
-        RangeValues((_isKM ? 2 : 3) * 60, (_isKM ? 11 : 18) * 60);
-    _currentRangeValuesWeekly = RangeValues(_isKM ? 4 : 2.5, _isKM ? 150 : 94);
+        RangeValues(getUserPaceStartFilter() * 60, getUserPaceEndFilter() * 60);
+
+    _currentRangeValuesWeekly =
+        RangeValues(getUserWeeklyStartFilter(), getUserWeeklyEndFilter());
+  }
+
+  double getUserPaceStartFilter() {
+    if (_isKM && _userModel!.pace >= 2.16) {
+      return _userModel!.pace - 0.16;
+    }
+
+    if (!_isKM && _userModel!.pace >= 3.10) {
+      return _userModel!.pace - 0.10;
+    }
+
+    return _isKM ? 2.01 : 3;
+  }
+
+  double getUserPaceEndFilter() {
+    if (_isKM && _userModel!.pace <= 10.96) {
+      return _userModel!.pace + 0.17;
+    }
+    if (!_isKM && _userModel!.pace <= 17.90) {
+      return _userModel!.pace + 0.10;
+    }
+
+    return _isKM ? 11 : 18;
+  }
+
+  double getUserWeeklyStartFilter() {
+    if (_isKM && _userModel!.weeklyDistance >= 14) {
+      return _userModel!.weeklyDistance - 10;
+    }
+
+    if (!_isKM && _userModel!.weeklyDistance >= 12.5) {
+      return _userModel!.weeklyDistance - 10;
+    }
+
+    return _isKM ? 4 : 2.5;
+  }
+
+  double getUserWeeklyEndFilter() {
+    if (_isKM && _userModel!.weeklyDistance <= 140) {
+      return _userModel!.weeklyDistance + 10;
+    }
+    if (!_isKM && _userModel!.weeklyDistance <= 84) {
+      return _userModel!.weeklyDistance + 10;
+    }
+
+    return _isKM ? 150 : 94;
   }
 
   Future<DateTime?> getDate({required BuildContext context}) {
@@ -1065,6 +1189,28 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         false;
   }
 
+  double getWeeklyDistance() {
+    return getCreateBattleDistanceMenuValue(
+        value: _distanceMenuValue,
+        customValue: _weeklyDistanceCustomController.text.isNotEmpty
+            ? double.parse(_weeklyDistanceCustomController.text)
+            : 10);
+  }
+
+  bool isFieldsChecked() {
+    if (_distanceMenuValue == Constants.filterMenuCustom &&
+        _weeklyDistanceCustomController.text.isEmpty) {
+      Fluttertoast.showToast(
+          msg: 'Custom distance field is empty!',
+          fontSize: 16.0,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER);
+
+      return false;
+    }
+    return true;
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _isAppInForeground = state == AppLifecycleState.resumed;
@@ -1076,6 +1222,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _pageController.dispose();
     _battleNameController.dispose();
     _messageController.dispose();
+    _weeklyDistanceCustomController.dispose();
     if (_signalR != null) {
       _signalR.stopConnection();
     }

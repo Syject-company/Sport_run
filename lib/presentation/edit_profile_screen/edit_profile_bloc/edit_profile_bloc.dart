@@ -15,6 +15,10 @@ class EditProfileBloc extends Bloc<EditProfileEvent, EditProfileState> {
       yield TimesPerWeekIsSelected(event.timesPerWeek);
     }else if (event is SaveUserData) {
       yield UserDataSaved();
+    }else if (event is ChangeDistanceValue) {
+      yield DistanceValueChanged(event.value);
+    }else if (event is ChangePaceValue) {
+      yield PaceValueChanged(event.value);
     }
   }
 }

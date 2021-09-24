@@ -49,6 +49,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield ApplyBattleIsChanged(event.battleId);
     } else if (event is OpenChangeBattleDrawer) {
       yield ChangeBattleDrawerIsOpened(event.battleId, event.model);
+    } else if (event is ChangeFilterRangePace) {
+      yield FilterRangePaceChanged(event.values);
+    }else if (event is ChangeFilterRangeWeekly) {
+      yield FilterRangeWeeklyChanged(event.values);
+    }else if (event is ChangeDistanceValue) {
+      yield DistanceValueChanged(event.value);
+    }else if (event is ChangeDropMenuDistanceValue) {
+      yield DropMenuDistanceValueChanged(event.value);
     }
   }
 }

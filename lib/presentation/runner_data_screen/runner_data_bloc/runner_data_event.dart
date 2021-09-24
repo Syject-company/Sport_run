@@ -11,7 +11,7 @@ class UpdateState extends RunnerDataEvents {}
 class CheckFields extends RunnerDataEvents {}
 
 class SelectKmOrMile extends RunnerDataEvents {
-   SelectKmOrMile(this.isKM);
+  SelectKmOrMile(this.isKM);
 
   final bool isKM;
 
@@ -35,4 +35,15 @@ class NavigateToHome extends RunnerDataEvents {
 
   @override
   List<Object> get props => <Object>[runnerDataModel];
+}
+
+class SelectRunnerType extends RunnerDataEvents {
+  SelectRunnerType(this.isUserBeginnerSelected, this.isUserHaveRunSelected);
+
+  final bool isUserBeginnerSelected;
+  final bool isUserHaveRunSelected;
+
+  @override
+  List<Object> get props =>
+      <Object>[isUserBeginnerSelected, isUserHaveRunSelected];
 }
