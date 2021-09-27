@@ -1295,7 +1295,8 @@ Widget statusLabel(
     required int statusCode,
     required bool isBattleMainStatus}) {
   return Container(
-    width: width * (isBattleMainStatus ? 0.26 : 0.2),
+    //width: width * (isBattleMainStatus ? 0.26 : 0.2),
+    width: width * 0.26,
     height: width * 0.071,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(6),

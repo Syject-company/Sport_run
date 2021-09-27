@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +17,7 @@ import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData, ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 //NOte:'/finishedCompletedDetail'
@@ -98,9 +101,16 @@ class FinishedCompletedDetailPageState
                   } else if (state is ImageBattleIsShared) {
                     await _interactApi
                         .getImageBattleShare(id: widget.finishedModel.id)
-                        .then((String? imageUrl) {
+                        .then((Uint8List? imageUrl) async{
                       if (imageUrl != null) {
-                        Share.share(imageUrl, subject: 'One2One.run\nBattle of Supermen!\n');
+                        final Directory? dir = await getExternalStorageDirectory();
+                        final String myImagePath = '${dir!.path}/tempimg.png';
+                        final File imageFile = File(myImagePath);
+                        if(! await imageFile.exists()) {
+                          imageFile.create(recursive: true);
+                        }
+                        imageFile.writeAsBytes(imageUrl);
+                        Share.shareFiles(<String>[(imageFile.path)], subject: 'One2One.run\nBattle of Supermen!\n');
                       } else {
                         toastUnexpectedError();
                       }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:http/http.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
@@ -122,16 +123,16 @@ class InteractApi {
   }
 
   //@get
-  Future<String?> getImageBattleShare({required String id}) async {
+  Future<Uint8List?> getImageBattleShare({required String id}) async {
     final String token = PreferenceUtils.getUserToken();
     final Response res =
-        await get(Uri.parse('$_urlGetImageShare$id'), headers: <String, String>{
-      HttpHeaders.contentTypeHeader: 'application/json',
+        await get(Uri.parse('$_urlGetImageShare$id/File'), headers: <String, String>{
+      HttpHeaders.contentTypeHeader: 'image/png',
       HttpHeaders.authorizationHeader: token,
     });
 
-    if (res.statusCode == 200 && res.body != null) {
-      return res.body.replaceAll(RegExp(r'\"'), '');
+    if (res.statusCode == 200 && res.bodyBytes != null) {
+      return res.bodyBytes;
     }
   }
 }
