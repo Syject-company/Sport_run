@@ -131,7 +131,7 @@ class LoginPageState extends State<LoginPage> {
                 Navigator.pushReplacement<dynamic, dynamic>(
                     context,
                     MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) => FAQHelperPage(
+                      builder: (BuildContext context) => const FAQHelperPage(
                         faqHelperState: FAQHelperState.LoginState,
                       ),
                     ));

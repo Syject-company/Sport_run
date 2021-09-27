@@ -244,6 +244,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       PreferenceUtils.getCurrentUserModel();
                   if (_keyScaffold.currentState != null &&
                       _keyScaffold.currentState!.isEndDrawerOpen) {
+                    _selectedDrawersType = DrawersType.NON;
                     Navigator.of(context).pop();
                   }
                   battleCreated(
@@ -343,7 +344,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           getBattleDataFromFirebaseMessaging(context: context);
           startWebSockets(context: context);
           return WillPopScope(
-            onWillPop: _onWillPop,
+            onWillPop: () => _onWillPop(context: context),
             child: FutureBuilder<UserModel?>(
                 future: _userModelApi,
                 builder:
@@ -931,6 +932,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               onTapCancelBattle: () {
                 if (_keyScaffold.currentState != null &&
                     _keyScaffold.currentState!.isEndDrawerOpen) {
+                  _selectedDrawersType = DrawersType.NON;
                   Navigator.of(context).pop();
                 }
               },
@@ -1155,38 +1157,55 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     });
   }
 
-  Future<bool> _onWillPop() async {
-    return (await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            content: const Text('Do you want to exit an App?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(
-                      color: Colors.green,
-                      fontFamily: 'roboto',
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.normal),
+  Future<bool> _onWillPop({required BuildContext context}) async {
+    if (_selectedDrawersType != DrawersType.BattleDrawer) {
+      return (await showDialog<bool>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              content: const Text('Do you want to exit an App?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                        color: Colors.green,
+                        fontFamily: 'roboto',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.normal),
+                  ),
                 ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
-                  'Exit',
-                  style: TextStyle(
-                      color: Colors.redAccent,
-                      fontFamily: 'roboto',
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.normal),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(
+                    'Exit',
+                    style: TextStyle(
+                        color: Colors.redAccent,
+                        fontFamily: 'roboto',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.normal),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        )) ??
-        false;
+              ],
+            ),
+          )) ??
+          false;
+    } else {
+      //NOTE: to close message to opponent drawer on back press
+      if (_isNeedToOpenMessageDrawer) {
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.OpenCloseMessageDrawer());
+      } else {
+        //NOTE: to close battle drawer on back press
+        if (_keyScaffold.currentState != null &&
+            _keyScaffold.currentState!.isEndDrawerOpen) {
+          _selectedDrawersType = DrawersType.NON;
+          Navigator.of(context).pop();
+        }
+      }
+
+      return false;
+    }
   }
 
   double getWeeklyDistance() {

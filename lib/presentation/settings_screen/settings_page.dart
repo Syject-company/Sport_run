@@ -189,10 +189,8 @@ class SettingsPageState extends State<SettingsPage> {
                             WidgetsBinding.instance?.addPostFrameCallback((_) {
                               Navigator.push<dynamic>(context,
                                   MaterialPageRoute<dynamic>(
-                                      builder: (BuildContext context) {
-                                PreferenceUtils.setIsInteractFAQHelperShown(
-                                    true);
-                                return FAQHelperPage(
+                                      builder: (BuildContext con) {
+                                return  const FAQHelperPage(
                                   faqHelperState: FAQHelperState.HelpState,
                                 );
                               }));
