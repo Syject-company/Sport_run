@@ -96,6 +96,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _isNeedToOpenMessageDrawer = false;
   bool _isNeedToOpenChangeBattleDrawer = false;
   bool _isAppInForeground = true;
+  bool _isNeedToShowSearchBar = false;
   late bool _isKM;
 
   int _countOfRuns = 1;
@@ -337,6 +338,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             _currentDistanceValue = state.value;
           } else if (state is DropMenuDistanceValueChanged) {
             _distanceMenuValue = state.value;
+          } else if (state is SearchBarShownHidden) {
+            _isNeedToShowSearchBar = !_isNeedToShowSearchBar;
           }
 
           BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
@@ -388,7 +391,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         backgroundColor: colorPrimary,
                         actions: _selectedDrawerItem == DrawerItems.Connect
                             ? appBarButtons(
-                                isNeedSecondButton: false,
+                                isNeedSecondButton: true,
+                                onTapSecondButton: () {
+                                  BlocProvider.of<HomeBloc>(context)
+                                      .add(home_bloc.ShowHideSearchBar());
+                                },
+                                secondButtonIcon:
+                                    const Icon(Icons.search_rounded),
                                 firstButtonIcon:
                                     const Icon(Icons.filter_alt_outlined),
                                 onTapFirstButton: () async {
@@ -494,6 +503,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                             return snapshot.data!.isNotEmpty
                                                 ? ConnectPage(
                                                     users: snapshot.data!,
+                                                    isNeedToShowSearchBar: _isNeedToShowSearchBar,
                                                     onBattleTap:
                                                         (ConnectUsersModel
                                                             userModel) {

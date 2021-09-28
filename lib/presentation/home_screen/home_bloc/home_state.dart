@@ -179,3 +179,5 @@ class DropMenuDistanceValueChanged extends HomeState {
   @override
   List<Object> get props => <Object>[value];
 }
+
+class SearchBarShownHidden extends HomeState {}
