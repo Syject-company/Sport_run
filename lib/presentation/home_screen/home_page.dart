@@ -92,6 +92,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late BattleRespondModel _battleRespondModel;
 
   bool _isNeedFilter = false;
+  bool _isNeedUpdateList = false;
   bool _isNeedToOpenMessageDrawer = false;
   bool _isNeedToOpenChangeBattleDrawer = false;
   bool _isAppInForeground = true;
@@ -161,7 +162,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             _userModelApi = _homeApi.getUserModel();
           } else if (state is SwitchedIsNeedFilter) {
             _isNeedFilter = state.isNeedFilter;
-            if (!_isNeedFilter) {
+            if (_isNeedUpdateList) {
+              _isNeedUpdateList = false;
               _users = getUsers(isFilterIncluded: _isNeedFilter);
             }
           } else if (state is BattleDrawerIsOpen) {
@@ -572,6 +574,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                                             shadowColor: Colors
                                                                 .transparent,
                                                             onPressed: () {
+                                                              _isNeedUpdateList =
+                                                                  true;
                                                               BlocProvider.of<
                                                                           HomeBloc>(
                                                                       context)
@@ -778,17 +782,30 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       },
       applyController: _applyController,
       onTapApply: () {
-        BlocProvider.of<HomeBloc>(context).add(home_bloc.SelectConnectFilters(
-          _isNeedFilter,
-          _currentRangeValuesPace.start,
-          _currentRangeValuesPace.end,
-          _currentRangeValuesWeekly.start,
-          _currentRangeValuesWeekly.end,
-          _countOfRuns,
-        ));
+        if (_isNeedFilter) {
+          BlocProvider.of<HomeBloc>(context).add(home_bloc.SelectConnectFilters(
+            _isNeedFilter,
+            _currentRangeValuesPace.start,
+            _currentRangeValuesPace.end,
+            _currentRangeValuesWeekly.start,
+            _currentRangeValuesWeekly.end,
+            _countOfRuns,
+          ));
+        } else {
+          _isNeedUpdateList = true;
+          BlocProvider.of<HomeBloc>(context)
+              .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: false));
+          if (_keyScaffold.currentState != null &&
+              _keyScaffold.currentState!.isEndDrawerOpen) {
+            Navigator.of(context).pop();
+          }
+        }
         _applyController.reset();
       },
       onTapCancel: () {
+        _isNeedUpdateList = true;
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: false));
         if (_keyScaffold.currentState != null &&
             _keyScaffold.currentState!.isEndDrawerOpen) {
           Navigator.of(context).pop();
