@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -299,9 +298,11 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
       imageFirst: _imageFirst,
       imageSecond: _imageSecond,
       isUploading: _isUploadingProgress,
-      timeController: _timeResultController,
+    /*  timeController: _timeResultController,
       resultValueChanged: (String value) {
-        if (value.length == 2 && !_isDeleteKeyBoardPressed) {
+        int cursorPosition = _timeResultController.selection.base.offset;
+
+ *//*       if (value.length == 2 && !_isDeleteKeyBoardPressed) {
           _timeResultController.text = '${_timeResultController.text}:';
           _timeResultController.selection = TextSelection.fromPosition(
               TextPosition(offset: _timeResultController.text.length));
@@ -311,15 +312,47 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
           _timeResultController.selection = TextSelection.fromPosition(
               TextPosition(offset: _timeResultController.text.length));
         }
+*//*
+        if (cursorPosition == 2 && !_isDeleteKeyBoardPressed) {
+          _timeResultController.selection = TextSelection.fromPosition(
+              const TextPosition(offset: 5));
+        }
+
+        if (_isDeleteKeyBoardPressed) {
+
+          if(cursorPosition == 5){
+
+            _timeResultController.text = '${_timeResultController.text}:00';
+            _timeResultController.selection = TextSelection.fromPosition(
+                TextPosition(offset: _timeResultController.text.length - 3));
+          }
+
+          if(cursorPosition == 2){
+
+            _timeResultController.text = '${_timeResultController.text}:00';
+            _timeResultController.selection = TextSelection.fromPosition(
+                TextPosition(offset: _timeResultController.text.length - 6));
+          }
+
+
+        }
+
+
+
         BlocProvider.of<ActiveDetailBloc>(context).add(
             active_detail_bloc.IsDeleteKeyBoardPressed(isDeletePressed: false));
+
+
+
+
+
       },
       onKey: (RawKeyEvent event) {
         BlocProvider.of<ActiveDetailBloc>(context).add(
             active_detail_bloc.IsDeleteKeyBoardPressed(
                 isDeletePressed:
                     event.logicalKey == LogicalKeyboardKey.backspace));
-      },
+      },*/
       onCancelTap: () {
         BlocProvider.of<ActiveDetailBloc>(context).add(
             active_detail_bloc.ShowUploadResultPage(isNeedResultPage: false));

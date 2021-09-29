@@ -9,7 +9,6 @@ import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_blo
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_state.dart';
 import 'package:one2one_run/presentation/connect_screen/user_info.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/resources/images.dart';
 
 //NOte:'/connect'
 class ConnectPage extends StatefulWidget {
@@ -31,9 +30,13 @@ class ConnectPage extends StatefulWidget {
 class ConnectPageState extends State<ConnectPage> {
   final TextEditingController _searchController = TextEditingController();
 
+  List<ConnectUsersModel> usersConnect = <ConnectUsersModel>[];
+
   @override
   void initState() {
     super.initState();
+
+    usersConnect.addAll(widget.users);
   }
 
   @override
@@ -61,6 +64,15 @@ class ConnectPageState extends State<ConnectPage> {
                 ),
               ),
             );
+          } else if (state is SearchTheValueIsStarted) {
+            usersConnect.addAll(widget.users.where((ConnectUsersModel element) {
+              return element.nickName
+                  .toString()
+                  .toLowerCase()
+                  .contains(state.value);
+            }));
+          } else if (state is SearchTheValueIsCleared) {
+            usersConnect.addAll(widget.users);
           }
           BlocProvider.of<ConnectBloc>(context).add(connect_bloc.UpdateState());
         },
@@ -97,7 +109,7 @@ class ConnectPageState extends State<ConnectPage> {
                         children: <Widget>[
                           Container(
                             height: height * 0.05,
-                            width: width - (height * 0.14),
+                            width: width - (height * 0.207),
                             margin:
                                 EdgeInsets.symmetric(horizontal: width * 0.025),
                             child: inputFilterTextField(
@@ -110,16 +122,48 @@ class ConnectPageState extends State<ConnectPage> {
                           ),
                           Material(
                             color: Colors.transparent,
-                            child: IconButton(
-                              color: redColor,
-                              splashColor: const Color(0xffCFFFB1),
-                              highlightColor: const Color(0xffCFFFB1),
-                              splashRadius: height * 0.03,
-                              icon: const Icon(Icons.search_rounded),
-                              iconSize: height * 0.035,
-                              onPressed: () {
-                                //TODO: here
-                              },
+                            child: Row(
+                              children: <Widget>[
+                                IconButton(
+                                  color: redColor,
+                                  splashColor: const Color(0xffCFFFB1),
+                                  highlightColor: const Color(0xffCFFFB1),
+                                  splashRadius: height * 0.03,
+                                  icon: const Icon(Icons.search_rounded),
+                                  iconSize: height * 0.035,
+                                  tooltip: 'Search',
+                                  onPressed: () {
+                                    usersConnect.clear();
+
+                                    BlocProvider.of<ConnectBloc>(context).add(
+                                        connect_bloc.StartSearchTheValue(
+                                            _searchController.text
+                                                .trim()
+                                                .toLowerCase()));
+                                  },
+                                ),
+                                Container(
+                                  color: Colors.grey,
+                                  height: height * 0.04,
+                                  width: 0.5,
+                                ),
+                                IconButton(
+                                  color: Colors.grey,
+                                  splashColor: const Color(0xffCFFFB1),
+                                  highlightColor: const Color(0xffCFFFB1),
+                                  splashRadius: height * 0.03,
+                                  tooltip: 'Clear',
+                                  icon:
+                                      const Icon(Icons.delete_forever_outlined),
+                                  iconSize: height * 0.035,
+                                  onPressed: () {
+                                    usersConnect.clear();
+                                    _searchController.text = '';
+                                    BlocProvider.of<ConnectBloc>(context).add(
+                                        connect_bloc.ClearSearchTheValue());
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -133,18 +177,18 @@ class ConnectPageState extends State<ConnectPage> {
                     width: width,
                     child: Scrollbar(
                       child: ListView.builder(
-                          itemCount: widget.users.length,
+                          itemCount: usersConnect.length,
                           physics: const BouncingScrollPhysics(),
                           itemBuilder: (BuildContext con, int index) {
                             return userCardMain(
                               context: context,
                               width: width,
                               height: height,
-                              model: widget.users[index],
+                              model: usersConnect[index],
                               onTapCard: () {
                                 BlocProvider.of<ConnectBloc>(context).add(
                                     connect_bloc.NavigateToUserInfo(
-                                        widget.users[index]));
+                                        usersConnect[index]));
                               },
                               onTapBattleCreate: (ConnectUsersModel model) {
                                 widget.onBattleTap(

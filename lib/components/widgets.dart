@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/check_opponent_results_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
@@ -2860,7 +2861,7 @@ Widget battleDetailsCard({
                                                     fontFamily: 'roboto',
                                                     fontSize: 12.sp,
                                                     fontWeight:
-                                                        FontWeight.w500),
+                                                        FontWeight.w600),
                                               ),
                                             ),
                                           ),
@@ -3165,9 +3166,6 @@ Widget uploadBattleResultDialog({
   required File? imageFirst,
   required File? imageSecond,
   required bool isUploading,
-  required TextEditingController timeController,
-  required ValueChanged<RawKeyEvent>? onKey,
-  required ValueChanged<String>? resultValueChanged,
 }) {
   return Center(
     child: Container(
@@ -3223,20 +3221,24 @@ Widget uploadBattleResultDialog({
                   fontWeight: FontWeight.w700),
             ),
           ),
-          SizedBox(
+          Container(
             width: width,
-            child: RawKeyboardListener(
-              focusNode: FocusNode(),
-              onKey: onKey,
-              child: inputTextField(
-                errorText: null,
-                controller: timeController,
-                hintText: 'Time format should be 00:00:00',
-                keyboardType: TextInputType.number,
-                maxLength: 8,
-                isCounterShown: true,
-                valueChanged: resultValueChanged,
+            child: TimePickerSpinner(
+              isShowSeconds: true,
+              is24HourMode: true,
+              itemHeight: 30,
+
+              isForce2Digits: true,
+              normalTextStyle: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
               ),
+              highlightedTextStyle:  TextStyle(
+                fontSize: 24,
+                color: redColor,
+                fontWeight: FontWeight.bold,
+              ),
+              onTimeChange: (DateTime time) {},
             ),
           ),
           SizedBox(
