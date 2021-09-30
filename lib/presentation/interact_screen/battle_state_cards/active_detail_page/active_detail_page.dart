@@ -49,7 +49,6 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
   final TextEditingController _chatController = TextEditingController();
   final RoundedLoadingButtonController _showUploadResultsPageController =
       RoundedLoadingButtonController();
-  final TextEditingController _timeResultController = TextEditingController();
 
   List<Messages> _messages = <Messages>[];
   final List<String> _resultPhotos = <String>[];
@@ -61,11 +60,11 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
   late ApplicationUser _opponentAppUserModel;
 
   String _messageText = '';
+  String _myTimeValue = '01:30:00';
 
   bool _isUploadResultsPage = false;
   bool _isUploadingProgress = false;
   bool _isNeedToCheckOpponentResults = true;
-  bool _isDeleteKeyBoardPressed = false;
 
   final ImagePicker _imagePicker = ImagePicker();
   File? _imageFirst;
@@ -87,8 +86,6 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
     _opponentAppUserModel = _opponentBattleModel.applicationUser;
     _isNeedToCheckOpponentResults =
         isNeedToCheckOpponentResults(model: _opponentBattleModel);
-
-    _timeResultController.text = '01:30:00';
   }
 
   @override
@@ -135,8 +132,7 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
                     await _interactApi.sendBattleResult(
                         model: BattleResultModel(
                           photos: _resultPhotos,
-                          time: getFormattedTimeForServer(
-                              time: _timeResultController.text),
+                          time: getFormattedTimeForServer(time: _myTimeValue),
                         ),
                         id: widget.activeModel.id);
                     _isUploadingProgress = false;
@@ -189,8 +185,8 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
                   } else if (state is OpponentResultsChecked) {
                     widget.onNeedToRefreshActivePage();
                     _isNeedToCheckOpponentResults = !state.isNeed;
-                  } else if (state is DeleteKeyBoardIsPressed) {
-                    _isDeleteKeyBoardPressed = state.isDeletePressed;
+                  } else if (state is TheTimeResultChanged) {
+                    _myTimeValue = state.time;
                   }
                   if (!_activeDetailBloc.isClosed) {
                     BlocProvider.of<ActiveDetailBloc>(context)
@@ -298,61 +294,12 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
       imageFirst: _imageFirst,
       imageSecond: _imageSecond,
       isUploading: _isUploadingProgress,
-    /*  timeController: _timeResultController,
-      resultValueChanged: (String value) {
-        int cursorPosition = _timeResultController.selection.base.offset;
-
- *//*       if (value.length == 2 && !_isDeleteKeyBoardPressed) {
-          _timeResultController.text = '${_timeResultController.text}:';
-          _timeResultController.selection = TextSelection.fromPosition(
-              TextPosition(offset: _timeResultController.text.length));
-        }
-        if (value.length == 5 && !_isDeleteKeyBoardPressed) {
-          _timeResultController.text = '${_timeResultController.text}:';
-          _timeResultController.selection = TextSelection.fromPosition(
-              TextPosition(offset: _timeResultController.text.length));
-        }
-*//*
-        if (cursorPosition == 2 && !_isDeleteKeyBoardPressed) {
-          _timeResultController.selection = TextSelection.fromPosition(
-              const TextPosition(offset: 5));
-        }
-
-        if (_isDeleteKeyBoardPressed) {
-
-          if(cursorPosition == 5){
-
-            _timeResultController.text = '${_timeResultController.text}:00';
-            _timeResultController.selection = TextSelection.fromPosition(
-                TextPosition(offset: _timeResultController.text.length - 3));
-          }
-
-          if(cursorPosition == 2){
-
-            _timeResultController.text = '${_timeResultController.text}:00';
-            _timeResultController.selection = TextSelection.fromPosition(
-                TextPosition(offset: _timeResultController.text.length - 6));
-          }
-
-
-        }
-
-
-
+      myTimeValue: _myTimeValue,
+      onChangeTime: (Duration time) {
         BlocProvider.of<ActiveDetailBloc>(context).add(
-            active_detail_bloc.IsDeleteKeyBoardPressed(isDeletePressed: false));
-
-
-
-
-
+            active_detail_bloc.ChangeTheTimeResult(
+                time: getFormattedResultTime(time: time)));
       },
-      onKey: (RawKeyEvent event) {
-        BlocProvider.of<ActiveDetailBloc>(context).add(
-            active_detail_bloc.IsDeleteKeyBoardPressed(
-                isDeletePressed:
-                    event.logicalKey == LogicalKeyboardKey.backspace));
-      },*/
       onCancelTap: () {
         BlocProvider.of<ActiveDetailBloc>(context).add(
             active_detail_bloc.ShowUploadResultPage(isNeedResultPage: false));
@@ -366,32 +313,15 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
             .add(active_detail_bloc.OpenGallery());
       },
       onUploadTap: () async {
-        if (_imageFirst != null && _timeResultController.text.length == 8) {
+        if (_imageFirst != null) {
           BlocProvider.of<ActiveDetailBloc>(context)
               .add(active_detail_bloc.PrepareResultBattle());
         } else {
           await Fluttertoast.showToast(
-              msg:
-                  'Please, check The time format or upload at least one photo!',
+              msg: 'Please, check upload at least one photo!',
               fontSize: 16.0,
               gravity: ToastGravity.CENTER);
         }
-      },
-    );
-  }
-
-  Future<TimeOfDay?> getTime({required BuildContext context}) {
-    return showTimePicker(
-      context: context,
-      initialTime: const TimeOfDay(hour: 01, minute: 30),
-      confirmText: 'APPLY',
-      builder: (BuildContext context, Widget? child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            alwaysUse24HourFormat: true,
-          ),
-          child: child!,
-        );
       },
     );
   }
@@ -441,13 +371,13 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
     if (!_isUploadResultsPage && _imageSecond != null) {
       _imageSecond = null;
     }
+    _myTimeValue = '01:30:00';
   }
 
   @override
   void dispose() {
     _activeDetailBloc.close();
     _chatController.dispose();
-    _timeResultController.dispose();
     super.dispose();
   }
 }

@@ -55,6 +55,18 @@ extension DateTimeExtension on void {
         .toLocal());
   }
 
+  String getFormattedResultTime({
+    required Duration time,
+  }) {
+    final String _timeChanged =
+        time.toString().substring(0, time.toString().indexOf('.'));
+    if (_timeChanged.length == 7) {
+      return '0$_timeChanged';
+    }
+
+    return _timeChanged;
+  }
+
   String getTimeStringFromDouble(double value) {
     final int flooredValue = value.floor();
     final double decimalValue = value - flooredValue;

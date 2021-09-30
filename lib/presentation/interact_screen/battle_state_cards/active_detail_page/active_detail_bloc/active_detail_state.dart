@@ -70,13 +70,13 @@ class OpponentResultsChecked extends ActiveDetailState {
   List<Object> get props => <Object>[isNeed];
 }
 
-class DeleteKeyBoardIsPressed extends ActiveDetailState {
-  const DeleteKeyBoardIsPressed({
-    required this.isDeletePressed,
+class TheTimeResultChanged extends ActiveDetailState {
+  const TheTimeResultChanged({
+    required this.time,
   });
 
-  final bool isDeletePressed;
+  final String time;
 
   @override
-  List<Object> get props => <Object>[isDeletePressed];
+  List<Object> get props => <Object>[time];
 }

@@ -84,6 +84,8 @@ String get helpIcon => 'assets/icons/help.png';
 
 String get searchIcon => 'assets/icons/search.png';
 
+String get swipeUpDownIcon => 'assets/icons/swipe_up_down.png';
+
 String get startChatImage => 'assets/images/start_chat.png';
 
 //region F.A.Q.

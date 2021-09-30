@@ -169,6 +169,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             }
           } else if (state is BattleDrawerIsOpen) {
             _distanceMenuValue = Constants.filterMenuThree;
+            _weeklyDistanceCustomController.text = '';
             _dateAndTimeForUser = getFormattedDateForUser(
                 date: DateTime.now() /*, time: TimeOfDay.now()*/);
             _userBattleModel = state.userModel;

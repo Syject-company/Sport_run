@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/check_opponent_results_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
@@ -106,7 +105,7 @@ Widget inputTextField({
   );
 }
 
-Widget inputFilterTextField({
+Widget inputBattleCustomTextField({
   required TextEditingController controller,
   required String hintText,
   required String? errorText,
@@ -123,6 +122,7 @@ Widget inputFilterTextField({
       fontWeight: FontWeight.bold,
     ),
     onChanged: valueChanged,
+    textInputAction: TextInputAction.done,
     cursorColor: const Color(0xffFF1744),
     maxLength: maxLength,
     keyboardType: keyboardType,
@@ -3166,10 +3166,12 @@ Widget uploadBattleResultDialog({
   required File? imageFirst,
   required File? imageSecond,
   required bool isUploading,
+  required String myTimeValue,
+  required Function(Duration time) onChangeTime,
 }) {
   return Center(
     child: Container(
-      height: height * 0.67,
+      height: height * 0.80,
       margin: EdgeInsets.symmetric(horizontal: width * 0.025),
       padding: EdgeInsets.all(width * 0.05),
       decoration: BoxDecoration(
@@ -3221,24 +3223,33 @@ Widget uploadBattleResultDialog({
                   fontWeight: FontWeight.w700),
             ),
           ),
+          Text(
+            '" $myTimeValue "',
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 14.sp,
+                fontFamily: 'roboto',
+                fontWeight: FontWeight.w700),
+          ),
+          SizedBox(
+            height: height * 0.015,
+          ),
           Container(
             width: width,
-            child: TimePickerSpinner(
-              isShowSeconds: true,
-              is24HourMode: true,
-              itemHeight: 30,
-
-              isForce2Digits: true,
-              normalTextStyle: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-              highlightedTextStyle:  TextStyle(
-                fontSize: 24,
-                color: redColor,
-                fontWeight: FontWeight.bold,
-              ),
-              onTimeChange: (DateTime time) {},
+            height: height * 0.2,
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color(0xffCDCDCD).withOpacity(0.3),
+                  width: 2,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
+            child: CupertinoTimerPicker(
+              mode: CupertinoTimerPickerMode.hms,
+              minuteInterval: 1,
+              secondInterval: 1,
+              initialTimerDuration:
+                  const Duration(hours: 01, minutes: 30, seconds: 00),
+              onTimerDurationChanged: onChangeTime,
             ),
           ),
           SizedBox(

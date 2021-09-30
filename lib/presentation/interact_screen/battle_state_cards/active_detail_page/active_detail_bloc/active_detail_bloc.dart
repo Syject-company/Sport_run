@@ -31,9 +31,9 @@ class ActiveDetailBloc extends Bloc<ActiveDetailEvent, ActiveDetailState> {
       yield OpponentResultsChecked(
         isNeed: event.isNeed,
       );
-    } else if (event is IsDeleteKeyBoardPressed) {
-      yield DeleteKeyBoardIsPressed(
-        isDeletePressed: event.isDeletePressed,
+    } else if (event is ChangeTheTimeResult) {
+      yield TheTimeResultChanged(
+        time: event.time,
       );
     }
   }

@@ -112,7 +112,7 @@ class ConnectPageState extends State<ConnectPage> {
                             width: width - (height * 0.207),
                             margin:
                                 EdgeInsets.symmetric(horizontal: width * 0.025),
-                            child: inputFilterTextField(
+                            child: inputBattleCustomTextField(
                               controller: _searchController,
                               errorText: null,
                               hintText: 'Search...',
@@ -173,7 +173,7 @@ class ConnectPageState extends State<ConnectPage> {
                   SizedBox(
                     height: widget.isNeedToShowSearchBar
                         ? height - (height * 0.2)
-                        : height - (height * 0.12),
+                        : height - (height * 0.121),
                     width: width,
                     child: Scrollbar(
                       child: ListView.builder(

@@ -1112,7 +1112,7 @@ Widget battleDrawer({
                   ),
                 ],
               ),
-              child: inputFilterTextField(
+              child: inputBattleCustomTextField(
                 controller: weeklyDistanceCustomController,
                 errorText: null,
                 hintText: 'Custom value',
