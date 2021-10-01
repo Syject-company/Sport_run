@@ -14,6 +14,7 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/fini
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_bloc/finished_completed_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_bloc/finished_completed_detail_state.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/utils/data_values.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData, ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
@@ -48,6 +49,7 @@ class FinishedCompletedDetailPageState
 
   late UserModel _currentUserModel;
   late BattleUsers _opponentBattleModel;
+  late BattleUsers _myBattleModel;
   late ApplicationUser _opponentAppUserModel;
 
   String _messageText = '';
@@ -59,6 +61,9 @@ class FinishedCompletedDetailPageState
   void initState() {
     super.initState();
     _currentUserModel = PreferenceUtils.getCurrentUserModel();
+
+    _myBattleModel = getMyBattleModel(
+        model: widget.finishedModel, currentUserId: widget.currentUserId);
     _opponentBattleModel = getOpponentBattleModel(
         model: widget.finishedModel, currentUserId: widget.currentUserId);
     _opponentAppUserModel = _opponentBattleModel.applicationUser;
@@ -101,16 +106,18 @@ class FinishedCompletedDetailPageState
                   } else if (state is ImageBattleIsShared) {
                     await _interactApi
                         .getImageBattleShare(id: widget.finishedModel.id)
-                        .then((Uint8List? imageUrl) async{
+                        .then((Uint8List? imageUrl) async {
                       if (imageUrl != null) {
-                        final Directory? dir = await getExternalStorageDirectory();
+                        final Directory? dir =
+                            await getExternalStorageDirectory();
                         final String myImagePath = '${dir!.path}/tempimg.png';
                         final File imageFile = File(myImagePath);
-                        if(!imageFile.existsSync()) {
+                        if (!imageFile.existsSync()) {
                           imageFile.create(recursive: true);
                         }
                         imageFile.writeAsBytes(imageUrl);
-                        Share.shareFiles(<String>[(imageFile.path)], subject: 'One2One.run\nBattle of Supermen!\n');
+                        Share.shareFiles(<String>[(imageFile.path)],
+                            subject: 'One2One.run\nBattle of Supermen!\n');
                       } else {
                         toastUnexpectedError();
                       }
@@ -174,6 +181,12 @@ class FinishedCompletedDetailPageState
       width: width,
       height: height,
       context: context,
+      resultMyApprovalState: getResultApprovalState(
+          resultIsConfirmed: _myBattleModel.resultIsConfirmed,
+          resultIsRejected: _myBattleModel.resultIsRejected),
+      resultOpponentApprovalState: getResultApprovalState(
+          resultIsConfirmed: _opponentBattleModel.resultIsConfirmed,
+          resultIsRejected: _opponentBattleModel.resultIsRejected),
       finishedTime: widget.finishedModel.finishTime != null
           ? getDateWithOutTime(date: widget.finishedModel.finishTime!)
           : '--:--',
@@ -220,6 +233,18 @@ class FinishedCompletedDetailPageState
             finished_completed_detail_bloc.GetChatMessage(messageModel: model));
       }
     });
+  }
+
+  Map<String, dynamic> getResultApprovalState(
+      {required bool resultIsConfirmed, required bool resultIsRejected}) {
+    if (resultIsConfirmed && !resultIsRejected) {
+      return DataValues.resultImagesApprovalState;
+    }
+    if (!resultIsConfirmed && resultIsRejected) {
+      return DataValues.resultImagesRejectedState;
+    }
+
+    return DataValues.resultImagesPendingState;
   }
 
   @override
