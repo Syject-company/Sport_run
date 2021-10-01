@@ -20,6 +20,7 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/acti
     as active_detail_bloc;
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/check_opponent_results.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/utils/data_values.dart';
 import 'package:one2one_run/utils/extension.dart'
     show UserData, DateTimeExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -57,6 +58,7 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
 
   late UserModel _currentUserModel;
   late BattleUsers _opponentBattleModel;
+  late BattleUsers _myBattleModel;
   late ApplicationUser _opponentAppUserModel;
 
   String _messageText = '';
@@ -81,6 +83,9 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
 
   void prepareData() {
     _currentUserModel = PreferenceUtils.getCurrentUserModel();
+
+    _myBattleModel = getMyBattleModel(
+        model: widget.activeModel, currentUserId: widget.currentUserId);
     _opponentBattleModel = getOpponentBattleModel(
         model: widget.activeModel, currentUserId: widget.currentUserId);
     _opponentAppUserModel = _opponentBattleModel.applicationUser;
@@ -241,6 +246,12 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
       currentUserModel: _currentUserModel,
       messages: _messages.reversed.toList(),
       chatController: _chatController,
+      resultMyApprovalState: getResultApprovalState(
+          resultIsConfirmed: _myBattleModel.resultIsConfirmed,
+          resultIsRejected: _myBattleModel.resultIsRejected),
+      resultOpponentApprovalState: getResultApprovalState(
+          resultIsConfirmed: _opponentBattleModel.resultIsConfirmed,
+          resultIsRejected: _opponentBattleModel.resultIsRejected),
       onMessageSend: () {
         _messageText = _chatController.text;
         _chatController.clear();
@@ -362,6 +373,18 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
             .add(active_detail_bloc.GetChatMessage(messageModel: model));
       }
     });
+  }
+
+  Map<String, dynamic> getResultApprovalState(
+      {required bool resultIsConfirmed, required bool resultIsRejected}) {
+    if (resultIsConfirmed && !resultIsRejected) {
+      return DataValues.resultImagesApprovalState;
+    }
+    if (!resultIsConfirmed && resultIsRejected) {
+      return DataValues.resultImagesRejectedState;
+    }
+
+    return DataValues.resultImagesPendingState;
   }
 
   void _clearResultsData() {

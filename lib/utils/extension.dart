@@ -227,6 +227,17 @@ extension UserData on void {
     return model.battleUsers[1];
   }
 
+  BattleUsers getMyBattleModel({
+    required BattleRespondModel model,
+    required String currentUserId,
+  }) {
+    if (model.battleUsers[0].applicationUser.id == currentUserId) {
+      return model.battleUsers[0];
+    }
+
+    return model.battleUsers[1];
+  }
+
   //0001-01-01T00:00:00
   String getTimeWithOutDate({required String time}) {
     return time.substring(11, 19);

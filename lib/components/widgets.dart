@@ -14,6 +14,7 @@ import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/data_values.dart';
+import 'package:one2one_run/utils/enums.dart';
 import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -2026,6 +2027,8 @@ Widget finishedBattleDetailsCard({
   required TextEditingController chatController,
   required VoidCallback onMessageSend,
   required Function(List<String> photos) onTapProofImage,
+  required Map<String, dynamic> resultMyApprovalState,
+  required Map<String, dynamic> resultOpponentApprovalState,
 }) {
   return Center(
     child: SizedBox(
@@ -2037,7 +2040,7 @@ Widget finishedBattleDetailsCard({
           children: <Widget>[
             //NOTE: Battle details
             Container(
-              height: height * 0.49,
+              height: height * 0.511,
               width: width,
               color: Colors.transparent,
               margin: EdgeInsets.only(top: height * 0.01),
@@ -2104,6 +2107,9 @@ Widget finishedBattleDetailsCard({
                           model: model,
                           myProofTime: myProofTime,
                           myProofPhotos: myProofsPhoto,
+                          resultMyApprovalState: resultMyApprovalState,
+                          resultOpponentApprovalState:
+                              resultOpponentApprovalState,
                           opponentProofTime: opponentProofTime,
                           opponentProofPhotos:
                               opponentProofPhotos ?? <String>[],
@@ -2251,7 +2257,7 @@ Widget finishedBattleDetailsCard({
             ),
             //NOTE: Chat title
             Container(
-              margin: EdgeInsets.only(left: width * 0.04, top: height * 0.01),
+              margin: EdgeInsets.only(left: width * 0.04),
               alignment: Alignment.centerLeft,
               child: Text(
                 'Chat',
@@ -2460,6 +2466,8 @@ Widget battleDetailsCard({
   required Function(List<String> photos) onTapProofImage,
   required Function(CheckOpponentResultsModel checkOpponentResultsModel)
       onTapOpponentResults,
+  required Map<String, dynamic> resultMyApprovalState,
+  required Map<String, dynamic> resultOpponentApprovalState,
 }) {
   return Center(
     child: SizedBox(
@@ -2471,7 +2479,7 @@ Widget battleDetailsCard({
           children: <Widget>[
             //NOTE: Battle details
             Container(
-              height: height * 0.49,
+              height: height * 0.511,
               width: width,
               color: Colors.transparent,
               child: Stack(
@@ -2535,6 +2543,9 @@ Widget battleDetailsCard({
                           width: width,
                           model: model,
                           myProofTime: myProofTime,
+                          resultMyApprovalState: resultMyApprovalState,
+                          resultOpponentApprovalState:
+                              resultOpponentApprovalState,
                           myProofPhotos: myProofsPhoto.isNotEmpty
                               ? myProofsPhoto
                               : myProofPhotosLocalStorage,
@@ -2731,7 +2742,7 @@ Widget battleDetailsCard({
             ),
             //NOTE: Chat title
             Container(
-              margin: EdgeInsets.only(left: width * 0.04, top: height * 0.01),
+              margin: EdgeInsets.only(left: width * 0.04),
               alignment: Alignment.centerLeft,
               child: Text(
                 'Chat',
@@ -2927,6 +2938,8 @@ Widget timeAndPhotoInteract({
   required RoundedLoadingButtonController? uploadResultsController,
   required VoidCallback? onTapUploadResults,
   required Function(List<String> photos) onTapProofImage,
+  required Map<String, dynamic> resultMyApprovalState,
+  required Map<String, dynamic> resultOpponentApprovalState,
 }) {
   return Padding(
     padding: EdgeInsets.only(
@@ -2954,13 +2967,14 @@ Widget timeAndPhotoInteract({
               width: width,
               height: height,
               battleId: model.id,
+              resultApprovalState: resultMyApprovalState,
               uploadResultsController: uploadResultsController,
               onTapUploadResults: onTapUploadResults,
               onTapProofImage: onTapProofImage,
             ),
             Container(
               color: Colors.grey,
-              height: height * 0.1,
+              height: height * 0.15,
               width: 0.2,
               margin: EdgeInsets.symmetric(horizontal: width * 0.02),
             ),
@@ -2971,6 +2985,7 @@ Widget timeAndPhotoInteract({
               width: width,
               height: height,
               battleId: model.id,
+              resultApprovalState: resultOpponentApprovalState,
               uploadResultsController: uploadResultsController,
               onTapUploadResults: onTapUploadResults,
               onTapProofImage: onTapProofImage,
@@ -2992,6 +3007,7 @@ Widget timePhotosProofs({
   required VoidCallback? onTapUploadResults,
   required Function(List<String> photos) onTapProofImage,
   required String battleId,
+  required Map<String, dynamic> resultApprovalState,
 }) {
   return SizedBox(
     width: width / 2.45,
@@ -3072,48 +3088,56 @@ Widget timePhotosProofs({
                   onTap: () {
                     onTapProofImage(photos);
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  child: Column(
                     children: <Widget>[
-                      SizedBox(
-                        height: height * 0.08,
-                        width: height * 0.08,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: CachedNetworkImage(
-                            imageUrl: photos[0],
-                            fit: BoxFit.fill,
-                            placeholder: (BuildContext context, String url) =>
-                                Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.transparent,
-                              child: Center(child: progressIndicator()),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            height: height * 0.08,
+                            width: height * 0.08,
+                            child: resultImages(
+                                imageUrl: photos[0],
+                                color: resultApprovalState['color'] as Color),
+                          ),
+                          Visibility(
+                            visible: photos.length > 1,
+                            child: Container(
+                              height: height * 0.08,
+                              width: height * 0.08,
+                              margin: EdgeInsets.only(left: width * 0.03),
+                              child: resultImages(
+                                  imageUrl: photos.length > 1 ? photos[1] : '',
+                                  color: resultApprovalState['color'] as Color),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      Visibility(
-                        visible: photos.length > 1,
-                        child: Container(
-                          height: height * 0.08,
-                          width: height * 0.08,
-                          margin: EdgeInsets.only(left: width * 0.03),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: CachedNetworkImage(
-                              imageUrl: photos.length > 1 ? photos[1] : '',
-                              fit: BoxFit.fill,
-                              placeholder: (BuildContext context, String url) =>
-                                  Container(
-                                width: 50,
-                                height: 50,
-                                color: Colors.transparent,
-                                child: Center(child: progressIndicator()),
-                              ),
+                      Container(
+                        margin: EdgeInsets.only(top: height * 0.01),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Image.asset(
+                              resultApprovalState['icon'] as String,
+                              height: height * 0.02,
+                              width: height * 0.02,
+                              fit: BoxFit.contain,
                             ),
-                          ),
+                            SizedBox(
+                              width: width * 0.02,
+                            ),
+                            Text(
+                              resultApprovalState['title'] as String,
+                              style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12.sp,
+                                  fontFamily: 'roboto',
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -3128,6 +3152,31 @@ Widget timePhotosProofs({
                 ),
             ],
           ),
+  );
+}
+
+Widget resultImages({required Color color, required String imageUrl}) {
+  return Container(
+    padding: const EdgeInsets.all(0.5),
+    decoration: BoxDecoration(
+        border: Border.all(
+          color: color,
+          width: 2.5,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(10))),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(10.0),
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.fill,
+        placeholder: (BuildContext context, String url) => Container(
+          width: 50,
+          height: 50,
+          color: Colors.transparent,
+          child: Center(child: progressIndicator()),
+        ),
+      ),
+    ),
   );
 }
 

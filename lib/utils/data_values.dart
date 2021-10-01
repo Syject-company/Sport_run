@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:one2one_run/resources/images.dart';
 
 mixin DataValues {
-  static Map<int, Map<String, dynamic>> battleStatusLabels = <int, Map<String, dynamic>>{
+  static Map<int, Map<String, dynamic>> battleStatusLabels =
+      <int, Map<String, dynamic>>{
     0: proposedData,
     1: negotiateData,
     2: acceptedData,
@@ -48,7 +49,8 @@ mixin DataValues {
     'color': const Color(0xffFFBABA),
   };
 
-  static Map<int, Map<String, dynamic>> battleUserStatusLabel = <int, Map<String, dynamic>>{
+  static Map<int, Map<String, dynamic>> battleUserStatusLabel =
+      <int, Map<String, dynamic>>{
     0: wonData,
     1: lostData,
     2: drawData,
@@ -70,5 +72,22 @@ mixin DataValues {
     'title': 'Draw',
     'icon': wonIcon,
     'color': const Color(0xffCFFFB1),
+  };
+
+  static Map<String, dynamic> resultImagesApprovalState = <String, dynamic>{
+    'title': 'Approved',
+    'icon': approveResultIcon,
+    'color': const Color(0xff1BCE2D),
+  };
+  static Map<String, dynamic> resultImagesPendingState = <String, dynamic>{
+    'title': 'Pending approval',
+    'icon': pendingResultIcon,
+    'color': const Color(0xffC4C4C4),
+  };
+
+  static Map<String, dynamic> resultImagesRejectedState = <String, dynamic>{
+    'title': 'Rejected',
+    'icon': rejectResultIcon,
+    'color': const Color(0xffFA1A1A),
   };
 }

@@ -82,6 +82,12 @@ String get configurationIcon => 'assets/icons/configuration.png';
 
 String get helpIcon => 'assets/icons/help.png';
 
+String get approveResultIcon => 'assets/icons/approve_result.png';
+
+String get rejectResultIcon => 'assets/icons/reject_result.png';
+
+String get pendingResultIcon => 'assets/icons/pending_result.png';
+
 String get searchIcon => 'assets/icons/search.png';
 
 String get swipeUpDownIcon => 'assets/icons/swipe_up_down.png';
