@@ -746,7 +746,7 @@ Widget filterDrawer({
                             child: buildRoundedButton(
                               label: 'APPLY',
                               width: width,
-                              height: 40.h,
+                              height: height * 0.065,
                               buttonTextSize: 14.0,
                               controller: applyController,
                               textColor: Colors.white,
@@ -762,7 +762,7 @@ Widget filterDrawer({
                             child: buttonNoIcon(
                               title: 'Cancel',
                               color: Colors.transparent,
-                              height: 40.h,
+                              height: height * 0.065,
                               textColor: Colors.black,
                               buttonTextSize: 14.0,
                               shadowColor: Colors.transparent,
@@ -778,7 +778,7 @@ Widget filterDrawer({
                   visible: !isNeedFilter,
                   child: Container(
                     width: width,
-                    height: height - (height * 0.07),
+                    height: height - (height * 0.4),
                     color: Colors.white.withOpacity(0.7),
                   ),
                 ),
@@ -1112,7 +1112,7 @@ Widget battleDrawer({
                   ),
                 ],
               ),
-              child: inputFilterTextField(
+              child: inputBattleCustomTextField(
                 controller: weeklyDistanceCustomController,
                 errorText: null,
                 hintText: 'Custom value',

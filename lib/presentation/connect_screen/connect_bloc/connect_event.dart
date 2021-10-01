@@ -16,3 +16,14 @@ class NavigateToUserInfo extends ConnectEvent {
   @override
   List<Object> get props => <Object>[userModel];
 }
+
+class StartSearchTheValue extends ConnectEvent {
+  StartSearchTheValue(this.value);
+
+  final String value;
+
+  @override
+  List<Object> get props => <Object>[value];
+}
+
+class ClearSearchTheValue extends ConnectEvent {}

@@ -66,13 +66,13 @@ class IsNeedToCheckOpponentResults extends ActiveDetailEvent {
   List<Object> get props => <Object>[isNeed];
 }
 
-class IsDeleteKeyBoardPressed extends ActiveDetailEvent {
-  IsDeleteKeyBoardPressed({
-    required this.isDeletePressed,
+class ChangeTheTimeResult extends ActiveDetailEvent {
+  ChangeTheTimeResult({
+    required this.time,
   });
 
-  final bool isDeletePressed;
+  final String time;
 
   @override
-  List<Object> get props => <Object>[isDeletePressed];
+  List<Object> get props => <Object>[time];
 }

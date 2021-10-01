@@ -204,7 +204,7 @@ class InteractPageState extends State<InteractPage> {
         Navigator.push<dynamic>(context,
             MaterialPageRoute<dynamic>(builder: (BuildContext context) {
           PreferenceUtils.setIsInteractFAQHelperShown(true);
-          return FAQHelperPage(
+          return const FAQHelperPage(
             faqHelperState: FAQHelperState.InteractState,
           );
         }));

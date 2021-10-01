@@ -170,3 +170,5 @@ class ChangeDropMenuDistanceValue extends HomeEvent {
   @override
   List<Object> get props => <Object>[value];
 }
+
+class ShowHideSearchBar extends HomeEvent {}

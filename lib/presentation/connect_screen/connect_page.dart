@@ -8,23 +8,35 @@ import 'package:one2one_run/presentation/connect_screen/connect_bloc/bloc.dart'
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_bloc.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_state.dart';
 import 'package:one2one_run/presentation/connect_screen/user_info.dart';
+import 'package:one2one_run/resources/colors.dart';
 
 //NOte:'/connect'
 class ConnectPage extends StatefulWidget {
-  const ConnectPage({Key? key, required this.users, required this.onBattleTap})
+  const ConnectPage(
+      {Key? key,
+      required this.users,
+      required this.onBattleTap,
+      required this.isNeedToShowSearchBar})
       : super(key: key);
 
   final List<ConnectUsersModel> users;
   final Function(ConnectUsersModel userModel) onBattleTap;
+  final bool isNeedToShowSearchBar;
 
   @override
   ConnectPageState createState() => ConnectPageState();
 }
 
 class ConnectPageState extends State<ConnectPage> {
+  final TextEditingController _searchController = TextEditingController();
+
+  List<ConnectUsersModel> usersConnect = <ConnectUsersModel>[];
+
   @override
   void initState() {
     super.initState();
+
+    usersConnect.addAll(widget.users);
   }
 
   @override
@@ -52,38 +64,142 @@ class ConnectPageState extends State<ConnectPage> {
                 ),
               ),
             );
+          } else if (state is SearchTheValueIsStarted) {
+            usersConnect.addAll(widget.users.where((ConnectUsersModel element) {
+              return element.nickName
+                  .toString()
+                  .toLowerCase()
+                  .contains(state.value);
+            }));
+          } else if (state is SearchTheValueIsCleared) {
+            usersConnect.addAll(widget.users);
           }
           BlocProvider.of<ConnectBloc>(context).add(connect_bloc.UpdateState());
         },
         child: BlocBuilder<ConnectBloc, ConnectState>(
             builder: (final BuildContext context, final ConnectState state) {
           return Scaffold(
+            resizeToAvoidBottomInset: false,
             body: Container(
               width: width,
               height: height,
               color: Colors.white,
-              child: Scrollbar(
-                child: ListView.builder(
-                    itemCount: widget.users.length,
-                    physics: const BouncingScrollPhysics(),
-                    itemBuilder: (BuildContext con, int index) {
-                      return userCardMain(
-                        context: context,
-                        width: width,
-                        height: height,
-                        model: widget.users[index],
-                        onTapCard: () {
-                          BlocProvider.of<ConnectBloc>(context).add(
-                              connect_bloc.NavigateToUserInfo(
-                                  widget.users[index]));
-                        },
-                        onTapBattleCreate: (ConnectUsersModel model) {
-                          widget.onBattleTap(
-                            model,
-                          );
-                        },
-                      );
-                    }),
+              child: Column(
+                children: <Widget>[
+                  Visibility(
+                    visible: widget.isNeedToShowSearchBar,
+                    child: Container(
+                      height: height * 0.06,
+                      width: width,
+                      margin: EdgeInsets.symmetric(
+                          horizontal: width * 0.025, vertical: height * 0.01),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white,
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 3,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            height: height * 0.05,
+                            width: width - (height * 0.207),
+                            margin:
+                                EdgeInsets.symmetric(horizontal: width * 0.025),
+                            child: inputBattleCustomTextField(
+                              controller: _searchController,
+                              errorText: null,
+                              hintText: 'Search...',
+                              maxLength: 30,
+                              keyboardType: TextInputType.text,
+                            ),
+                          ),
+                          Material(
+                            color: Colors.transparent,
+                            child: Row(
+                              children: <Widget>[
+                                IconButton(
+                                  color: redColor,
+                                  splashColor: const Color(0xffCFFFB1),
+                                  highlightColor: const Color(0xffCFFFB1),
+                                  splashRadius: height * 0.03,
+                                  icon: const Icon(Icons.search_rounded),
+                                  iconSize: height * 0.035,
+                                  tooltip: 'Search',
+                                  onPressed: () {
+                                    usersConnect.clear();
+
+                                    BlocProvider.of<ConnectBloc>(context).add(
+                                        connect_bloc.StartSearchTheValue(
+                                            _searchController.text
+                                                .trim()
+                                                .toLowerCase()));
+                                  },
+                                ),
+                                Container(
+                                  color: Colors.grey,
+                                  height: height * 0.04,
+                                  width: 0.5,
+                                ),
+                                IconButton(
+                                  color: Colors.grey,
+                                  splashColor: const Color(0xffCFFFB1),
+                                  highlightColor: const Color(0xffCFFFB1),
+                                  splashRadius: height * 0.03,
+                                  tooltip: 'Clear',
+                                  icon:
+                                      const Icon(Icons.delete_forever_outlined),
+                                  iconSize: height * 0.035,
+                                  onPressed: () {
+                                    usersConnect.clear();
+                                    _searchController.text = '';
+                                    BlocProvider.of<ConnectBloc>(context).add(
+                                        connect_bloc.ClearSearchTheValue());
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: widget.isNeedToShowSearchBar
+                        ? height - (height * 0.2)
+                        : height - (height * 0.121),
+                    width: width,
+                    child: Scrollbar(
+                      child: ListView.builder(
+                          itemCount: usersConnect.length,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: (BuildContext con, int index) {
+                            return userCardMain(
+                              context: context,
+                              width: width,
+                              height: height,
+                              model: usersConnect[index],
+                              onTapCard: () {
+                                BlocProvider.of<ConnectBloc>(context).add(
+                                    connect_bloc.NavigateToUserInfo(
+                                        usersConnect[index]));
+                              },
+                              onTapBattleCreate: (ConnectUsersModel model) {
+                                widget.onBattleTap(
+                                  model,
+                                );
+                              },
+                            );
+                          }),
+                    ),
+                  ),
+                ],
               ),
             ),
           );

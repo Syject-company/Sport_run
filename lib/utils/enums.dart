@@ -11,6 +11,7 @@ enum DrawersType {
   BattleDrawer,
   BattleOnNotificationDrawer,
   ChangeBattleDrawer,
+  NON,
 }
 
 enum FAQHelperState {

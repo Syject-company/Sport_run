@@ -7,14 +7,20 @@ import 'package:one2one_run/utils/enums.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 //NOte:'/faqHelper'
-class FAQHelperPage extends StatelessWidget {
-  FAQHelperPage({Key? key, required this.faqHelperState}) : super(key: key);
-
-  final PageController _pageController = PageController();
+class FAQHelperPage extends StatefulWidget {
+  const FAQHelperPage({Key? key, required this.faqHelperState})
+      : super(key: key);
 
   final FAQHelperState faqHelperState;
 
-  final List<String> faqImages = <String>[
+  @override
+  FAQHelperPageState createState() => FAQHelperPageState();
+
+}
+class FAQHelperPageState extends State<FAQHelperPage> {
+  final PageController _pageController = PageController();
+
+  final List<String> _faqImages = <String>[
     faqHelp1,
     faqHelp2,
     faqHelp3,
@@ -22,6 +28,23 @@ class FAQHelperPage extends StatelessWidget {
     faqHelp5,
     faqHelp6,
   ];
+
+   bool isNeedToShowGoButton = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController.addListener(() {
+         if(_pageController.page == (widget.faqHelperState == FAQHelperState.LoginState ||
+             widget.faqHelperState == FAQHelperState.InteractState ? 2: 5)){
+           isNeedToShowGoButton = true;
+         } else {
+           isNeedToShowGoButton = false;
+         }
+         setState((){});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +62,12 @@ class FAQHelperPage extends StatelessWidget {
           children: <Widget>[
             PageView.builder(
               controller: _pageController,
-              itemCount: _getPageCount(state: faqHelperState),
+              scrollDirection: Axis.vertical,
+              itemCount: _getPageCount(state: widget.faqHelperState),
               itemBuilder: (_, int index) {
                 return faqItem(
-                    image: faqImages[
-                        faqHelperState == FAQHelperState.InteractState
+                    image: _faqImages[
+                    widget.faqHelperState == FAQHelperState.InteractState
                             ? (index + 3)
                             : index],
                     height: height,
@@ -51,17 +75,17 @@ class FAQHelperPage extends StatelessWidget {
               },
             ),
             Positioned(
-              bottom: height * 0.01,
+              right: height * 0.01,
               child: SmoothPageIndicator(
+                axisDirection: Axis.vertical,
                 controller: _pageController,
-                count: _getPageCount(state: faqHelperState),
-                effect: JumpingDotEffect(
-                  dotHeight: width * 0.032,
-                  dotWidth: width * 0.032,
-                  spacing: 10,
+                count: _getPageCount(state: widget.faqHelperState),
+                effect: SlideEffect(
+                  dotHeight: width * 0.022,
+                  dotWidth: width * 0.022,
+                  spacing: 5,
                   activeDotColor: redColor,
-                  dotColor: lightGreenColor,
-                  verticalOffset: 12.0,
+                  dotColor: Colors.grey.shade300,
                   // strokeWidth: 5,
                 ),
               ),
@@ -69,16 +93,19 @@ class FAQHelperPage extends StatelessWidget {
             Positioned(
               right: 5.0,
               bottom: height * 0.03,
-              child: buttonNoIcon(
-                title: "Let's start",
-                color: redColor.withOpacity(0.6),
-                height: height * 0.045,
-                width: width * 0.02,
-                textColor: Colors.white,
-                buttonTextSize: 14.0,
-                onPressed: () {
-                  onClick(context: context);
-                },
+              child: Visibility(
+                visible: isNeedToShowGoButton,
+                child: buttonNoIcon(
+                  title: "Let's Go  ->",
+                  color: redColor,
+                  height: height * 0.055,
+                  width: width * 0.02,
+                  textColor: Colors.white,
+                  buttonTextSize: 14.0,
+                  onPressed: () {
+                    onClick(context: context);
+                  },
+                ),
               ),
             ),
           ],
@@ -88,10 +115,10 @@ class FAQHelperPage extends StatelessWidget {
   }
 
   void onClick({required BuildContext context}) {
-    if (faqHelperState == FAQHelperState.LoginState) {
+    if (widget.faqHelperState == FAQHelperState.LoginState) {
       Navigator.of(context).pushReplacementNamed(Constants.homeRoute);
-    } else if (faqHelperState == FAQHelperState.InteractState ||
-        faqHelperState == FAQHelperState.HelpState) {
+    } else if (widget.faqHelperState == FAQHelperState.InteractState ||
+        widget.faqHelperState == FAQHelperState.HelpState) {
       Navigator.of(context).pop();
     }
   }
@@ -110,10 +137,7 @@ class FAQHelperPage extends StatelessWidget {
     if (state == FAQHelperState.LoginState ||
         state == FAQHelperState.InteractState) {
       return 3;
-    } else if (state == FAQHelperState.HelpState) {
-      return 6;
     }
-
-    return 0;
+    return 6;
   }
 }

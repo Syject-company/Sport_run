@@ -20,3 +20,14 @@ class NavigatedToUserInfo extends ConnectState {
   @override
   List<Object> get props => <Object>[userModel];
 }
+
+class SearchTheValueIsStarted extends ConnectState {
+  const SearchTheValueIsStarted(this.value);
+
+  final String value;
+
+  @override
+  List<Object> get props => <Object>[value];
+}
+
+class SearchTheValueIsCleared extends ConnectState {}

@@ -11,6 +11,10 @@ class ConnectBloc extends Bloc<ConnectEvent, ConnectState> {
       yield StateUpdated();
     } else if (event is NavigateToUserInfo) {
       yield NavigatedToUserInfo(event.userModel);
+    }else if (event is StartSearchTheValue) {
+      yield SearchTheValueIsStarted(event.value);
+    }else if (event is ClearSearchTheValue) {
+      yield SearchTheValueIsCleared();
     }
   }
 }

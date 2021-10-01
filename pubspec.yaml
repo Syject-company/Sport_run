@@ -32,8 +32,8 @@ dependencies:
   shared_preferences: ^2.0.8
   google_sign_in: ^5.1.1
   sign_in_with_apple: ^3.2.0
-  firebase_messaging: ^10.0.7
-  firebase_core: ^1.6.0
+  firebase_messaging: ^10.0.8
+  firebase_core: ^1.7.0
   firebase_analytics: "^8.3.0"
   intl: ^0.17.0
   share_plus: ^2.1.4

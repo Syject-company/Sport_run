@@ -110,7 +110,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                               context,
                               MaterialPageRoute<dynamic>(
                                 builder: (BuildContext context) =>
-                                    FAQHelperPage(
+                                    const FAQHelperPage(
                                   faqHelperState: FAQHelperState.LoginState,
                                 ),
                               ));

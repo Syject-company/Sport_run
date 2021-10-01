@@ -106,7 +106,7 @@ class FinishedCompletedDetailPageState
                         final Directory? dir = await getExternalStorageDirectory();
                         final String myImagePath = '${dir!.path}/tempimg.png';
                         final File imageFile = File(myImagePath);
-                        if(! await imageFile.exists()) {
+                        if(!imageFile.existsSync()) {
                           imageFile.create(recursive: true);
                         }
                         imageFile.writeAsBytes(imageUrl);

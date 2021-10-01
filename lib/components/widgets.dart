@@ -105,7 +105,7 @@ Widget inputTextField({
   );
 }
 
-Widget inputFilterTextField({
+Widget inputBattleCustomTextField({
   required TextEditingController controller,
   required String hintText,
   required String? errorText,
@@ -122,6 +122,7 @@ Widget inputFilterTextField({
       fontWeight: FontWeight.bold,
     ),
     onChanged: valueChanged,
+    textInputAction: TextInputAction.done,
     cursorColor: const Color(0xffFF1744),
     maxLength: maxLength,
     keyboardType: keyboardType,
@@ -2860,7 +2861,7 @@ Widget battleDetailsCard({
                                                     fontFamily: 'roboto',
                                                     fontSize: 12.sp,
                                                     fontWeight:
-                                                        FontWeight.w500),
+                                                        FontWeight.w600),
                                               ),
                                             ),
                                           ),
@@ -3165,13 +3166,12 @@ Widget uploadBattleResultDialog({
   required File? imageFirst,
   required File? imageSecond,
   required bool isUploading,
-  required TextEditingController timeController,
-  required ValueChanged<RawKeyEvent>? onKey,
-  required ValueChanged<String>? resultValueChanged,
+  required String myTimeValue,
+  required Function(Duration time) onChangeTime,
 }) {
   return Center(
     child: Container(
-      height: height * 0.67,
+      height: height * 0.80,
       margin: EdgeInsets.symmetric(horizontal: width * 0.025),
       padding: EdgeInsets.all(width * 0.05),
       decoration: BoxDecoration(
@@ -3223,20 +3223,33 @@ Widget uploadBattleResultDialog({
                   fontWeight: FontWeight.w700),
             ),
           ),
+          Text(
+            '" $myTimeValue "',
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 14.sp,
+                fontFamily: 'roboto',
+                fontWeight: FontWeight.w700),
+          ),
           SizedBox(
+            height: height * 0.015,
+          ),
+          Container(
             width: width,
-            child: RawKeyboardListener(
-              focusNode: FocusNode(),
-              onKey: onKey,
-              child: inputTextField(
-                errorText: null,
-                controller: timeController,
-                hintText: 'Time format should be 00:00:00',
-                keyboardType: TextInputType.number,
-                maxLength: 8,
-                isCounterShown: true,
-                valueChanged: resultValueChanged,
-              ),
+            height: height * 0.2,
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color(0xffCDCDCD).withOpacity(0.3),
+                  width: 2,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
+            child: CupertinoTimerPicker(
+              mode: CupertinoTimerPickerMode.hms,
+              minuteInterval: 1,
+              secondInterval: 1,
+              initialTimerDuration:
+                  const Duration(hours: 01, minutes: 30, seconds: 00),
+              onTimerDurationChanged: onChangeTime,
             ),
           ),
           SizedBox(
