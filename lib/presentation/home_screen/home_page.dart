@@ -362,126 +362,127 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       _userModel = snapshot.data;
                       updateRangeValuesAndUnit();
                     }
-                    return Scaffold(
-                      key: _keyScaffold,
-                      backgroundColor: homeBackground,
-                      resizeToAvoidBottomInset: false,
-                      onEndDrawerChanged: (bool value) {
-                        if (!value &&
-                            _selectedDrawersType != DrawersType.FilterDrawer) {
-                          _isNeedToOpenMessageDrawer = false;
-                          _isNeedToOpenChangeBattleDrawer = false;
-                          _currentDistanceValue = 5;
-                          _battleNameController.text = '';
-                          Timer(const Duration(milliseconds: 300), () {
-                            BlocProvider.of<HomeBloc>(context)
-                                .add(home_bloc.OpenFilterDrawer());
-                          });
-                        }
-                      },
-                      appBar: AppBar(
-                        shadowColor: Colors.transparent,
-                        title: Text(
-                          _pageTitle,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'roboto',
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600),
+                    return SafeArea(
+                      child: Scaffold(
+                        key: _keyScaffold,
+                        backgroundColor: homeBackground,
+                        resizeToAvoidBottomInset: false,
+                        onEndDrawerChanged: (bool value) {
+                          if (!value &&
+                              _selectedDrawersType != DrawersType.FilterDrawer) {
+                            _isNeedToOpenMessageDrawer = false;
+                            _isNeedToOpenChangeBattleDrawer = false;
+                            _currentDistanceValue = 5;
+                            _battleNameController.text = '';
+                            Timer(const Duration(milliseconds: 300), () {
+                              BlocProvider.of<HomeBloc>(context)
+                                  .add(home_bloc.OpenFilterDrawer());
+                            });
+                          }
+                        },
+                        appBar: AppBar(
+                          shadowColor: Colors.transparent,
+                          centerTitle: false,
+                          title: Text(
+                            _pageTitle,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'roboto',
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          backgroundColor: colorPrimary,
+                          actions: _selectedDrawerItem == DrawerItems.Connect
+                              ? appBarButtons(
+                                  isNeedSecondButton: true,
+                                  onTapSecondButton: () {
+                                    BlocProvider.of<HomeBloc>(context)
+                                        .add(home_bloc.ShowHideSearchBar());
+                                  },
+                                  secondButtonIcon:
+                                      const Icon(Icons.search_rounded),
+                                  firstButtonIcon:
+                                      const Icon(Icons.filter_alt_outlined),
+                                  onTapFirstButton: () async {
+                                    if (_keyScaffold.currentState != null &&
+                                        !_keyScaffold
+                                            .currentState!.isEndDrawerOpen) {
+                                      _keyScaffold.currentState!.openEndDrawer();
+                                    }
+                                  },
+                                )
+                              : _selectedDrawerItem == DrawerItems.Interact
+                                  ? <Widget>[Container()]
+                                  : null,
                         ),
-                        backgroundColor: colorPrimary,
-                        actions: _selectedDrawerItem == DrawerItems.Connect
-                            ? appBarButtons(
-                                isNeedSecondButton: true,
-                                onTapSecondButton: () {
-                                  BlocProvider.of<HomeBloc>(context)
-                                      .add(home_bloc.ShowHideSearchBar());
-                                },
-                                secondButtonIcon:
-                                    const Icon(Icons.search_rounded),
-                                firstButtonIcon:
-                                    const Icon(Icons.filter_alt_outlined),
-                                onTapFirstButton: () async {
-                                  if (_keyScaffold.currentState != null &&
-                                      !_keyScaffold
-                                          .currentState!.isEndDrawerOpen) {
-                                    _keyScaffold.currentState!.openEndDrawer();
-                                  }
-                                },
-                              )
-                            : _selectedDrawerItem == DrawerItems.Interact
-                                ? <Widget>[Container()]
-                                : null,
-                      ),
-                      endDrawer: _selectedDrawerItem == DrawerItems.Connect ||
-                              _selectedDrawerItem == DrawerItems.Interact
-                          ? ConditionalSwitch.single<DrawersType>(
-                              context: context,
-                              valueBuilder: (BuildContext context) =>
-                                  _selectedDrawersType,
-                              caseBuilders: <DrawersType,
-                                  Widget Function(BuildContext)>{
-                                DrawersType.FilterDrawer:
-                                    (BuildContext context) =>
-                                        _connectFilterDrawer(
-                                            context: context,
-                                            width: width,
-                                            height: height),
-                                DrawersType.BattleDrawer:
-                                    (BuildContext context) {
-                                  return _createBattleDrawer(
-                                    context: context,
-                                    model: _userBattleModel,
-                                    width: width,
-                                    height: height,
-                                  );
-                                },
-                                DrawersType.BattleOnNotificationDrawer:
-                                    (BuildContext context) {
-                                  return _battleOfferOnNotification(
-                                    context: context,
-                                    model: _battleRespondModel,
-                                    width: width,
-                                    height: height,
-                                  );
-                                },
-                                DrawersType.ChangeBattleDrawer:
-                                    (BuildContext context) {
-                                  return _changeBattle(
-                                    context: context,
-                                    width: width,
-                                    height: height,
-                                    onTapCancelBattle: () {
-                                      if (_keyScaffold.currentState != null &&
-                                          _keyScaffold
-                                              .currentState!.isEndDrawerOpen) {
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                    userName: getOpponentName(
+                        endDrawer: _selectedDrawerItem == DrawerItems.Connect ||
+                                _selectedDrawerItem == DrawerItems.Interact
+                            ? ConditionalSwitch.single<DrawersType>(
+                                context: context,
+                                valueBuilder: (BuildContext context) =>
+                                    _selectedDrawersType,
+                                caseBuilders: <DrawersType,
+                                    Widget Function(BuildContext)>{
+                                  DrawersType.FilterDrawer:
+                                      (BuildContext context) =>
+                                          _connectFilterDrawer(
+                                              context: context,
+                                              width: width,
+                                              height: height),
+                                  DrawersType.BattleDrawer:
+                                      (BuildContext context) {
+                                    return _createBattleDrawer(
+                                      context: context,
+                                      model: _userBattleModel,
+                                      width: width,
+                                      height: height,
+                                    );
+                                  },
+                                  DrawersType.BattleOnNotificationDrawer:
+                                      (BuildContext context) {
+                                    return _battleOfferOnNotification(
+                                      context: context,
                                       model: _battleRespondModel,
-                                      currentUserId: _currentUserId,
-                                    ),
-                                    userPhoto: getOpponentPhoto(
-                                      model: _battleRespondModel,
-                                      currentUserId: _currentUserId,
-                                    ),
-                                    userRank: getOpponentRank(
-                                      model: _battleRespondModel,
-                                      currentUserId: _currentUserId,
-                                    ),
-                                  );
-                                },
-                              },
-                              fallbackBuilder: (BuildContext context) =>
-                                  _connectFilterDrawer(
+                                      width: width,
+                                      height: height,
+                                    );
+                                  },
+                                  DrawersType.ChangeBattleDrawer:
+                                      (BuildContext context) {
+                                    return _changeBattle(
                                       context: context,
                                       width: width,
-                                      height: height),
-                            )
-                          : null,
-                      body: SafeArea(
-                        child: Column(
+                                      height: height,
+                                      onTapCancelBattle: () {
+                                        if (_keyScaffold.currentState != null &&
+                                            _keyScaffold
+                                                .currentState!.isEndDrawerOpen) {
+                                          Navigator.of(context).pop();
+                                        }
+                                      },
+                                      userName: getOpponentName(
+                                        model: _battleRespondModel,
+                                        currentUserId: _currentUserId,
+                                      ),
+                                      userPhoto: getOpponentPhoto(
+                                        model: _battleRespondModel,
+                                        currentUserId: _currentUserId,
+                                      ),
+                                      userRank: getOpponentRank(
+                                        model: _battleRespondModel,
+                                        currentUserId: _currentUserId,
+                                      ),
+                                    );
+                                  },
+                                },
+                                fallbackBuilder: (BuildContext context) =>
+                                    _connectFilterDrawer(
+                                        context: context,
+                                        width: width,
+                                        height: height),
+                              )
+                            : null,
+                        body: Column(
                           children: <Widget>[
                             Container(
                               width: width,
