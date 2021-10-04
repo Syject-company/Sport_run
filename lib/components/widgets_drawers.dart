@@ -1117,7 +1117,7 @@ Widget battleDrawer({
                 errorText: null,
                 hintText: 'Custom value',
                 maxLength: 6,
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
               ),
             ),
           ),

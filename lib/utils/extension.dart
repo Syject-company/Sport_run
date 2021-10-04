@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -343,5 +345,17 @@ extension Authorization on void {
           fontSize: 16.0,
           gravity: ToastGravity.CENTER);
     });
+  }
+}
+
+extension ScreenUtils on void {
+  bool isIPhoneX(MediaQueryData mediaQuery) {
+    if (Platform.isIOS) {
+      final Size size = mediaQuery.size;
+      if (size.height == 812.0 || size.width == 812.0) {
+        return true;
+      }
+    }
+    return false;
   }
 }
