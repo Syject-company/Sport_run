@@ -20,7 +20,9 @@ class EnjoyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     _currentUserModel = PreferenceUtils.getCurrentUserModel();
     final double height = MediaQuery.of(context).size.height -
-        (MediaQuery.of(context).padding.top + kToolbarHeight);
+        (MediaQuery.of(context).padding.top +
+            kToolbarHeight +
+            MediaQuery.of(context).padding.bottom);
     final double width = MediaQuery.of(context).size.width;
 
     return FutureBuilder<List<EnjoyResponseModel>?>(
