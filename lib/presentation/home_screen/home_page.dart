@@ -139,7 +139,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height -
-        (MediaQuery.of(context).padding.top + kToolbarHeight);
+        (MediaQuery.of(context).padding.top +
+            kToolbarHeight +
+            MediaQuery.of(context).padding.bottom);
     final double width = MediaQuery.of(context).size.width;
 
     return BlocProvider<HomeBloc>(
@@ -639,10 +641,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             ),
                             _bottomNavigationBar(
                                 context: context, width: width, height: height),
-                            if (isIPhoneX(MediaQuery.of(context)))
-                              const SizedBox(height: 16.0)
-                            else
-                              const SizedBox(),
+                            // if (isIPhoneX(MediaQuery.of(context)))
+                            //   const SizedBox(height: 26.0)
+                            // else
+                            //   const SizedBox(),
                           ],
                         ),
                       ),

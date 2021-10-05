@@ -42,7 +42,9 @@ class ConnectPageState extends State<ConnectPage> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height -
-        (MediaQuery.of(context).padding.top + kToolbarHeight);
+        (MediaQuery.of(context).padding.top +
+            kToolbarHeight +
+            MediaQuery.of(context).padding.bottom);
     final double width = MediaQuery.of(context).size.width;
 
     return BlocProvider<ConnectBloc>(
