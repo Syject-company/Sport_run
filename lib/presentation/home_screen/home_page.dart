@@ -27,7 +27,7 @@ import 'package:one2one_run/presentation/interact_screen/interact_page.dart';
 import 'package:one2one_run/presentation/settings_screen/settings_page.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:one2one_run/resources/strings.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
@@ -105,6 +105,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   double _currentDistanceValue = 5;
   late SignalR _signalR;
 
+ late HomeBloc _homeBloc;
+
   @override
   void initState() {
     super.initState();
@@ -113,6 +115,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void prepareData() {
+    _homeBloc = HomeBloc();
     _token = PreferenceUtils.getUserToken();
     _signalR = SignalR();
     _signalR.initSocketConnection(
@@ -145,7 +148,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final double width = MediaQuery.of(context).size.width;
 
     return BlocProvider<HomeBloc>(
-      create: (final BuildContext context) => HomeBloc(),
+      create: (final BuildContext context) => _homeBloc,
       child: BlocListener<HomeBloc, HomeState>(
         listener: (final BuildContext context, final HomeState state) async {
           if (state is NavigatedToPage) {
@@ -257,9 +260,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     context: context,
                     height: height,
                     width: width,
-                    currentUserName: currentUserModel.nickName ?? 'NickName',
+                    currentUserName: currentUserModel.nickName ?? AppStringRes.nickname,
                     currentUserPhoto: currentUserModel.photoLink,
-                    opponentUserName: _userBattleModel?.nickName ?? 'NickName',
+                    opponentUserName: _userBattleModel?.nickName ?? AppStringRes.nickname,
                     opponentUserPhoto: _userBattleModel?.photoLink,
                   );
 
@@ -344,8 +347,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           } else if (state is SearchBarShownHidden) {
             _isNeedToShowSearchBar = !_isNeedToShowSearchBar;
           }
+              if(!_homeBloc.isClosed){
+                BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
+              }
 
-          BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
         },
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (final BuildContext context, final HomeState state) {
@@ -541,8 +546,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                                             MainAxisSize.min,
                                                         children: <Widget>[
                                                           buildRoundedButton(
-                                                            label: 'Refresh'
-                                                                .toUpperCase(),
+                                                            label: AppStringRes.refresh,
                                                             width: width,
                                                             height: 40.h,
                                                             buttonTextSize:
@@ -704,7 +708,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             },
           ),
           drawerItem(
-            label: 'Interact',
+            label: AppStringRes.battles,
             icon: interactIcon,
             width: width * 0.06,
             height: height * 0.033,
@@ -713,13 +717,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 : Colors.black,
             onPressed: () {
               _selectedDrawerItem = DrawerItems.Interact;
-              _pageTitle = 'Interact';
+              _pageTitle = AppStringRes.battles;
               BlocProvider.of<HomeBloc>(context)
                   .add(home_bloc.NavigateToPage(pageIndex: 1));
             },
           ),
           drawerItem(
-            label: 'Enjoy',
+            label: AppStringRes.rankings,
             icon: enjoyIcon,
             width: width * 0.08,
             height: height * 0.033,
@@ -728,7 +732,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 : Colors.black,
             onPressed: () {
               _selectedDrawerItem = DrawerItems.Enjoy;
-              _pageTitle = 'Enjoy';
+              _pageTitle = AppStringRes.rankings;
               BlocProvider.of<HomeBloc>(context)
                   .add(home_bloc.NavigateToPage(pageIndex: 2));
             },
@@ -993,7 +997,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       home_bloc.SendMessageToOpponent(
                           _messageController.text.isNotEmpty
                               ? _messageController.text
-                              : messagesToOpponent[_selectedMessageIndex]));
+                              : AppStringRes.messagesToOpponent[_selectedMessageIndex]));
                 } else {
                   _applyMessageController.reset();
                   await Fluttertoast.showToast(
@@ -1090,7 +1094,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
-      confirmText: 'APPLY',
+      confirmText: AppStringRes.apply,
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -1113,7 +1117,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      confirmText: 'APPLY',
+      confirmText: AppStringRes.apply,
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
@@ -1198,12 +1202,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       return (await showDialog<bool>(
             context: context,
             builder: (BuildContext context) => AlertDialog(
-              content: const Text('Do you want to exit an App?'),
+              content: Text(AppStringRes.doWantExitApp),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(
-                    'Cancel',
+                    AppStringRes.cancel,
                     style: TextStyle(
                         color: Colors.green,
                         fontFamily: 'roboto',
@@ -1274,6 +1278,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
+    _homeBloc.close();
     _pageController.dispose();
     _battleNameController.dispose();
     _messageController.dispose();

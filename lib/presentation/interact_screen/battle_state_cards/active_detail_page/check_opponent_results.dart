@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/check_opponent_results_model.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
@@ -49,7 +50,7 @@ class CheckOpponentResultsPage extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Opponent',
+                      AppStringRes.opponent,
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 13.sp,
@@ -109,7 +110,7 @@ class CheckOpponentResultsPage extends StatelessWidget {
                                   width: 7.0,
                                 ),
                                 Text(
-                                  'Rank ${model.rank}',
+                                  '${AppStringRes.rank} ${model.rank}',
                                   style: TextStyle(
                                       color: Colors.grey,
                                       fontSize: 12.sp,
@@ -128,7 +129,7 @@ class CheckOpponentResultsPage extends StatelessWidget {
                   ),
                   results(
                     width: width,
-                    title: 'Time',
+                    title: AppStringRes.time,
                     value: model.time,
                   ),
                   SizedBox(
@@ -136,7 +137,7 @@ class CheckOpponentResultsPage extends StatelessWidget {
                   ),
                   results(
                     width: width,
-                    title: 'Distance',
+                    title: AppStringRes.distance,
                     value: model.distance,
                   ),
                   SizedBox(
@@ -207,7 +208,7 @@ class CheckOpponentResultsPage extends StatelessWidget {
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: buildRoundedButton(
-                            label: 'ACCEPT',
+                            label: AppStringRes.accept.toUpperCase(),
                             width: width,
                             height: 40.h,
                             buttonTextSize: 14.0,
@@ -236,10 +237,10 @@ class CheckOpponentResultsPage extends StatelessWidget {
                               dialog(
                                   context: context,
                                   title:
-                                      "Are you sure you want to reject the opponent's results?",
-                                  text: 'You can open chat for discussion.',
+                                  AppStringRes.areYouSureRejectOpponentResults,
+                                  text: AppStringRes.youCanOpenChatForDiscussion,
                                   applyButtonText: 'REJECT',
-                                  cancelButtonText: 'CANCEL',
+                                  cancelButtonText: AppStringRes.cancel.toUpperCase(),
                                   onApplyPressed: () {
                                     Navigator.pop(context);
                                     onTapResults(false);
@@ -254,7 +255,7 @@ class CheckOpponentResultsPage extends StatelessWidget {
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: buttonNoIcon(
-                            title: 'CANCEL',
+                            title: AppStringRes.cancel.toUpperCase(),
                             color: Colors.transparent,
                             height: 40.h,
                             textColor: Colors.grey,

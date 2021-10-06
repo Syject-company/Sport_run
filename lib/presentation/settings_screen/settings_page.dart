@@ -13,6 +13,7 @@ import 'package:one2one_run/presentation/settings_screen/settings_bloc/bloc.dart
     as settings_bloc;
 import 'package:one2one_run/presentation/settings_screen/settings_bloc/settings_bloc.dart';
 import 'package:one2one_run/presentation/settings_screen/settings_bloc/settings_state.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
@@ -134,7 +135,7 @@ class SettingsPageState extends State<SettingsPage> {
                                           left: width * 0.03,
                                           top: height * 0.01),
                                       child: Text(
-                                        snapshot.data!.nickName ?? 'Nickname',
+                                        snapshot.data!.nickName ?? AppStringRes.nickname,
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontFamily: 'roboto',
@@ -228,9 +229,9 @@ class SettingsPageState extends State<SettingsPage> {
                               dialog(
                                   context: context,
                                   //title: 'Logout',
-                                  text: 'Are you sure you want to logout?',
+                                  text: AppStringRes.areYouSureWantLogout,
                                   applyButtonText: 'Logout',
-                                  cancelButtonText: 'Cancel',
+                                  cancelButtonText: AppStringRes.cancel,
                                   onApplyPressed: () async {
                                     await PreferenceUtils
                                             .setIsUserAuthenticated(false)

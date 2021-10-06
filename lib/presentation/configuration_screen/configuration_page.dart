@@ -11,6 +11,7 @@ import 'package:one2one_run/presentation/configuration_screen/configuration_bloc
     as configuration_bloc;
 import 'package:one2one_run/presentation/configuration_screen/configuration_bloc/configuration_bloc.dart';
 import 'package:one2one_run/presentation/configuration_screen/configuration_bloc/configuration_state.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/extension.dart' show ToastExtension;
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -91,7 +92,7 @@ class ConfigurationPageState extends State<ConfigurationPage> {
                       appBar: AppBar(
                         shadowColor: Colors.transparent,
                         title: Text(
-                          'Configuration',
+                          AppStringRes.configuration,
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'roboto',
@@ -111,7 +112,7 @@ class ConfigurationPageState extends State<ConfigurationPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                'Push notifications',
+                                AppStringRes.pushNotifications,
                                 style: TextStyle(
                                     color: Colors.grey,
                                     fontFamily: 'roboto',
@@ -123,7 +124,7 @@ class ConfigurationPageState extends State<ConfigurationPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   Text(
-                                    'Battle updates',
+                                    AppStringRes.battleUpdates,
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 14.sp,
@@ -153,7 +154,7 @@ class ConfigurationPageState extends State<ConfigurationPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   Text(
-                                    'Chat messages',
+                                    AppStringRes.chatMessages,
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 14.sp,
@@ -175,7 +176,7 @@ class ConfigurationPageState extends State<ConfigurationPage> {
                               ),
                               const Spacer(),
                               buildRoundedButton(
-                                label: 'SAVE CHANGES',
+                                label: AppStringRes.saveChanges,
                                 width: width,
                                 height: 40.h,
                                 buttonTextSize: 14.0,

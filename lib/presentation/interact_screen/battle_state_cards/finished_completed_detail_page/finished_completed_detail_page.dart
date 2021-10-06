@@ -13,6 +13,7 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/fini
     as finished_completed_detail_bloc;
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_bloc/finished_completed_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_completed_detail_page/finished_completed_detail_bloc/finished_completed_detail_state.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/data_values.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData, ToastExtension;
@@ -148,7 +149,7 @@ class FinishedCompletedDetailPageState
                           },
                         ),
                         title: Text(
-                          widget.finishedModel.battleName ?? 'Battle',
+                          widget.finishedModel.battleName ?? AppStringRes.battle,
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'roboto',

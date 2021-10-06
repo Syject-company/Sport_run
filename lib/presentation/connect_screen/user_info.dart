@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/extension.dart';
@@ -24,7 +25,7 @@ class UserInfo extends StatelessWidget {
       appBar: AppBar(
         leading: const BackButton(color: Colors.white),
         title: Text(
-          userModel.nickName ?? 'NickName',
+          userModel.nickName ?? AppStringRes.nickname,
           style: TextStyle(
               color: Colors.white,
               fontFamily: 'roboto',
@@ -65,7 +66,7 @@ class UserInfo extends StatelessWidget {
                               Container(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  userModel.nickName ?? 'NickName',
+                                  userModel.nickName ?? AppStringRes.nickname,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 18.sp,
@@ -87,7 +88,7 @@ class UserInfo extends StatelessWidget {
                                 width: 7.0,
                               ),
                               Text(
-                                'Rank ${userModel.rank}',
+                                '${AppStringRes.rank} ${userModel.rank}',
                                 style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 12.sp,
@@ -104,7 +105,7 @@ class UserInfo extends StatelessWidget {
                           alignment: Alignment.centerLeft,
                           width: width * 0.65,
                           child: Text(
-                            userModel.moto ?? 'Here will be your Motto.',
+                            userModel.moto ?? AppStringRes.hereWillBeYourMotto,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 color: Colors.black,
@@ -125,7 +126,7 @@ class UserInfo extends StatelessWidget {
                     _cardItem(
                       height: height,
                       width: width + 10,
-                      title: 'Pace',
+                      title: AppStringRes.pace,
                       icon: paceIcon,
                       value:
                           '${userModel.pace.toStringAsFixed(1)} min/${userModel.isMetric ? 'km' : 'mile'}',
@@ -136,7 +137,7 @@ class UserInfo extends StatelessWidget {
                     _cardItem(
                       height: height,
                       width: width + 10,
-                      title: 'Runs',
+                      title: AppStringRes.runs,
                       icon: runsIcon,
                       value: '${userModel.workoutsPerWeek} times/week',
                     ),
@@ -150,7 +151,7 @@ class UserInfo extends StatelessWidget {
                   child: _cardItem(
                     height: height,
                     width: width + 120,
-                    title: 'Weekly Distance',
+                    title: AppStringRes.weeklyDistance,
                     icon: weeklyDistanceIcon,
                     value:
                         '${userModel.isMetric ? double.parse(userModel.weeklyDistance.toStringAsFixed(0)) : double.parse(userModel.weeklyDistance.toStringAsFixed(1))} ${userModel.isMetric ? 'km' : 'mile'}',
@@ -169,7 +170,7 @@ class UserInfo extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     _userWonLoss(
-                        title: 'Won',
+                        title: AppStringRes.won,
                         value: '${userModel.wins}',
                         colorValue: Colors.red),
                     Container(
@@ -178,7 +179,7 @@ class UserInfo extends StatelessWidget {
                       width: 0.5,
                     ),
                     _userWonLoss(
-                      title: 'Loss',
+                      title: AppStringRes.loss,
                       value: '${userModel.loses}',
                     ),
                     Container(
@@ -187,7 +188,7 @@ class UserInfo extends StatelessWidget {
                       width: 0.5,
                     ),
                     _userWonLoss(
-                      title: 'Discarded',
+                      title: AppStringRes.discarded,
                       value: '${userModel.discarded}',
                     ),
                     Container(
@@ -196,7 +197,7 @@ class UserInfo extends StatelessWidget {
                       width: 0.5,
                     ),
                     _userWonLoss(
-                      title: 'My score',
+                      title: AppStringRes.myScore,
                       value: '${userModel.score}',
                     ),
                   ],
@@ -215,10 +216,10 @@ class UserInfo extends StatelessWidget {
                   height: height * 0.5,
                   child: _userBio(
                       value: userModel.description ??
-                          'Here will be your Biography.'),
+                          AppStringRes.hereWillBeYourBiography),
                 ),
                 buttonWithIcon(
-                  title: 'BATTLE',
+                  title: AppStringRes.battle.toUpperCase(),
                   icon: battleIcon,
                   buttonColor: Colors.red,
                   iconColor: Colors.white,
@@ -275,7 +276,7 @@ class UserInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          'Bio',
+          AppStringRes.bio,
           textAlign: TextAlign.start,
           style: TextStyle(
               color: const Color(0xff2B2B2B),

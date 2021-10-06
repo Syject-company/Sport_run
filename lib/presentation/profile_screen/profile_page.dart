@@ -15,6 +15,7 @@ import 'package:one2one_run/presentation/profile_screen/profile_bloc/bloc.dart'
     as profile_bloc;
 import 'package:one2one_run/presentation/profile_screen/profile_bloc/profile_bloc.dart';
 import 'package:one2one_run/presentation/profile_screen/profile_bloc/profile_state.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
@@ -105,7 +106,7 @@ class ProfilePageState extends State<ProfilePage> {
                         //title: 'Logout',
                         text: 'Are you sure you want to logout?',
                         applyButtonText: 'Logout',
-                        cancelButtonText: 'Cancel',
+                        cancelButtonText: AppStringRes.cancel,
                         onApplyPressed: () async {
                           await PreferenceUtils.setIsUserAuthenticated(false)
                               .then((_) {
@@ -125,7 +126,7 @@ class ProfilePageState extends State<ProfilePage> {
                         (BuildContext ctx, AsyncSnapshot<UserModel?> snapshot) {
                       if (snapshot.hasData && snapshot.data != null) {
                         _nameController.text =
-                            snapshot.data!.nickName ?? 'NickName';
+                            snapshot.data!.nickName ?? AppStringRes.nickname;
                         _emailController.text =
                             snapshot.data!.email ?? 'email@gmail.com';
                         return Padding(
@@ -157,7 +158,7 @@ class ProfilePageState extends State<ProfilePage> {
                                             left: (height * 0.12) / 2),
                                         child: Text(
                                           snapshot.data!.moto ??
-                                              'Here will be your Motto.',
+                                              AppStringRes.hereWillBeYourMotto,
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                               color: Colors.black,
@@ -174,7 +175,7 @@ class ProfilePageState extends State<ProfilePage> {
                                             //title: 'Profile picture',
                                             text: 'Profile picture',
                                             applyButtonText: 'Change',
-                                            cancelButtonText: 'Cancel',
+                                            cancelButtonText: AppStringRes.cancel,
                                             onApplyPressed: () {
                                               BlocProvider.of<ProfileBloc>(
                                                       context)
@@ -265,7 +266,7 @@ class ProfilePageState extends State<ProfilePage> {
                                     Row(
                                       children: <Widget>[
                                         _userPaceDistance(
-                                          title: 'Pace',
+                                          title: AppStringRes.pace,
                                           value: snapshot.data!.isMetric
                                               ? '${getTimeStringFromDouble(snapshot.data!.pace.toDouble())} min/km'
                                               : '${(snapshot.data!.pace).toStringAsFixed(2)} min/mile',
@@ -276,7 +277,7 @@ class ProfilePageState extends State<ProfilePage> {
                                           width: width * 0.2,
                                         ),
                                         _userPaceDistance(
-                                          title: 'Weekly Distance',
+                                          title: AppStringRes.weeklyDistance,
 
                                           value:   '${snapshot.data!.weeklyDistance.toStringAsFixed(snapshot.data!.isMetric ? 0 : 1)} ${snapshot.data!.isMetric ? 'km' : 'mile'}',
 
@@ -307,7 +308,7 @@ class ProfilePageState extends State<ProfilePage> {
                                           MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
                                         _userWonLoss(
-                                            title: 'Won',
+                                            title: AppStringRes.won,
                                             value: '${snapshot.data!.wins}',
                                             colorValue: Colors.red),
                                         Container(
@@ -316,7 +317,7 @@ class ProfilePageState extends State<ProfilePage> {
                                           width: 0.5,
                                         ),
                                         _userWonLoss(
-                                          title: 'Loss',
+                                          title: AppStringRes.loss,
                                           value: '${snapshot.data!.loses}',
                                         ),
                                         Container(
@@ -325,7 +326,7 @@ class ProfilePageState extends State<ProfilePage> {
                                           width: 0.5,
                                         ),
                                         _userWonLoss(
-                                          title: 'Discarded',
+                                          title: AppStringRes.discarded,
                                           value: '${snapshot.data!.discarded}',
                                         ),
                                         Container(
@@ -352,7 +353,7 @@ class ProfilePageState extends State<ProfilePage> {
                                     ),
                                     _userBio(
                                         value: snapshot.data!.description ??
-                                            'Here will be your Biography.'),
+                                            AppStringRes.hereWillBeYourBiography),
                                   ],
                                 ),
                               ),
@@ -444,7 +445,7 @@ class ProfilePageState extends State<ProfilePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          'Bio',
+          AppStringRes.bio,
           textAlign: TextAlign.start,
           style: TextStyle(
               color: const Color(0xff2B2B2B),

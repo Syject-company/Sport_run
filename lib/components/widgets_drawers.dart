@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:one2one_run/components/widgets.dart';
@@ -5,7 +6,7 @@ import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:one2one_run/resources/strings.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -66,7 +67,7 @@ Widget changeBattleDrawer({
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.04),
               child: Text(
-                'Opponent',
+                AppStringRes.opponent,
                 style: TextStyle(
                     color: Colors.grey,
                     fontSize: 13.sp,
@@ -125,7 +126,7 @@ Widget changeBattleDrawer({
                             width: 7.0,
                           ),
                           Text(
-                            'Rank $userRank',
+                            '${AppStringRes.rank}  $userRank',
                             style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 12.sp,
@@ -143,10 +144,10 @@ Widget changeBattleDrawer({
               height: height * 0.01,
             ),
             seekBarWeekly(
-              title: 'Distance',
+              title: AppStringRes.distance,
               context: context,
-              dialogTitle: 'Distance',
-              dialogText: distanceText,
+              dialogTitle: AppStringRes.distance,
+              dialogText: AppStringRes.distanceText,
               timePerKM: currentDistanceValue,
               unit: isKM ? 'km' : 'mile',
               minValue: isKM ? 2 : 3,
@@ -160,7 +161,7 @@ Widget changeBattleDrawer({
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.04),
               child: Text(
-                'Deadline date',
+                AppStringRes.deadlineDate,
                 style: TextStyle(
                     color: Colors.grey,
                     fontSize: 13.sp,
@@ -206,7 +207,7 @@ Widget changeBattleDrawer({
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: buildRoundedButton(
-                      label: 'APPLY',
+                      label: AppStringRes.apply,
                       width: width,
                       height: 40.h,
                       buttonTextSize: 14.0,
@@ -222,7 +223,7 @@ Widget changeBattleDrawer({
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: buttonNoIcon(
-                      title: 'Cancel',
+                      title: AppStringRes.cancel,
                       color: Colors.transparent,
                       height: 40.h,
                       textColor: Colors.black,
@@ -279,7 +280,7 @@ Widget battleOfferOnNotificationDrawer({
                     width: 20.0,
                   ),
                   Text(
-                    'Battle',
+                    AppStringRes.battle,
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 22.sp,
@@ -295,7 +296,7 @@ Widget battleOfferOnNotificationDrawer({
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.04),
               child: Text(
-                'Opponent',
+                AppStringRes.opponent,
                 style: TextStyle(
                     color: Colors.grey,
                     fontSize: 13.sp,
@@ -354,7 +355,7 @@ Widget battleOfferOnNotificationDrawer({
                             width: 7.0,
                           ),
                           Text(
-                            'Rank ${secondUserModel.rank}',
+                            '${AppStringRes.rank} ${secondUserModel.rank}',
                             style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 12.sp,
@@ -379,7 +380,7 @@ Widget battleOfferOnNotificationDrawer({
                   Row(
                     children: <Widget>[
                       Text(
-                        'Distance',
+                        AppStringRes.distance,
                         style: TextStyle(
                             color: Colors.grey,
                             fontFamily: 'roboto',
@@ -398,7 +399,7 @@ Widget battleOfferOnNotificationDrawer({
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text(
-                                  'Distance',
+                                  AppStringRes.distance,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       color: Colors.black,
@@ -407,7 +408,7 @@ Widget battleOfferOnNotificationDrawer({
                                       fontWeight: FontWeight.w700),
                                 ),
                                 content: Text(
-                                  distanceText,
+                                  AppStringRes.distanceText,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontFamily: 'roboto',
@@ -422,7 +423,7 @@ Widget battleOfferOnNotificationDrawer({
                                       margin: const EdgeInsets.symmetric(
                                           vertical: 10.0),
                                       child: buttonNoIcon(
-                                        title: 'Ok',
+                                        title: AppStringRes.ok,
                                         color: redColor,
                                         height: 40.h,
                                         onPressed: () async {
@@ -458,7 +459,7 @@ Widget battleOfferOnNotificationDrawer({
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Deadline date',
+                AppStringRes.deadlineDate,
                 style: TextStyle(
                     color: Colors.grey,
                     fontFamily: 'roboto',
@@ -484,7 +485,7 @@ Widget battleOfferOnNotificationDrawer({
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Message',
+                AppStringRes.message,
                 style: TextStyle(
                     color: Colors.grey,
                     fontFamily: 'roboto',
@@ -495,7 +496,7 @@ Widget battleOfferOnNotificationDrawer({
             Padding(
               padding: const EdgeInsets.only(left: 16.0, top: 8.0),
               child: Text(
-                battleMessage ?? 'It will be a piece of cake!',
+                battleMessage ?? AppStringRes.willBePieceOfCake,
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: 'roboto',
@@ -513,7 +514,7 @@ Widget battleOfferOnNotificationDrawer({
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: buildRoundedButton(
-                      label: 'Accept',
+                      label: AppStringRes.accept,
                       width: width,
                       height: 40.h,
                       buttonTextSize: 14.0,
@@ -529,7 +530,7 @@ Widget battleOfferOnNotificationDrawer({
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: buttonNoIcon(
-                      title: 'Change conditions',
+                      title: AppStringRes.changeConditions,
                       color: Colors.transparent,
                       height: 40.h,
                       textColor: Colors.black,
@@ -544,7 +545,7 @@ Widget battleOfferOnNotificationDrawer({
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: buttonNoIcon(
-                      title: 'Cancel',
+                      title: AppStringRes.cancel,
                       color: Colors.transparent,
                       height: 40.h,
                       textColor: Colors.black,
@@ -599,7 +600,7 @@ Widget filterDrawer({
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.03),
               child: Text(
-                'Filters',
+                AppStringRes.filters,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 20.sp,
@@ -636,10 +637,10 @@ Widget filterDrawer({
                 Column(
                   children: <Widget>[
                     rangeSeekBarPace(
-                      title: 'Pace',
+                      title: AppStringRes.pace,
                       context: context,
-                      dialogTitle: 'Pace',
-                      dialogText: paceText,
+                      dialogTitle: AppStringRes.pace,
+                      dialogText: AppStringRes.paceText,
                       startTimePerKM: valuePaceStart,
                       endTimePerKM: valuePaceEnd,
                       unit: isKM ? 'km' : 'mile',
@@ -650,10 +651,10 @@ Widget filterDrawer({
                       onRangeChanged: onRangePaceChanged,
                     ),
                     rangeSeekBarWeekly(
-                      title: 'Weekly distance',
+                      title: AppStringRes.weeklyDistance,
                       context: context,
-                      dialogTitle: 'Weekly distance',
-                      dialogText: weeklyDistanceText,
+                      dialogTitle: AppStringRes.weeklyDistance,
+                      dialogText: AppStringRes.weeklyDistanceText,
                       startTimePerKM: valueWeeklyStart,
                       endTimePerKM: valueWeeklyEnd,
                       unit: isKM ? 'km' : 'mile',
@@ -669,7 +670,7 @@ Widget filterDrawer({
                       alignment: Alignment.centerLeft,
                       padding: EdgeInsets.symmetric(horizontal: width * 0.03),
                       child: Text(
-                        'Runs at least:',
+                        AppStringRes.runsAtLeast,
                         style: TextStyle(
                             color: Colors.black,
                             fontFamily: 'roboto',
@@ -713,7 +714,7 @@ Widget filterDrawer({
                                   thickness: 2,
                                 ),
                                 Text(
-                                  'times per week',
+                                  AppStringRes.timesPerWeek,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       color: Colors.black,
@@ -744,7 +745,7 @@ Widget filterDrawer({
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: buildRoundedButton(
-                              label: 'APPLY',
+                              label: AppStringRes.apply,
                               width: width,
                               height: height * 0.065,
                               buttonTextSize: 14.0,
@@ -760,7 +761,7 @@ Widget filterDrawer({
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: buttonNoIcon(
-                              title: 'Cancel',
+                              title: AppStringRes.cancel,
                               color: Colors.transparent,
                               height: height * 0.065,
                               textColor: Colors.black,
@@ -830,7 +831,7 @@ Widget battleDrawer({
                   width: 20.0,
                 ),
                 Text(
-                  'Battle',
+                  AppStringRes.battle,
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 22.sp,
@@ -846,7 +847,7 @@ Widget battleDrawer({
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.04),
             child: Text(
-              'Opponent',
+              AppStringRes.opponent,
               style: TextStyle(
                   color: Colors.grey,
                   fontSize: 13.sp,
@@ -881,7 +882,7 @@ Widget battleDrawer({
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      model?.nickName ?? 'NickName',
+                      model?.nickName ?? AppStringRes.nickname,
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 18.sp,
@@ -905,7 +906,7 @@ Widget battleDrawer({
                           width: 7.0,
                         ),
                         Text(
-                          'Rank ${model?.rank}',
+                          '${AppStringRes.rank} ${model?.rank}',
                           style: TextStyle(
                               color: Colors.grey,
                               fontSize: 12.sp,
@@ -939,7 +940,7 @@ Widget battleDrawer({
             child: Row(
               children: <Widget>[
                 Text(
-                  'Frequent distances',
+                  AppStringRes.frequentDistances,
                   style: TextStyle(
                       color: Colors.grey,
                       fontFamily: 'roboto',
@@ -957,7 +958,7 @@ Widget battleDrawer({
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text(
-                            'Weekly distance',
+                            AppStringRes.weeklyDistance,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: Colors.black,
@@ -966,7 +967,7 @@ Widget battleDrawer({
                                 fontWeight: FontWeight.w700),
                           ),
                           content: Text(
-                            weeklyDistanceText,
+                            AppStringRes.weeklyDistanceText,
                             style: TextStyle(
                                 color: Colors.black,
                                 fontFamily: 'roboto',
@@ -981,7 +982,7 @@ Widget battleDrawer({
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 10.0),
                                 child: buttonNoIcon(
-                                  title: 'Ok',
+                                  title: AppStringRes.ok,
                                   color: redColor,
                                   height: 40.h,
                                   onPressed: () async {
@@ -1013,7 +1014,7 @@ Widget battleDrawer({
                 width: 7.0,
               ),
               Text(
-                'Distance',
+                AppStringRes.distance,
                 style: TextStyle(
                     color: Colors.grey,
                     fontSize: 12.sp,
@@ -1067,7 +1068,7 @@ Widget battleDrawer({
                     );
                   }).toList(),
                   hint: Text(
-                    'Select',
+                    AppStringRes.select,
                     style: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 12,
@@ -1115,7 +1116,7 @@ Widget battleDrawer({
               child: inputBattleCustomTextField(
                 controller: weeklyDistanceCustomController,
                 errorText: null,
-                hintText: 'Custom value',
+                hintText: AppStringRes.customValue,
                 maxLength: 6,
                 keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
               ),
@@ -1126,13 +1127,26 @@ Widget battleDrawer({
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-            child: Text(
-              'Deadline date',
-              style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 13.sp,
-                  fontFamily: 'roboto',
-                  fontWeight: FontWeight.w700),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  AppStringRes.deadlineDate,
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 13.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w700),
+                ),
+                Text(
+                  AppStringRes.deadlineDateMessage,
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 11.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w500),
+                )
+              ],
             ),
           ),
           Padding(
@@ -1166,7 +1180,7 @@ Widget battleDrawer({
           Padding(
             padding: EdgeInsets.only(left: width * 0.04, top: height * 0.02),
             child: Text(
-              'Message to opponent',
+              AppStringRes.messageToOpponent,
               style: TextStyle(
                   color: Colors.grey,
                   fontSize: 13.sp,
@@ -1222,7 +1236,7 @@ Widget battleDrawer({
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: buildRoundedButton(
-                    label: 'APPLY',
+                    label: AppStringRes.apply,
                     width: width,
                     height: 40.h,
                     buttonTextSize: 14.0,
@@ -1238,7 +1252,7 @@ Widget battleDrawer({
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: buttonNoIcon(
-                    title: 'Cancel',
+                    title: AppStringRes.cancel,
                     color: Colors.transparent,
                     height: 40.h,
                     textColor: Colors.black,
@@ -1289,7 +1303,7 @@ Widget messageToOpponentDrawer({
                   width: 20.0,
                 ),
                 Text(
-                  'Message to opponent',
+                  AppStringRes.messageToOpponent,
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 18.sp,
@@ -1309,7 +1323,7 @@ Widget messageToOpponentDrawer({
             child: inputTextField(
               controller: messageController,
               errorText: null,
-              hintText: 'My variant',
+              hintText: AppStringRes.myVariant,
             ),
           ),
           SizedBox(
@@ -1318,7 +1332,7 @@ Widget messageToOpponentDrawer({
           SizedBox(
             height: height * 0.7,
             child: ListView.builder(
-                itemCount: messagesToOpponent.length,
+                itemCount: AppStringRes.messagesToOpponent.length,
                 itemBuilder: (BuildContext con, int index) {
                   return Container(
                     color: index == selectedMessageIndex
@@ -1347,7 +1361,7 @@ Widget messageToOpponentDrawer({
                               ),
                             ),
                             child: Text(
-                              messagesToOpponent[index],
+                              AppStringRes.messagesToOpponent[index],
                               style: TextStyle(
                                   color: index == selectedMessageIndex
                                       ? Colors.red
@@ -1371,7 +1385,7 @@ Widget messageToOpponentDrawer({
               horizontal: width * 0.04,
             ),
             child: buildRoundedButton(
-              label: 'APPLY',
+              label: AppStringRes.apply,
               width: width,
               height: 40.h,
               buttonTextSize: 14.0,
