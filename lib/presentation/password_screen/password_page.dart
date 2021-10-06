@@ -14,6 +14,7 @@ import 'package:one2one_run/presentation/password_screen/password_bloc/bloc.dart
     as password_bloc;
 import 'package:one2one_run/presentation/password_screen/password_bloc/password_bloc.dart';
 import 'package:one2one_run/presentation/password_screen/password_bloc/password_state.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/constants.dart';
@@ -341,7 +342,7 @@ class PasswordPageState extends State<PasswordPage> {
                   primary: Colors.transparent,
                   shadowColor: Colors.transparent),
               child: Text(
-                'Cancel'.toUpperCase(),
+                AppStringRes.cancel.toUpperCase(),
                 style: const TextStyle(
                     fontSize: 17.0,
                     fontWeight: FontWeight.w600,
@@ -498,7 +499,7 @@ class PasswordPageState extends State<PasswordPage> {
                 primary: Colors.transparent,
                 shadowColor: Colors.transparent),
             child: Text(
-              'Cancel'.toUpperCase(),
+              AppStringRes.cancel.toUpperCase(),
               style: const TextStyle(
                   fontSize: 17.0,
                   fontWeight: FontWeight.w600,
@@ -587,7 +588,7 @@ class PasswordPageState extends State<PasswordPage> {
             height: 40.h,
           ),
           buildRoundedButton(
-            label: 'Apply',
+            label: AppStringRes.apply,
             width: width,
             height: 40.h,
             controller: _applyNewPassController,
@@ -614,7 +615,7 @@ class PasswordPageState extends State<PasswordPage> {
                   primary: Colors.transparent,
                   shadowColor: Colors.transparent),
               child: Text(
-                'Cancel'.toUpperCase(),
+                AppStringRes.cancel.toUpperCase(),
                 style: const TextStyle(
                     fontSize: 17.0,
                     fontWeight: FontWeight.w600,

@@ -13,8 +13,8 @@ import 'package:one2one_run/data/models/opponent_chat_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/utils/data_values.dart';
-import 'package:one2one_run/utils/enums.dart';
 import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -179,7 +179,7 @@ Widget inputTextChatField({
             focusedBorder: InputBorder.none,
             fillColor: Colors.transparent,
             filled: true,
-            hintText: 'Type here',
+            hintText: AppStringRes.typeHere,
             hintStyle: hintTextStyle,
           ),
         ),
@@ -521,7 +521,7 @@ Widget seekBarPace({
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 10.0),
                                 child: buttonNoIcon(
-                                  title: 'Ok',
+                                  title: AppStringRes.ok,
                                   color: redColor,
                                   height: 40.h,
                                   onPressed: () async {
@@ -641,7 +641,7 @@ Widget rangeSeekBarPace({
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 10.0),
                                 child: buttonNoIcon(
-                                  title: 'Ok',
+                                  title: AppStringRes.ok,
                                   color: redColor,
                                   height: 40.h,
                                   onPressed: () async {
@@ -788,7 +788,7 @@ void dialogImageZoom({
         insetPadding:
             const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
         title: Text(
-          'Pinch to zoom',
+          AppStringRes.pinchToZoom,
           style: TextStyle(
               color: Colors.black,
               fontFamily: 'roboto',
@@ -848,7 +848,7 @@ void dialogImageZoom({
             width: 100.0,
             height: 50.0,
             child: buttonNoIcon(
-              title: 'Close'.toUpperCase(),
+              title: AppStringRes.close.toUpperCase(),
               color: Colors.transparent,
               height: 40.h,
               shadowColor: Colors.transparent,
@@ -929,7 +929,7 @@ Widget seekBarWeekly({
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 10.0),
                                 child: buttonNoIcon(
-                                  title: 'Ok',
+                                  title: AppStringRes.ok,
                                   color: redColor,
                                   height: 40.h,
                                   onPressed: () async {
@@ -1037,7 +1037,7 @@ Widget rangeSeekBarWeekly({
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 10.0),
                                 child: buttonNoIcon(
-                                  title: 'Ok',
+                                  title: AppStringRes.ok,
                                   color: redColor,
                                   height: 40.h,
                                   onPressed: () async {
@@ -1379,7 +1379,7 @@ Widget interactListItem({
       child: Column(
         children: <Widget>[
           Text(
-            model.battleName ?? 'Battle',
+            model.battleName ?? AppStringRes.battle,
             style: TextStyle(
                 color: Colors.red,
                 fontSize: 18.sp,
@@ -1434,7 +1434,7 @@ Widget interactListItem({
                 ),
               ),
               Text(
-                'Opponent',
+                AppStringRes.opponent,
                 style: TextStyle(
                     color: Colors.grey,
                     fontSize: 12.sp,
@@ -1445,7 +1445,7 @@ Widget interactListItem({
                 width: 5.0,
               ),
               Text(
-                opponentName ?? 'Nickname',
+                opponentName ?? AppStringRes.nickname,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 14.sp,
@@ -1467,7 +1467,7 @@ Widget interactListItem({
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
                 child: Text(
-                  model.message ?? 'It will be a piece of cake!',
+                  model.message ?? AppStringRes.willBePieceOfCake,
                   maxLines: 1,
                   style: TextStyle(
                       color: Colors.black,
@@ -1485,7 +1485,7 @@ Widget interactListItem({
               child: cardItem(
                 height: height,
                 width: width + width * 0.7,
-                title: 'Battle date',
+                title: AppStringRes.battleDate,
                 icon: weeklyDistanceIcon,
                 value: model.timeLeft.toString(),
               ),
@@ -1499,7 +1499,7 @@ Widget interactListItem({
             child: cardItem(
               height: height,
               width: width + 50,
-              title: 'Distance',
+              title: AppStringRes.distance,
               icon: distanceIcon,
               value: distance,
             ),
@@ -1510,7 +1510,7 @@ Widget interactListItem({
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: height * 0.015),
                 child: Text(
-                  model.statusReason ?? 'Declined...',
+                  model.statusReason ?? AppStringRes.declinedThreeDots,
                   maxLines: 3,
                   style: TextStyle(
                       color: Colors.redAccent,
@@ -1538,7 +1538,7 @@ Widget interactListItem({
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 buttonNoIcon(
-                  title: 'Accept',
+                  title: AppStringRes.accept,
                   color: const Color(0xffCFFFB1),
                   textColor: Colors.black87,
                   width: width * 0.25,
@@ -1549,7 +1549,7 @@ Widget interactListItem({
                   },
                 ),
                 buttonNoIcon(
-                  title: 'Change',
+                  title: AppStringRes.change,
                   color: const Color(0xffEDEDED),
                   textColor: Colors.black87,
                   width: width * 0.25,
@@ -1560,7 +1560,7 @@ Widget interactListItem({
                   },
                 ),
                 buttonNoIcon(
-                  title: 'Decline',
+                  title: AppStringRes.decline,
                   color: Colors.white,
                   textColor: redColor,
                   width: width * 0.25,
@@ -1644,7 +1644,7 @@ Widget pendingFinishedBattleDetailsCard({
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
                             child: Text(
-                              model.message ?? 'It will be a piece of cake!',
+                              model.message ?? AppStringRes.willBePieceOfCake,
                               maxLines: 1,
                               style: TextStyle(
                                   color: Colors.grey,
@@ -1660,7 +1660,7 @@ Widget pendingFinishedBattleDetailsCard({
                         cardItem(
                           height: height,
                           width: width + width * 0.7,
-                          title: 'Deadline',
+                          title: AppStringRes.deadline,
                           icon: weeklyDistanceIcon,
                           value: model.timeLeft.toString(),
                         ),
@@ -1672,7 +1672,7 @@ Widget pendingFinishedBattleDetailsCard({
                                 vertical: height * 0.02),
                             child: Center(
                               child: Text(
-                                "One of or both participants haven't uploaded their results.",
+                                AppStringRes.haveNotUploadedTheirResults,
                                 maxLines: 3,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -1713,7 +1713,7 @@ Widget pendingFinishedBattleDetailsCard({
                                     height: height * 0.01,
                                   ),
                                   Text(
-                                    currentUserModel.nickName ?? 'Nickname',
+                                    currentUserModel.nickName ?? AppStringRes.nickname,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -1827,7 +1827,7 @@ Widget pendingFinishedBattleDetailsCard({
               margin: EdgeInsets.only(left: width * 0.04, top: height * 0.04),
               alignment: Alignment.centerLeft,
               child: Text(
-                'Chat',
+                AppStringRes.chat,
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: 'roboto',
@@ -2080,7 +2080,7 @@ Widget finishedBattleDetailsCard({
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
                             child: Text(
-                              model.message ?? 'It will be a piece of cake!',
+                              model.message ?? AppStringRes.willBePieceOfCake,
                               maxLines: 1,
                               style: TextStyle(
                                   color: Colors.grey,
@@ -2097,7 +2097,7 @@ Widget finishedBattleDetailsCard({
                           height: height,
                           width: width + width * 0.7,
                           alignment: Alignment.center,
-                          title: 'Finished at',
+                          title: AppStringRes.finishedAt,
                           icon: finishedIcon,
                           value: finishedTime,
                         ),
@@ -2146,7 +2146,7 @@ Widget finishedBattleDetailsCard({
                                     height: height * 0.01,
                                   ),
                                   Text(
-                                    currentUserModel.nickName ?? 'Nickname',
+                                    currentUserModel.nickName ?? AppStringRes.nickname,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -2260,7 +2260,7 @@ Widget finishedBattleDetailsCard({
               margin: EdgeInsets.only(left: width * 0.04),
               alignment: Alignment.centerLeft,
               child: Text(
-                'Chat',
+                AppStringRes.chat,
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: 'roboto',
@@ -2518,7 +2518,7 @@ Widget battleDetailsCard({
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
                             child: Text(
-                              model.message ?? 'It will be a piece of cake!',
+                              model.message ?? AppStringRes.willBePieceOfCake,
                               maxLines: 1,
                               style: TextStyle(
                                   color: Colors.grey,
@@ -2534,7 +2534,7 @@ Widget battleDetailsCard({
                         cardItem(
                           height: height,
                           width: width + width * 0.7,
-                          title: 'Deadline',
+                          title: AppStringRes.deadline,
                           icon: weeklyDistanceIcon,
                           value: model.timeLeft.toString(),
                         ),
@@ -2585,7 +2585,7 @@ Widget battleDetailsCard({
                                     height: height * 0.01,
                                   ),
                                   Text(
-                                    currentUserModel.nickName ?? 'Nickname',
+                                    currentUserModel.nickName ?? AppStringRes.nickname,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -2718,7 +2718,7 @@ Widget battleDetailsCard({
                   ],
                 ),
                 child: buttonNoIcon(
-                  title: "Check an opponent's results".toUpperCase(),
+                  title: AppStringRes.checkAnOpponentResults.toUpperCase(),
                   color: redColor,
                   height: height * 0.055,
                   width: width * 0.2,
@@ -2745,7 +2745,7 @@ Widget battleDetailsCard({
               margin: EdgeInsets.only(left: width * 0.04),
               alignment: Alignment.centerLeft,
               child: Text(
-                'Chat',
+                AppStringRes.chat,
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: 'roboto',
@@ -3020,7 +3020,7 @@ Widget timePhotosProofs({
               horizontal: width * 0.03,
             ),
             child: buildRoundedButton(
-              label: 'Upload Results'.toUpperCase(),
+              label: AppStringRes.uploadResults.toUpperCase(),
               width: width,
               height: 35.h,
               buttonTextSize: 13.0,
@@ -3058,7 +3058,7 @@ Widget timePhotosProofs({
                       width: 3.0,
                     ),
                     Text(
-                      'Time',
+                      AppStringRes.time,
                       maxLines: 1,
                       style: TextStyle(
                           color: const Color(0xff9F9F9F),
@@ -3193,7 +3193,7 @@ Widget showEmptyListText({required double height, required double width}) {
           height: 100.h,
         ),
         Text(
-          'List is empty!',
+          AppStringRes.listIsEmpty,
           style: TextStyle(
               color: Colors.grey,
               fontFamily: 'roboto',
@@ -3220,7 +3220,7 @@ Widget uploadBattleResultDialog({
 }) {
   return Center(
     child: Container(
-      height: height * 0.80,
+      height: height * 0.85,
       margin: EdgeInsets.symmetric(horizontal: width * 0.025),
       padding: EdgeInsets.all(width * 0.05),
       decoration: BoxDecoration(
@@ -3249,7 +3249,7 @@ Widget uploadBattleResultDialog({
                 width: 10.0,
               ),
               Text(
-                'Upload result',
+                AppStringRes.uploadResult,
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: 'roboto',
@@ -3259,12 +3259,23 @@ Widget uploadBattleResultDialog({
             ],
           ),
           SizedBox(
+            height: height * 0.01,
+          ),
+          Text(
+            AppStringRes.uploadResultsMessage,
+            style: TextStyle(
+                color: Colors.grey,
+                fontSize: 11.sp,
+                fontFamily: 'roboto',
+                fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
             height: height * 0.03,
           ),
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'My time',
+              AppStringRes.myTime,
               style: TextStyle(
                   color: const Color(0xff838383),
                   fontSize: 13.sp,
@@ -3305,7 +3316,7 @@ Widget uploadBattleResultDialog({
             height: height * 0.02,
           ),
           Text(
-            'You can upload 1 or 2 photos',
+            AppStringRes.youCanUploadPhotos,
             style: TextStyle(
                 color: Colors.grey,
                 fontFamily: 'roboto',
@@ -3330,7 +3341,7 @@ Widget uploadBattleResultDialog({
                     icon: addIcon,
                     width: width * 0.2,
                     height: width * 0.2,
-                    text: 'Add photo',
+                    text: AppStringRes.addPhoto,
                     onPressed: onAddPhotoFirstTap,
                   ),
                 )
@@ -3358,7 +3369,7 @@ Widget uploadBattleResultDialog({
                     icon: addIcon,
                     width: width * 0.2,
                     height: width * 0.2,
-                    text: 'Add photo',
+                    text: AppStringRes.addPhoto,
                     onPressed: onAddPhotoFirstTap,
                   ),
                 )
@@ -3385,7 +3396,7 @@ Widget uploadBattleResultDialog({
                 width: 100.0,
                 height: 50.0,
                 child: buttonNoIcon(
-                  title: 'CANCEL',
+                  title: AppStringRes.cancel.toUpperCase(),
                   color: Colors.transparent,
                   height: 40.h,
                   shadowColor: Colors.transparent,
@@ -3407,7 +3418,7 @@ Widget uploadBattleResultDialog({
                 width: 100.0,
                 height: 50.0,
                 child: buttonNoIcon(
-                  title: 'UPLOAD',
+                  title: AppStringRes.upload,
                   color: Colors.transparent,
                   height: 40.h,
                   shadowColor: Colors.transparent,
@@ -3512,7 +3523,7 @@ Widget userCardMain({
                       top: height * 0.015,
                     ),
                     child: Text(
-                      model.nickName ?? 'NickName',
+                      model.nickName ?? AppStringRes.nickname,
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 18.sp,
@@ -3546,7 +3557,7 @@ Widget userCardMain({
                       cardItem(
                         height: height,
                         width: width,
-                        title: 'Pace',
+                        title: AppStringRes.pace,
                         icon: paceIcon,
                         value:
                             '${model.pace.toStringAsFixed(1)} min/${model.isMetric ? 'km' : 'mile'}',
@@ -3557,7 +3568,7 @@ Widget userCardMain({
                       cardItem(
                         height: height,
                         width: width,
-                        title: 'Runs',
+                        title: AppStringRes.runs,
                         icon: runsIcon,
                         value: '${model.workoutsPerWeek} times/week',
                       ),
@@ -3572,7 +3583,7 @@ Widget userCardMain({
                     child: cardItem(
                       height: height,
                       width: width + 120,
-                      title: 'Weekly Distance',
+                      title: AppStringRes.weeklyDistance,
                       icon: weeklyDistanceIcon,
                       value:
                           '${model.isMetric ? double.parse(model.weeklyDistance.toStringAsFixed(0)) : double.parse(model.weeklyDistance.toStringAsFixed(1))} ${model.isMetric ? 'km' : 'mile'}',
@@ -3593,7 +3604,7 @@ Widget userCardMain({
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       userWonLossCard(
-                          title: 'Won',
+                          title: AppStringRes.won,
                           value: '${model.wins}',
                           colorValue: Colors.red),
                       Container(
@@ -3602,14 +3613,14 @@ Widget userCardMain({
                         width: 0.5,
                       ),
                       userWonLossCard(
-                        title: 'Loss',
+                        title: AppStringRes.loss,
                         value: '${model.loses}',
                       ),
                       SizedBox(
                         width: height * 0.02,
                       ),
                       buttonWithIcon(
-                        title: 'BATTLE',
+                        title: AppStringRes.battle.toUpperCase(),
                         icon: battleIcon,
                         iconSize: 13.0,
                         titleColor: Colors.red,
@@ -3656,7 +3667,7 @@ Widget userCardMain({
                       width: 7.0,
                     ),
                     Text(
-                      'Rank ${model.rank}',
+                      '${AppStringRes.rank} ${model.rank}',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12.sp,
@@ -3717,7 +3728,7 @@ Widget userCardEnjoy({
                     top: height * 0.015,
                   ),
                   child: Text(
-                    model.nickName ?? 'NickName',
+                    model.nickName ?? AppStringRes.nickname,
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 18.sp,
@@ -3751,7 +3762,7 @@ Widget userCardEnjoy({
                     cardItem(
                       height: height,
                       width: width,
-                      title: 'Pace',
+                      title: AppStringRes.pace,
                       icon: paceIcon,
                       value:
                           '${model.pace.toStringAsFixed(1)} min/${model.isMetric ? 'km' : 'mile'}',
@@ -3762,7 +3773,7 @@ Widget userCardEnjoy({
                     cardItem(
                       height: height,
                       width: width,
-                      title: 'Runs',
+                      title: AppStringRes.runs,
                       icon: runsIcon,
                       value: '${model.workoutsPerWeek} times/week',
                     ),
@@ -3777,7 +3788,7 @@ Widget userCardEnjoy({
                   child: cardItem(
                     height: height,
                     width: width + 120,
-                    title: 'Weekly Distance',
+                    title: AppStringRes.weeklyDistance,
                     icon: weeklyDistanceIcon,
                     value: distance,
                   ),
@@ -3796,7 +3807,7 @@ Widget userCardEnjoy({
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       userWonLossCard(
-                          title: 'Won',
+                          title: AppStringRes.won,
                           value: '${model.wins}',
                           colorValue: Colors.red),
                       Container(
@@ -3806,7 +3817,7 @@ Widget userCardEnjoy({
                         width: 0.5,
                       ),
                       userWonLossCard(
-                        title: 'Loss',
+                        title: AppStringRes.loss,
                         value: '${model.loses}',
                       ),
                     ],
@@ -3846,7 +3857,7 @@ Widget userCardEnjoy({
                       width: 7.0,
                     ),
                     Text(
-                      'Rank ${model.rank}',
+                      '${AppStringRes.rank}  ${model.rank}',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12.sp,

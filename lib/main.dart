@@ -12,6 +12,7 @@ import 'package:one2one_run/presentation/register_screen/register_page.dart';
 import 'package:one2one_run/presentation/runner_data_screen/runner_data_page.dart';
 import 'package:one2one_run/presentation/splash_screen/splash_screen.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 
@@ -53,7 +54,7 @@ class OneTwoOne extends StatelessWidget {
                 TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
               }),
         ),
-        title: 'One2OneApp',
+        title: AppStringRes.appTitle,
         routes: <String, WidgetBuilder>{
           Constants.loginRoute: (BuildContext context) => const LoginPage(),
           Constants.registerRoute: (BuildContext context) =>

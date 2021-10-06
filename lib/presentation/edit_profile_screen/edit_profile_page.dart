@@ -10,8 +10,8 @@ import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/b
     as edit_profile_bloc;
 import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/edit_profile_bloc.dart';
 import 'package:one2one_run/presentation/edit_profile_screen/edit_profile_bloc/edit_profile_state.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/extension.dart'
     show DateTimeExtension, ToastExtension;
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -134,7 +134,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                         child: inputTextField(
                           controller: _mottoController,
                           errorText: null,
-                          hintText: 'Motto',
+                          hintText: AppStringRes.motto,
                           isCounterShown: true,
                           maxLength: 35,
                         ),
@@ -147,7 +147,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                         child: inputTextField(
                           controller: _nameController,
                           errorText: null,
-                          hintText: 'Name',
+                          hintText: AppStringRes.name,
                         ),
                       ),
                       const SizedBox(
@@ -158,7 +158,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                         child: inputTextField(
                           controller: _emailController,
                           errorText: null,
-                          hintText: 'E-mail address',
+                          hintText: AppStringRes.eMailAddress,
                           icon: Icons.email,
                           isReadOnly: true,
                         ),
@@ -195,7 +195,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                         child: inputTextField(
                           controller: _bioController,
                           errorText: null,
-                          hintText: 'Bio',
+                          hintText: AppStringRes.bio,
                           fontSize: 14,
                           isMultiLine: true,
                           keyboardType: TextInputType.multiline,
@@ -207,7 +207,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: buildRoundedButton(
-                          label: 'Save'.toUpperCase(),
+                          label: AppStringRes.save.toUpperCase(),
                           width: width,
                           height: 40.h,
                           controller: _saveController,
@@ -237,7 +237,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                                 primary: Colors.transparent,
                                 shadowColor: Colors.transparent),
                             child: Text(
-                              'Cancel'.toUpperCase(),
+                              AppStringRes.cancel.toUpperCase(),
                               style: const TextStyle(
                                   fontSize: 17.0,
                                   fontWeight: FontWeight.w500,
@@ -268,10 +268,10 @@ class EditProfilePageState extends State<EditProfilePage> {
     return Column(
       children: <Widget>[
         seekBarPace(
-          title: 'Pace',
+          title: AppStringRes.pace,
           context: context,
-          dialogTitle: 'Pace',
-          dialogText: paceText,
+          dialogTitle: AppStringRes.pace,
+          dialogText: AppStringRes.paceText,
           timePerKM: _isKM
               ? '${getTimeStringFromDouble(_currentPaceValue.toDouble() / 60)} min/km'
               : '${(_currentPaceValue.toDouble() / 60).toStringAsFixed(2)} min/mile',
@@ -286,10 +286,10 @@ class EditProfilePageState extends State<EditProfilePage> {
           },
         ),
         seekBarWeekly(
-          title: 'Weekly distance',
+          title: AppStringRes.weeklyDistance,
           context: context,
-          dialogTitle: 'Weekly distance',
-          dialogText: weeklyDistanceText,
+          dialogTitle: AppStringRes.weeklyDistance,
+          dialogText: AppStringRes.weeklyDistanceText,
           timePerKM: _currentWeeklyDistanceValue.toDouble(),
           unit: _isKM ? 'km' : 'mile',
           minValue: _isKM ? 4 : 2.5,
@@ -307,7 +307,7 @@ class EditProfilePageState extends State<EditProfilePage> {
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text(
-            'Show pace and distances in',
+            AppStringRes.showPaceAndDistancesIn,
             style: TextStyle(
                 color: Colors.black,
                 fontFamily: 'roboto',
@@ -355,7 +355,7 @@ class EditProfilePageState extends State<EditProfilePage> {
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text(
-            'How often do you run?',
+            AppStringRes.howOftenDoYouRun,
             style: TextStyle(
                 color: Colors.black,
                 fontFamily: 'roboto',
@@ -405,7 +405,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                       thickness: 2,
                     ),
                     Text(
-                      'times per week',
+                      AppStringRes.timesPerWeek,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Colors.black,
@@ -437,10 +437,10 @@ class EditProfilePageState extends State<EditProfilePage> {
   }
 
   void _setUserData({required UserModel data}) {
-    _mottoController.text = data.moto ?? 'Here will be your Motto.';
-    _nameController.text = data.nickName ?? 'NickName';
+    _mottoController.text = data.moto ?? AppStringRes.hereWillBeYourMotto;
+    _nameController.text = data.nickName ?? AppStringRes.nickname;
     _emailController.text = data.email ?? 'email@gmail.com';
-    _bioController.text = data.description ?? 'Here will be your Biography.';
+    _bioController.text = data.description ?? AppStringRes.hereWillBeYourBiography;
     _isKM = data.isMetric;
     _currentPaceValue = data.pace.toDouble() * 60;
     _currentWeeklyDistanceValue = data.weeklyDistance.toDouble();

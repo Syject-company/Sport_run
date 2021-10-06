@@ -8,6 +8,7 @@ import 'package:one2one_run/presentation/connect_screen/connect_bloc/bloc.dart'
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_bloc.dart';
 import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_state.dart';
 import 'package:one2one_run/presentation/connect_screen/user_info.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 
 //NOte:'/connect'
@@ -117,7 +118,7 @@ class ConnectPageState extends State<ConnectPage> {
                             child: inputBattleCustomTextField(
                               controller: _searchController,
                               errorText: null,
-                              hintText: 'Search...',
+                              hintText: '${AppStringRes.search}...',
                               maxLength: 30,
                               keyboardType: TextInputType.text,
                             ),
@@ -133,7 +134,7 @@ class ConnectPageState extends State<ConnectPage> {
                                   splashRadius: height * 0.03,
                                   icon: const Icon(Icons.search_rounded),
                                   iconSize: height * 0.035,
-                                  tooltip: 'Search',
+                                  tooltip: AppStringRes.search,
                                   onPressed: () {
                                     usersConnect.clear();
 
@@ -154,7 +155,7 @@ class ConnectPageState extends State<ConnectPage> {
                                   splashColor: const Color(0xffCFFFB1),
                                   highlightColor: const Color(0xffCFFFB1),
                                   splashRadius: height * 0.03,
-                                  tooltip: 'Clear',
+                                  tooltip: AppStringRes.clear,
                                   icon:
                                       const Icon(Icons.delete_forever_outlined),
                                   iconSize: height * 0.035,

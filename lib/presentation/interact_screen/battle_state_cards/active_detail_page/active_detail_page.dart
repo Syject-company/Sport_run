@@ -19,6 +19,7 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/acti
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/active_detail_bloc/bloc.dart'
     as active_detail_bloc;
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/active_detail_page/check_opponent_results.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/data_values.dart';
 import 'package:one2one_run/utils/extension.dart'
@@ -207,7 +208,7 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
                       appBar: AppBar(
                         shadowColor: Colors.transparent,
                         title: Text(
-                          widget.activeModel.battleName ?? 'Battle',
+                          widget.activeModel.battleName ?? AppStringRes.battle,
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'roboto',

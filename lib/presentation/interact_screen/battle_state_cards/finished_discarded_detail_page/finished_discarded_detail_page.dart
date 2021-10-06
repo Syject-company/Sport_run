@@ -11,6 +11,7 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/fini
     as finished_discarded_detail_bloc;
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_discarded_detail_page/finished_discarded_detail_bloc/finished_discarded_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/finished_discarded_detail_page/finished_discarded_detail_bloc/finished_discarded_detail_state.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -110,7 +111,7 @@ class FinishedDiscardedDetailPageState
                       appBar: AppBar(
                         shadowColor: Colors.transparent,
                         title: Text(
-                          widget.finishedModel.battleName ?? 'Battle',
+                          widget.finishedModel.battleName ?? AppStringRes.battle,
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'roboto',

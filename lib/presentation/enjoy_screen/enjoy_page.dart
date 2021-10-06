@@ -4,6 +4,7 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/enjoy_api.dart';
 import 'package:one2one_run/data/models/enjoy_response_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/extension.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -65,7 +66,7 @@ class EnjoyPage extends StatelessWidget {
                         width: 7.0,
                       ),
                       Text(
-                        'You ranked #${_currentUserModel.rank}',
+                        '${AppStringRes.youRanked}${_currentUserModel.rank}',
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 16.sp,

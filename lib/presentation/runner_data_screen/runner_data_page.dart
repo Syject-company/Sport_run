@@ -12,9 +12,9 @@ import 'package:one2one_run/presentation/runner_data_screen/runner_data_bloc/blo
     as runner_data_bloc;
 import 'package:one2one_run/presentation/runner_data_screen/runner_data_bloc/runner_data_bloc.dart';
 import 'package:one2one_run/presentation/runner_data_screen/runner_data_bloc/runner_data_state.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:one2one_run/resources/strings.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
@@ -253,7 +253,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             margin: const EdgeInsets.only(bottom: 5.0),
             child: Text(
-              'Are you new to running?',
+              AppStringRes.newWithRunning,
               style: TextStyle(
                   color: Colors.black,
                   fontFamily: 'roboto',
@@ -269,8 +269,8 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                   .add(runner_data_bloc.SelectRunnerType(true, false));
             },
             color: _isUserBeginnerSelected ? redColor : Colors.white,
-            title: 'Yes, I am a beginner',
-            underButtonTitle: 'All the required data will be filled for you',
+            title: AppStringRes.yesIamNewbie,
+            underButtonTitle: AppStringRes.averagePaceAndWeeklyDistance,
             textColor: _isUserBeginnerSelected ? Colors.white : Colors.black,
           ),
           buttonSquareNoIcon(
@@ -281,8 +281,8 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                   .add(runner_data_bloc.SelectRunnerType(false, true));
             },
             color: _isUserHaveRunSelected ? redColor : Colors.white,
-            title: 'Nope, I have run before',
-            underButtonTitle: 'You will be asked to provide some running data',
+            title: AppStringRes.nopeIRun,
+            underButtonTitle: AppStringRes.pleaseProvideYourRunningMetrics,
             textColor: _isUserHaveRunSelected ? Colors.white : Colors.black,
           ),
           SizedBox(
@@ -350,7 +350,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Please provide additional\ninformation',
+                AppStringRes.provideAdditionalInformation,
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: 'roboto',
@@ -362,10 +362,10 @@ class RunnerDataPageState extends State<RunnerDataPage> {
               height: 15.0,
             ),
             seekBarPace(
-              title: 'Pace',
+              title: AppStringRes.pace,
               context: context,
-              dialogTitle: 'Pace',
-              dialogText: paceText,
+              dialogTitle: AppStringRes.pace,
+              dialogText: AppStringRes.paceText,
               timePerKM: isKM
                   ? '${getTimeStringFromDouble(_currentPaceValue / 60)} min/km'
                   : '${(_currentPaceValue / 60).toStringAsFixed(2)} min/mile',
@@ -381,10 +381,10 @@ class RunnerDataPageState extends State<RunnerDataPage> {
               },
             ),
             seekBarWeekly(
-              title: 'Weekly distance',
+              title: AppStringRes.weeklyDistance,
               context: context,
-              dialogTitle: 'Weekly distance',
-              dialogText: weeklyDistanceText,
+              dialogTitle: AppStringRes.weeklyDistance,
+              dialogText: AppStringRes.weeklyDistanceText,
               timePerKM: _currentWeeklyDistanceValue,
               unit: isKM ? 'km' : 'mile',
               minValue: isKM ? 4 : 2.5,
@@ -403,7 +403,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Show pace and distances in',
+                AppStringRes.showPaceAndDistancesIn,
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: 'roboto',
@@ -451,7 +451,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'How often do you run?',
+                AppStringRes.howOftenDoYouRun,
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: 'roboto',
@@ -501,7 +501,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                           thickness: 2,
                         ),
                         Text(
-                          'times per week',
+                          AppStringRes.timesPerWeek,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: Colors.black,
@@ -536,7 +536,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: buildRoundedButton(
-                      label: "Let's go!",
+                      label: AppStringRes.letRun,
                       width: width,
                       height: 40.h,
                       controller: goController,

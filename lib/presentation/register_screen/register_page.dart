@@ -19,7 +19,7 @@ import 'package:one2one_run/presentation/register_screen/register_bloc/register_
 import 'package:one2one_run/presentation/register_screen/register_bloc/register_state.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:one2one_run/resources/strings.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/extension.dart'
     show EmailValidator, Authorization;
@@ -200,7 +200,7 @@ class RegisterPageState extends State<RegisterPage> {
                               child: SizedBox(
                                 width: 250.w,
                                 child: Text(
-                                  termsButtonText,
+                                  AppStringRes.termsButtonText,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 11.sp,
@@ -377,7 +377,7 @@ class RegisterPageState extends State<RegisterPage> {
                     height: 10.h,
                   ),
                   Text(
-                    termsText,
+                    AppStringRes.termsText,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14.sp,

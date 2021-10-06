@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -96,7 +97,7 @@ class FAQHelperPageState extends State<FAQHelperPage> {
               child: Visibility(
                 visible: isNeedToShowGoButton,
                 child: buttonNoIcon(
-                  title: "Let's Go  ->",
+                  title: AppStringRes.letsGo,
                   color: redColor,
                   height: height * 0.055,
                   width: width * 0.02,

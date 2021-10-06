@@ -11,6 +11,7 @@ import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pend
     as pending_detail_bloc;
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_bloc/pending_detail_bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/battle_state_cards/pending_detail_page/pending_detail_bloc/pending_detail_state.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/utils/extension.dart' show UserData;
 import 'package:one2one_run/utils/preference_utils.dart';
@@ -105,7 +106,7 @@ class PendingDetailPageState extends State<PendingDetailPage> {
                       appBar: AppBar(
                         shadowColor: Colors.transparent,
                         title: Text(
-                          widget.pendingModel.battleName ?? 'Battle',
+                          widget.pendingModel.battleName ?? AppStringRes.battle,
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'roboto',
