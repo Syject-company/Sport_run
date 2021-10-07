@@ -1,4 +1,6 @@
+
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,9 +13,9 @@ import 'package:one2one_run/data/models/connect_users_model.dart';
 import 'package:one2one_run/data/models/enjoy_response_model.dart';
 import 'package:one2one_run/data/models/opponent_chat_model.dart';
 import 'package:one2one_run/data/models/user_model.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/utils/data_values.dart';
 import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -283,7 +285,7 @@ Widget buttonWithIconWithOutShadow(
           Text(
             title,
             style: TextStyle(
-              fontSize: 14.0,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: titleColor,
             ),
@@ -803,7 +805,10 @@ void dialogImageZoom({
               child: Column(
                 children: <Widget>[
                   PinchZoomImage(
+                    //TODO: fix the memory
                     image: CachedNetworkImage(
+                      memCacheHeight: 200 * window.devicePixelRatio.ceil(),
+                      memCacheWidth:  200 * window.devicePixelRatio.ceil(),
                       imageUrl: photos[0],
                       fit: BoxFit.fill,
                       placeholder: (BuildContext context, String url) =>
@@ -3166,7 +3171,10 @@ Widget resultImages({required Color color, required String imageUrl}) {
         borderRadius: const BorderRadius.all(Radius.circular(10))),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
+      //TODO: fix the memory
       child: CachedNetworkImage(
+        memCacheHeight: 200 * window.devicePixelRatio.ceil(),
+        memCacheWidth:  200 * window.devicePixelRatio.ceil(),
         imageUrl: imageUrl,
         fit: BoxFit.fill,
         placeholder: (BuildContext context, String url) => Container(
@@ -3457,7 +3465,10 @@ Widget userAvatarPhoto(
               photos: <String>[photoUrl],
             );
           },
+    //TODO: fix the memory
           child: CachedNetworkImage(
+            memCacheHeight: 200 * window.devicePixelRatio.ceil(),
+            memCacheWidth:  200 * window.devicePixelRatio.ceil(),
             placeholder: (BuildContext context, String url) => Container(
               width: 50,
               height: 50,
