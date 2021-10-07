@@ -805,10 +805,7 @@ void dialogImageZoom({
               child: Column(
                 children: <Widget>[
                   PinchZoomImage(
-                    //TODO: fix the memory
                     image: CachedNetworkImage(
-                      memCacheHeight: 200 * window.devicePixelRatio.ceil(),
-                      memCacheWidth:  200 * window.devicePixelRatio.ceil(),
                       imageUrl: photos[0],
                       fit: BoxFit.fill,
                       placeholder: (BuildContext context, String url) =>
@@ -3171,10 +3168,7 @@ Widget resultImages({required Color color, required String imageUrl}) {
         borderRadius: const BorderRadius.all(Radius.circular(10))),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
-      //TODO: fix the memory
       child: CachedNetworkImage(
-        memCacheHeight: 200 * window.devicePixelRatio.ceil(),
-        memCacheWidth:  200 * window.devicePixelRatio.ceil(),
         imageUrl: imageUrl,
         fit: BoxFit.fill,
         placeholder: (BuildContext context, String url) => Container(
@@ -3465,10 +3459,7 @@ Widget userAvatarPhoto(
               photos: <String>[photoUrl],
             );
           },
-    //TODO: fix the memory
           child: CachedNetworkImage(
-            memCacheHeight: 200 * window.devicePixelRatio.ceil(),
-            memCacheWidth:  200 * window.devicePixelRatio.ceil(),
             placeholder: (BuildContext context, String url) => Container(
               width: 50,
               height: 50,
