@@ -151,6 +151,7 @@ class CheckOpponentResultsPage extends StatelessWidget {
                         child: Column(
                           children: <Widget>[
                             PinchZoomImage(
+                              //TODO: fix the memory
                               image: CachedNetworkImage(
                                 imageUrl: model.battlePhotos[0],
                                 fit: BoxFit.fill,
@@ -172,6 +173,7 @@ class CheckOpponentResultsPage extends StatelessWidget {
                                 margin: EdgeInsets.only(
                                     top: height * 0.02, bottom: height * 0.05),
                                 child: PinchZoomImage(
+                                  //TODO: fix the memory
                                   image: CachedNetworkImage(
                                     imageUrl: model.battlePhotos.length > 1
                                         ? model.battlePhotos[1]
