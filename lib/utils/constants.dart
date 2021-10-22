@@ -1,6 +1,9 @@
 class Constants {
   //domain
-  static const String domain = 'https://one2onerunapi.azurewebsites.net';
+  //Test domain
+  static const String domain = 'https://one2oneruntestapi.azurewebsites.net';
+  //Main domain
+ // static const String domain = 'https://one2onerunapi.azurewebsites.net';
 
   //pager routs:
   static const String loginRoute = '/login';
@@ -35,7 +38,10 @@ class Constants {
   static const String getImageShareUrl = '/api/Share/Battle/';
 
   //Data:
-  static const String socketUrl = 'https://one2onerunapi.azurewebsites.net/chathub';
+  //Main domain
+  //static const String socketUrl = 'https://one2onerunapi.azurewebsites.net/chathub';
+  //Test domain
+  static const String socketUrl = 'https://one2oneruntestapi.azurewebsites.net/chathub';
   static const String socketConnectToGroups = 'ConnectToGroups';
   static const String socketReceiveBattleNotification = 'ReceiveBattleNotification';
   static const String socketReceiveMessage = 'ReceiveMessage';
