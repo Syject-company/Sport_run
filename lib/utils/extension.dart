@@ -341,7 +341,7 @@ extension Authorization on void {
     }).catchError((Object err) async {
       print('error occurred');
       await Fluttertoast.showToast(
-          msg: 'Registration error',
+          msg: 'Registration error: $err',
           fontSize: 16.0,
           gravity: ToastGravity.CENTER);
     });
