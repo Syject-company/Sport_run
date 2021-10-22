@@ -12,12 +12,13 @@ class InteractInitial extends InteractState {}
 class StateUpdated extends InteractState {}
 
 class BattleIsAccepted extends InteractState {
-  const BattleIsAccepted({required this.id});
+  const BattleIsAccepted({required this.id, required this.isNegotiate});
 
   final String id;
+  final bool isNegotiate;
 
   @override
-  List<Object> get props => <Object>[id];
+  List<Object> get props => <Object>[id, isNegotiate];
 }
 
 class BattleIsDeclined extends InteractState {

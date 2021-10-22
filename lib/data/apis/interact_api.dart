@@ -26,6 +26,9 @@ class InteractApi {
   final String _urlGetImageShare =
       '${Constants.domain}${Constants.getImageShareUrl}';
 
+  final String _urlBattleAcceptConditions =
+      '${Constants.domain}${Constants.createBattleUrl}';
+
   //@get
   Future<List<BattleRespondModel>?> getInteractTabsDataById(
       {required int tabId}) async {
@@ -43,6 +46,19 @@ class InteractApi {
           .toList();
     }
     return null;
+  }
+
+  //@post
+  Future<bool> battleAcceptConditions({required String id}) async {
+    final String token = PreferenceUtils.getUserToken();
+    final Response res = await post(
+        Uri.parse('$_urlBattleAcceptConditions/$id/AcceptConditions'),
+        headers: <String, String>{
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
+        });
+
+    return res.statusCode == 200;
   }
 
   //@get
@@ -125,11 +141,11 @@ class InteractApi {
   //@get
   Future<Uint8List?> getImageBattleShare({required String id}) async {
     final String token = PreferenceUtils.getUserToken();
-    final Response res =
-        await get(Uri.parse('$_urlGetImageShare$id/File'), headers: <String, String>{
-      HttpHeaders.contentTypeHeader: 'image/png',
-      HttpHeaders.authorizationHeader: token,
-    });
+    final Response res = await get(Uri.parse('$_urlGetImageShare$id/File'),
+        headers: <String, String>{
+          HttpHeaders.contentTypeHeader: 'image/png',
+          HttpHeaders.authorizationHeader: token,
+        });
 
     if (res.statusCode == 200 && res.bodyBytes != null) {
       return res.bodyBytes;

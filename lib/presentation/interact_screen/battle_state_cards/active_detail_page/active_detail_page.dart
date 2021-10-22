@@ -64,6 +64,7 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
 
   String _messageText = '';
   String _myTimeValue = '01:30:00';
+  String _myTimeValueCopy = '01:30:00';
 
   bool _isUploadResultsPage = false;
   bool _isUploadingProgress = false;
@@ -193,6 +194,9 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
                     _isNeedToCheckOpponentResults = !state.isNeed;
                   } else if (state is TheTimeResultChanged) {
                     _myTimeValue = state.time;
+                    setState(() {
+                      _myTimeValueCopy = _myTimeValue;
+                    });
                   }
                   if (!_activeDetailBloc.isClosed) {
                     BlocProvider.of<ActiveDetailBloc>(context)
@@ -221,7 +225,7 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
                           ? battleResultDialog(
                               width: width, height: height, context: context)
                           : detailsCard(
-                              width: width, height: height, context: context),
+                              width: width, height: height, context: context,myResultTime: _myTimeValueCopy),
                     );
                   },
                 )));
@@ -238,7 +242,8 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
   Widget detailsCard(
       {required BuildContext context,
       required double width,
-      required double height}) {
+      required double height,
+      required String myResultTime}) {
     return battleDetailsCard(
       model: widget.activeModel,
       width: width,
@@ -280,11 +285,17 @@ class ActiveDetailPageState extends State<ActiveDetailPage> {
       opponentPhoto: _opponentAppUserModel.photoLink,
       opponentRank: _opponentAppUserModel.rank.toString(),
       isNeedToCheckOpponentResults: _isNeedToCheckOpponentResults,
-      myProofTime: _resultPhotos.isNotEmpty
+      myProofTime: _resultPhotos.isNotEmpty || getMyProofPhotos(
+        model: widget.activeModel,
+        currentUserId: widget.currentUserId,
+      ).cast<String>().isNotEmpty
           ? getMyProofTime(
               model: widget.activeModel,
               currentUserId: widget.currentUserId,
-            )
+            ) == '00:00:00' ? myResultTime : getMyProofTime(
+        model: widget.activeModel,
+        currentUserId: widget.currentUserId,
+      )
           : '00:00:00',
       myProofsPhoto: getMyProofPhotos(
         model: widget.activeModel,

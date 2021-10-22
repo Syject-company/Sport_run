@@ -8,12 +8,13 @@ abstract class InteractEvent extends Equatable {
 class UpdateState extends InteractEvent {}
 
 class AcceptBattle extends InteractEvent {
-  AcceptBattle({required this.id});
+  AcceptBattle({required this.id, required this.isNegotiate});
 
   final String id;
+  final bool isNegotiate;
 
   @override
-  List<Object> get props => <Object>[id];
+  List<Object> get props => <Object>[id, isNegotiate];
 }
 
 class DeclineBattle extends InteractEvent {
