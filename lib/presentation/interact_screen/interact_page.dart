@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:one2one_run/components/faq_helper.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/home_api.dart';
@@ -65,21 +66,39 @@ class InteractPageState extends State<InteractPage> {
         listener:
             (final BuildContext context, final InteractState state) async {
           if (state is BattleIsAccepted) {
-            await _homeApi
-                .acceptBattle(battleId: state.id)
-                .then((bool value) async {
-              if (value) {
-                await Fluttertoast.showToast(
-                    msg: 'You have successfully accepted the battle!',
-                    fontSize: 16.0,
-                    textColor: Colors.green,
-                    gravity: ToastGravity.CENTER);
-                getInteractTabsDataById =
-                    _interActApi.getInteractTabsDataById(tabId: 0);
-              } else {
-                await toastUnexpectedError();
-              }
-            });
+            if (state.isNegotiate) {
+              await _interActApi
+                  .battleAcceptConditions(id: state.id)
+                  .then((bool value) async {
+                if (value) {
+                  await Fluttertoast.showToast(
+                      msg: 'You have successfully accepted the battle!',
+                      fontSize: 16.0,
+                      textColor: Colors.green,
+                      gravity: ToastGravity.CENTER);
+                  getInteractTabsDataById =
+                      _interActApi.getInteractTabsDataById(tabId: 0);
+                } else {
+                  await toastUnexpectedError();
+                }
+              });
+            } else {
+              await _homeApi
+                  .acceptBattle(battleId: state.id)
+                  .then((bool value) async {
+                if (value) {
+                  await Fluttertoast.showToast(
+                      msg: 'You have successfully accepted the battle!',
+                      fontSize: 16.0,
+                      textColor: Colors.green,
+                      gravity: ToastGravity.CENTER);
+                  getInteractTabsDataById =
+                      _interActApi.getInteractTabsDataById(tabId: 0);
+                } else {
+                  await toastUnexpectedError();
+                }
+              });
+            }
           } else if (state is BattleIsDeclined) {
             await _homeApi
                 .declineBattle(battleId: state.id)
@@ -152,9 +171,10 @@ class InteractPageState extends State<InteractPage> {
                             signalR: widget.signalR,
                             currentUserId:
                                 PreferenceUtils.getCurrentUserModel().id,
-                            onTapAccept: (String id) {
-                              BlocProvider.of<InteractBloc>(context)
-                                  .add(interact_bloc.AcceptBattle(id: id));
+                            onTapAccept: (String id, bool isNegotiate) {
+                              BlocProvider.of<InteractBloc>(context).add(
+                                  interact_bloc.AcceptBattle(
+                                      id: id, isNegotiate: isNegotiate));
                             },
                             onTapChange: widget.onTapChange,
                             onTapDecline: (String id) {

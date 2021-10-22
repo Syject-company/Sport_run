@@ -11,7 +11,7 @@ class InteractBloc extends Bloc<InteractEvent, InteractState> {
     if (event is UpdateState) {
       yield StateUpdated();
     }else if (event is AcceptBattle) {
-      yield BattleIsAccepted(id: event.id);
+      yield BattleIsAccepted(id: event.id,isNegotiate: event.isNegotiate);
     }else if (event is DeclineBattle) {
       yield BattleIsDeclined(id: event.id);
     }else if (event is UpdateActivePage) {

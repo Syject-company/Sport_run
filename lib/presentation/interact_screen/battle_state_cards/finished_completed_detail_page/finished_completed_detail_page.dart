@@ -109,8 +109,9 @@ class FinishedCompletedDetailPageState
                         .getImageBattleShare(id: widget.finishedModel.id)
                         .then((Uint8List? imageUrl) async {
                       if (imageUrl != null) {
-                        final Directory? dir =
-                            await getExternalStorageDirectory();
+                        final Directory? dir = Platform.isAndroid
+                            ? await getExternalStorageDirectory()
+                            : await getApplicationSupportDirectory();
                         final String myImagePath = '${dir!.path}/tempimg.png';
                         final File imageFile = File(myImagePath);
                         if (!imageFile.existsSync()) {
@@ -149,7 +150,8 @@ class FinishedCompletedDetailPageState
                           },
                         ),
                         title: Text(
-                          widget.finishedModel.battleName ?? AppStringRes.battle,
+                          widget.finishedModel.battleName ??
+                              AppStringRes.battle,
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'roboto',

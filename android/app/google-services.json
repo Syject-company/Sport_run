@@ -14,19 +14,19 @@
       },
       "oauth_client": [
         {
+          "client_id": "57127894563-2a4hnn7tged5uqn99qpja77nivqjpd0b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.one2one.one2oneRun",
+            "certificate_hash": "a97b3f1a5512ed925de5de59053a88bd8aee9298"
+          }
+        },
+        {
           "client_id": "57127894563-ahb18h1cv6614lcni86qm0i26mvjoeso.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.one2one.one2oneRun",
             "certificate_hash": "84a8883640851c0bfb3832258223e27bc22f4c0f"
-          }
-        },
-        {
-          "client_id": "57127894563-raf1v9qvkdasctbquf0fd98e66nfgun2.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.one2one.one2oneRun",
-            "certificate_hash": "30c9875ffa2abd100d1b88f0477b0fbb0c00aae3"
           }
         },
         {
@@ -45,6 +45,13 @@
             {
               "client_id": "57127894563-cgrs9hne52a3muuaciuvrnpe7r6v7dre.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "57127894563-e7i7vsnfksa2708o7eool5f3lh1hu77p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.one2one.one2oneRun"
+              }
             }
           ]
         }

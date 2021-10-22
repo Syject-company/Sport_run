@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:ui';
 
@@ -7,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/check_opponent_results_model.dart';
 import 'package:one2one_run/data/models/connect_users_model.dart';
@@ -1346,7 +1346,7 @@ Widget interactListItem({
   required BattleRespondModel model,
   required String? opponentName,
   required String? opponentPhoto,
-  Function(String id)? onTapAccept,
+  Function(String id, bool isNegotiate)? onTapAccept,
   Function(String id, BattleRespondModel model)? onTapChange,
   Function(String id)? onTapDecline,
   required bool isNeedButtons,
@@ -1547,7 +1547,7 @@ Widget interactListItem({
                   height: height * 0.055,
                   buttonTextSize: 14.sp,
                   onPressed: () {
-                    onTapAccept!(model.id);
+                    onTapAccept!(model.id, statusCodeNum == 1);
                   },
                 ),
                 buttonNoIcon(
@@ -1715,7 +1715,8 @@ Widget pendingFinishedBattleDetailsCard({
                                     height: height * 0.01,
                                   ),
                                   Text(
-                                    currentUserModel.nickName ?? AppStringRes.nickname,
+                                    currentUserModel.nickName ??
+                                        AppStringRes.nickname,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -1911,8 +1912,10 @@ Widget pendingFinishedBattleDetailsCard({
                                         Align(
                                           alignment: Alignment.centerRight,
                                           child: Text(
-                                            messages[index]
-                                                .dateTime
+                                            DateTime.parse(
+                                                messages[index].dateTime)
+                                                .toLocal()
+                                                .toString()
                                                 .substring(0, 19)
                                                 .replaceAll('T', ' '),
                                             style: TextStyle(
@@ -2148,7 +2151,8 @@ Widget finishedBattleDetailsCard({
                                     height: height * 0.01,
                                   ),
                                   Text(
-                                    currentUserModel.nickName ?? AppStringRes.nickname,
+                                    currentUserModel.nickName ??
+                                        AppStringRes.nickname,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -2344,8 +2348,10 @@ Widget finishedBattleDetailsCard({
                                         Align(
                                           alignment: Alignment.centerRight,
                                           child: Text(
-                                            messages[index]
-                                                .dateTime
+                                            DateTime.parse(
+                                                messages[index].dateTime)
+                                                .toLocal()
+                                                .toString()
                                                 .substring(0, 19)
                                                 .replaceAll('T', ' '),
                                             style: TextStyle(
@@ -2587,7 +2593,8 @@ Widget battleDetailsCard({
                                     height: height * 0.01,
                                   ),
                                   Text(
-                                    currentUserModel.nickName ?? AppStringRes.nickname,
+                                    currentUserModel.nickName ??
+                                        AppStringRes.nickname,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -2829,8 +2836,10 @@ Widget battleDetailsCard({
                                         Align(
                                           alignment: Alignment.centerRight,
                                           child: Text(
-                                            messages[index]
-                                                .dateTime
+                                            DateTime.parse(
+                                                    messages[index].dateTime)
+                                                .toLocal()
+                                                .toString()
                                                 .substring(0, 19)
                                                 .replaceAll('T', ' '),
                                             style: TextStyle(

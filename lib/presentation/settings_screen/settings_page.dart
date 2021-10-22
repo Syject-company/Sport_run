@@ -135,7 +135,8 @@ class SettingsPageState extends State<SettingsPage> {
                                           left: width * 0.03,
                                           top: height * 0.01),
                                       child: Text(
-                                        snapshot.data!.nickName ?? AppStringRes.nickname,
+                                        snapshot.data!.nickName ??
+                                            AppStringRes.nickname,
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontFamily: 'roboto',
@@ -191,7 +192,7 @@ class SettingsPageState extends State<SettingsPage> {
                               Navigator.push<dynamic>(context,
                                   MaterialPageRoute<dynamic>(
                                       builder: (BuildContext con) {
-                                return  const FAQHelperPage(
+                                return const FAQHelperPage(
                                   faqHelperState: FAQHelperState.HelpState,
                                 );
                               }));
@@ -238,8 +239,9 @@ class SettingsPageState extends State<SettingsPage> {
                                         .then((_) {
                                       PreferenceUtils.setPageRout('Register');
                                       Navigator.of(context)
-                                          .pushReplacementNamed(
-                                              Constants.registerRoute);
+                                          .pushNamedAndRemoveUntil(
+                                              Constants.registerRoute,
+                                              (Route<dynamic> route) => false);
                                     });
                                   });
                             },

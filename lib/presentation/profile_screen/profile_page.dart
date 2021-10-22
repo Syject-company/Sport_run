@@ -111,8 +111,9 @@ class ProfilePageState extends State<ProfilePage> {
                           await PreferenceUtils.setIsUserAuthenticated(false)
                               .then((_) {
                             PreferenceUtils.setPageRout('Register');
-                            Navigator.of(context)
-                                .pushReplacementNamed(Constants.registerRoute);
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                Constants.registerRoute,
+                                (Route<dynamic> route) => false);
                           });
                         });
                   },
@@ -175,7 +176,8 @@ class ProfilePageState extends State<ProfilePage> {
                                             //title: 'Profile picture',
                                             text: 'Profile picture',
                                             applyButtonText: 'Change',
-                                            cancelButtonText: AppStringRes.cancel,
+                                            cancelButtonText:
+                                                AppStringRes.cancel,
                                             onApplyPressed: () {
                                               BlocProvider.of<ProfileBloc>(
                                                       context)
@@ -278,9 +280,8 @@ class ProfilePageState extends State<ProfilePage> {
                                         ),
                                         _userPaceDistance(
                                           title: AppStringRes.weeklyDistance,
-
-                                          value:   '${snapshot.data!.weeklyDistance.toStringAsFixed(snapshot.data!.isMetric ? 0 : 1)} ${snapshot.data!.isMetric ? 'km' : 'mile'}',
-
+                                          value:
+                                              '${snapshot.data!.weeklyDistance.toStringAsFixed(snapshot.data!.isMetric ? 0 : 1)} ${snapshot.data!.isMetric ? 'km' : 'mile'}',
                                         ),
                                       ],
                                     ),
@@ -353,7 +354,8 @@ class ProfilePageState extends State<ProfilePage> {
                                     ),
                                     _userBio(
                                         value: snapshot.data!.description ??
-                                            AppStringRes.hereWillBeYourBiography),
+                                            AppStringRes
+                                                .hereWillBeYourBiography),
                                   ],
                                 ),
                               ),

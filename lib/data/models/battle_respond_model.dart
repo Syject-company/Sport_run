@@ -136,6 +136,7 @@ class BattleUsers {
     required this.isCreater,
     required this.photos,
     required this.applicationUser,
+    required this.isChanger,
   });
 
   factory BattleUsers.fromJson(Map<String, dynamic> map) {
@@ -146,6 +147,7 @@ class BattleUsers {
       resultIsConfirmed: map['resultIsConfirmed'] as bool,
       resultIsRejected: map['resultIsRejected'] as bool,
       isCreater: map['isCreater'] as bool,
+      isChanger: map['isChanger'] as bool,
       //NOte: List<String>
       photos: map['photos'] as List<dynamic>,
       applicationUser: ApplicationUser.fromJson(
@@ -159,6 +161,7 @@ class BattleUsers {
   final bool resultIsConfirmed;
   final bool resultIsRejected;
   final bool isCreater;
+  final bool isChanger;
   final List<dynamic> photos;
   final ApplicationUser applicationUser;
 
@@ -169,6 +172,7 @@ class BattleUsers {
     bool? resultIsConfirmed,
     bool? resultIsRejected,
     bool? isCreater,
+    bool? isChanger,
     List<dynamic>? photos,
     ApplicationUser? applicationUser,
   }) {
@@ -179,6 +183,7 @@ class BattleUsers {
       resultIsConfirmed: resultIsConfirmed ?? this.resultIsConfirmed,
       resultIsRejected: resultIsRejected ?? this.resultIsRejected,
       isCreater: isCreater ?? this.isCreater,
+      isChanger: isChanger ?? this.isChanger,
       photos: photos ?? this.photos,
       applicationUser: applicationUser ?? this.applicationUser,
     );
@@ -186,7 +191,7 @@ class BattleUsers {
 
   @override
   String toString() {
-    return 'BattleUsers{id: $id, time: $time, batlleStatus: $batlleStatus, resultIsConfirmed: $resultIsConfirmed, resultIsRejected: $resultIsRejected, isCreater: $isCreater, photos: $photos, applicationUser: $applicationUser}';
+    return 'BattleUsers{id: $id, time: $time, batlleStatus: $batlleStatus, resultIsConfirmed: $resultIsConfirmed, resultIsRejected: $resultIsRejected, isCreater: $isCreater, isChanger: $isChanger, photos: $photos, applicationUser: $applicationUser}';
   }
 
   @override
@@ -200,6 +205,7 @@ class BattleUsers {
           resultIsConfirmed == other.resultIsConfirmed &&
           resultIsRejected == other.resultIsRejected &&
           isCreater == other.isCreater &&
+          isChanger == other.isChanger &&
           photos == other.photos &&
           applicationUser == other.applicationUser);
 
@@ -211,6 +217,7 @@ class BattleUsers {
       resultIsConfirmed.hashCode ^
       resultIsRejected.hashCode ^
       isCreater.hashCode ^
+      isChanger.hashCode ^
       photos.hashCode ^
       applicationUser.hashCode;
 
@@ -223,6 +230,7 @@ class BattleUsers {
       'resultIsConfirmed': resultIsConfirmed,
       'resultIsRejected': resultIsRejected,
       'isCreater': isCreater,
+      'isChanger': isChanger,
       'photos': photos,
       'applicationUser': applicationUser,
     } as Map<String, dynamic>;
