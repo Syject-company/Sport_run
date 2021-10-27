@@ -17,6 +17,7 @@ import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
 import 'package:one2one_run/utils/data_values.dart';
+import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -1913,7 +1914,7 @@ Widget pendingFinishedBattleDetailsCard({
                                           alignment: Alignment.centerRight,
                                           child: Text(
                                             DateTime.parse(
-                                                messages[index].dateTime)
+                                                    messages[index].dateTime)
                                                 .toLocal()
                                                 .toString()
                                                 .substring(0, 19)
@@ -2349,7 +2350,7 @@ Widget finishedBattleDetailsCard({
                                           alignment: Alignment.centerRight,
                                           child: Text(
                                             DateTime.parse(
-                                                messages[index].dateTime)
+                                                    messages[index].dateTime)
                                                 .toLocal()
                                                 .toString()
                                                 .substring(0, 19)
@@ -3494,6 +3495,7 @@ Widget userCardMain({
   required ConnectUsersModel model,
   required BuildContext context,
   required VoidCallback onTapCard,
+  required String pace,
   required Function(ConnectUsersModel model) onTapBattleCreate,
 }) {
   return Center(
@@ -3570,8 +3572,8 @@ Widget userCardMain({
                         width: width,
                         title: AppStringRes.pace,
                         icon: paceIcon,
-                        value:
-                            '${model.pace.toStringAsFixed(1)} min/${model.isMetric ? 'km' : 'mile'}',
+                        value: '$pace min/${PreferenceUtils.getIsUserUnitInKM() ? 'km' : 'mile'}',
+                        // '${model.pace.toStringAsFixed(1)} min/${model.isMetric ? 'km' : 'mile'}',
                       ),
                       SizedBox(
                         width: height * 0.02,
@@ -3597,7 +3599,7 @@ Widget userCardMain({
                       title: AppStringRes.weeklyDistance,
                       icon: weeklyDistanceIcon,
                       value:
-                          '${model.isMetric ? double.parse(model.weeklyDistance.toStringAsFixed(0)) : double.parse(model.weeklyDistance.toStringAsFixed(1))} ${model.isMetric ? 'km' : 'mile'}',
+                          '${PreferenceUtils.getIsUserUnitInKM() ? double.parse(model.weeklyDistance.toStringAsFixed(0)) : double.parse(model.weeklyDistance.toStringAsFixed(1))} ${PreferenceUtils.getIsUserUnitInKM() ? 'km' : 'mile'}',
                     ),
                   ),
                   SizedBox(
@@ -3702,6 +3704,7 @@ Widget userCardEnjoy({
   required EnjoyResponseModel model,
   required BuildContext context,
   required String distance,
+  required String pace,
 }) {
   return Center(
     child: Container(
@@ -3776,7 +3779,7 @@ Widget userCardEnjoy({
                       title: AppStringRes.pace,
                       icon: paceIcon,
                       value:
-                          '${model.pace.toStringAsFixed(1)} min/${model.isMetric ? 'km' : 'mile'}',
+                      '$pace min/${model.isMetric ? 'km' : 'mile'}',
                     ),
                     SizedBox(
                       width: height * 0.02,

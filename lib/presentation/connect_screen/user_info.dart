@@ -129,7 +129,7 @@ class UserInfo extends StatelessWidget {
                       title: AppStringRes.pace,
                       icon: paceIcon,
                       value:
-                          '${userModel.pace.toStringAsFixed(1)} min/${userModel.isMetric ? 'km' : 'mile'}',
+                          '${getFormattedPaceTime(pace: userModel.pace.toDouble())} min/${userModel.isMetric ? 'km' : 'mile'}',
                     ),
                     SizedBox(
                       width: height * 0.02,

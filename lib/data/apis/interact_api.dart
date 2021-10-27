@@ -49,7 +49,7 @@ class InteractApi {
   }
 
   //@post
-  Future<bool> battleAcceptConditions({required String id}) async {
+  Future<int> battleAcceptConditions({required String id}) async {
     final String token = PreferenceUtils.getUserToken();
     final Response res = await post(
         Uri.parse('$_urlBattleAcceptConditions/$id/AcceptConditions'),
@@ -58,7 +58,7 @@ class InteractApi {
           HttpHeaders.authorizationHeader: token,
         });
 
-    return res.statusCode == 200;
+    return res.statusCode;
   }
 
   //@get
