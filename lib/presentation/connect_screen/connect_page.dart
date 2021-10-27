@@ -10,6 +10,7 @@ import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_sta
 import 'package:one2one_run/presentation/connect_screen/user_info.dart';
 import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
+import 'package:one2one_run/utils/extension.dart' show DateTimeExtension;
 
 //NOte:'/connect'
 class ConnectPage extends StatefulWidget {
@@ -188,6 +189,7 @@ class ConnectPageState extends State<ConnectPage> {
                               width: width,
                               height: height,
                               model: usersConnect[index],
+                              pace: getFormattedPaceTime(pace: usersConnect[index].pace.toDouble()),
                               onTapCard: () {
                                 BlocProvider.of<ConnectBloc>(context).add(
                                     connect_bloc.NavigateToUserInfo(

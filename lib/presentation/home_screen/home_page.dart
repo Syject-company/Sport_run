@@ -25,13 +25,13 @@ import 'package:one2one_run/presentation/home_screen/home_bloc/home_bloc.dart';
 import 'package:one2one_run/presentation/home_screen/home_bloc/home_state.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_page.dart';
 import 'package:one2one_run/presentation/settings_screen/settings_page.dart';
+import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
 import 'package:one2one_run/resources/images.dart';
-import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/extension.dart'
-    show DateTimeExtension, ToastExtension, UserData, ScreenUtils;
+    show DateTimeExtension, ToastExtension, UserData;
 import 'package:one2one_run/utils/no_glow_scroll_behavior.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
@@ -44,7 +44,7 @@ class HomePage extends StatefulWidget {
   @override
   HomePageState createState() => HomePageState();
 }
-
+//Need refactoring, but as always no Time
 class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _keyScaffold = GlobalKey<ScaffoldState>();
 

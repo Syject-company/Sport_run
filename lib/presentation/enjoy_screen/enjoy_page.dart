@@ -87,6 +87,7 @@ class EnjoyPage extends StatelessWidget {
                             context: context,
                             width: width,
                             height: height,
+                            pace: getFormattedPaceTime(pace: snapshot.data![index].pace.toDouble()),
                             model: snapshot.data![index],
                             distance:
                                 '${snapshot.data![index].weeklyDistance.toStringAsFixed(snapshot.data![index].isMetric ? 0 : 1)} ${snapshot.data![index].isMetric ? 'km' : 'mile'}',

@@ -69,6 +69,17 @@ extension DateTimeExtension on void {
     return _timeChanged;
   }
 
+  String getFormattedPaceTime({
+    required double pace,
+  }) {
+    final String _paceText = double.parse(getTimeStringFromDouble(pace))
+        .toStringAsFixed(1)
+        .replaceAll('.', ':');
+    final String _paceTextFormatted =
+        _paceText.length == 3 ? '0${_paceText}0' : '${_paceText}0';
+    return _paceTextFormatted;
+  }
+
   String getTimeStringFromDouble(double value) {
     final int flooredValue = value.floor();
     final double decimalValue = value - flooredValue;
@@ -76,6 +87,15 @@ extension DateTimeExtension on void {
     final String minuteString = getMinuteString(decimalValue);
 
     return '$hourValue.$minuteString';
+  }
+
+  String getTimeStringFromDoubleProfile(double value) {
+    final int flooredValue = value.floor();
+    final double decimalValue = value - flooredValue;
+    final String hourValue = getHourString(flooredValue);
+    final String minuteString = getMinuteString(decimalValue);
+
+    return '$hourValue:$minuteString';
   }
 
   String getMinuteString(double decimalValue) {
@@ -102,7 +122,7 @@ extension UserData on void {
       if (distance > 150) {
         return 150;
       }
-      if (distance < 4) {
+      if (distance < 3) {
         return 4.0;
       }
     } else {
@@ -118,9 +138,7 @@ extension UserData on void {
   }
 
   String distance({required num distance}) {
-    return PreferenceUtils.getIsUserUnitInKM()
-        ? '${getDistance(distance: distance).toStringAsFixed(0)} km'
-        : '${getDistance(distance: distance).toStringAsFixed(1)} mile';
+    return '$distance ${PreferenceUtils.getIsUserUnitInKM() ? 'km' : 'mile'}';
   }
 
   String getOpponentName({

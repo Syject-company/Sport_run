@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "57127894563-243q21v0uhvvvfub3897c2n0c9jd9equ.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.one2one.one2oneRun",
+            "certificate_hash": "30c9875ffa2abd100d1b88f0477b0fbb0c00aae3"
+          }
+        },
+        {
           "client_id": "57127894563-2a4hnn7tged5uqn99qpja77nivqjpd0b.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

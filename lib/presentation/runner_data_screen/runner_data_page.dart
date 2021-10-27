@@ -366,9 +366,7 @@ class RunnerDataPageState extends State<RunnerDataPage> {
               context: context,
               dialogTitle: AppStringRes.pace,
               dialogText: AppStringRes.paceText,
-              timePerKM: isKM
-                  ? '${getTimeStringFromDouble(_currentPaceValue / 60)} min/km'
-                  : '${(_currentPaceValue / 60).toStringAsFixed(2)} min/mile',
+              timePerKM: '${getFormattedPaceTime(pace:_currentPaceValue / 60)} ${isKM ? 'min/km' : 'min/mile'}',
               unit: isKM ? 'km' : 'mile',
               kmPerHour: (60 * 60) / _currentPaceValue,
               minValue: (isKM ? 2.01 : 3) * 60,

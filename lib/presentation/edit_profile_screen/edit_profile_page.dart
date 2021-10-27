@@ -272,13 +272,11 @@ class EditProfilePageState extends State<EditProfilePage> {
           context: context,
           dialogTitle: AppStringRes.pace,
           dialogText: AppStringRes.paceText,
-          timePerKM: _isKM
-              ? '${getTimeStringFromDouble(_currentPaceValue.toDouble() / 60)} min/km'
-              : '${(_currentPaceValue.toDouble() / 60).toStringAsFixed(2)} min/mile',
+          timePerKM: '${getFormattedPaceTime(pace:_currentPaceValue.toDouble() / 60)} ${_isKM ? 'min/km' : 'min/mile'}',
           unit: _isKM ? 'km' : 'mile',
           kmPerHour: (60 * 60) / _currentPaceValue,
           minValue: (_isKM ? 2.01 : 3) * 60,
-          maxValue: (_isKM ? 11 : 18) * 60,
+          maxValue: (_isKM ? 11.01 : 18) * 60,
           sliderValue: _currentPaceValue.toDouble(),
           onChanged: (double value) {
             BlocProvider.of<EditProfileBloc>(context)
