@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:one2one_run/components/faq_helper.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/home_api.dart';
@@ -234,6 +235,9 @@ class SettingsPageState extends State<SettingsPage> {
                                   applyButtonText: 'Logout',
                                   cancelButtonText: AppStringRes.cancel,
                                   onApplyPressed: () async {
+                                    if (GoogleSignIn().currentUser != null) {
+                                      await GoogleSignIn().disconnect();
+                                    }
                                     await PreferenceUtils
                                             .setIsUserAuthenticated(false)
                                         .then((_) {

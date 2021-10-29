@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/data/apis/home_api.dart';
@@ -108,6 +109,9 @@ class ProfilePageState extends State<ProfilePage> {
                         applyButtonText: 'Logout',
                         cancelButtonText: AppStringRes.cancel,
                         onApplyPressed: () async {
+                          if (GoogleSignIn().currentUser != null) {
+                            await GoogleSignIn().disconnect();
+                          }
                           await PreferenceUtils.setIsUserAuthenticated(false)
                               .then((_) {
                             PreferenceUtils.setPageRout('Register');
