@@ -347,8 +347,8 @@ extension Authorization on void {
       {required BuildContext context,
       required Function(String token) onSuccess}) async {
     final  GoogleSignIn googleSignIn = GoogleSignIn();
-    await googleSignIn.disconnect();
-    await googleSignIn.signIn().then((GoogleSignInAccount? result) {
+    await googleSignIn.disconnect().whenComplete(()  =>
+     googleSignIn.signIn().then((GoogleSignInAccount? result) {
       result?.authentication.then((GoogleSignInAuthentication googleKey) async {
         print(googleKey.accessToken);
         final String? token = googleKey.accessToken;
@@ -364,7 +364,9 @@ extension Authorization on void {
           msg: 'Registration error: $err',
           fontSize: 16.0,
           gravity: ToastGravity.CENTER);
-    });
+    })
+    );
+
   }
 }
 
