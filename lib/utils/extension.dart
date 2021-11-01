@@ -346,7 +346,9 @@ extension Authorization on void {
   Future<void> signInWithGoogle(
       {required BuildContext context,
       required Function(String token) onSuccess}) async {
-    await GoogleSignIn().signIn().then((GoogleSignInAccount? result) {
+    final  GoogleSignIn googleSignIn = GoogleSignIn();
+    await googleSignIn.disconnect();
+    await googleSignIn.signIn().then((GoogleSignInAccount? result) {
       result?.authentication.then((GoogleSignInAuthentication googleKey) async {
         print(googleKey.accessToken);
         final String? token = googleKey.accessToken;

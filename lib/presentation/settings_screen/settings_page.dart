@@ -235,9 +235,6 @@ class SettingsPageState extends State<SettingsPage> {
                                   applyButtonText: 'Logout',
                                   cancelButtonText: AppStringRes.cancel,
                                   onApplyPressed: () async {
-                                    if (GoogleSignIn().currentUser != null) {
-                                      await GoogleSignIn().disconnect();
-                                    }
                                     await PreferenceUtils
                                             .setIsUserAuthenticated(false)
                                         .then((_) {
