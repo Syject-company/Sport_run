@@ -101,10 +101,7 @@ class LoginPageState extends State<LoginPage> {
                   } else {
                     signInController.reset();
                     await Fluttertoast.showToast(
-                        msg: ErrorModel.fromJson(
-                                json.decode(value.body) as Map<String, dynamic>)
-                            .title
-                            .toString(),
+                        msg: value.body,
                         fontSize: 16.0,
                         gravity: ToastGravity.CENTER);
                   }

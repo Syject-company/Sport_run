@@ -10,7 +10,8 @@ import 'package:one2one_run/presentation/connect_screen/connect_bloc/connect_sta
 import 'package:one2one_run/presentation/connect_screen/user_info.dart';
 import 'package:one2one_run/resources/app_string_res.dart';
 import 'package:one2one_run/resources/colors.dart';
-import 'package:one2one_run/utils/extension.dart' show DateTimeExtension;
+import 'package:one2one_run/utils/extension.dart'
+    show DateTimeExtension, ScreenUtils;
 
 //NOte:'/connect'
 class ConnectPage extends StatefulWidget {
@@ -176,8 +177,16 @@ class ConnectPageState extends State<ConnectPage> {
                   ),
                   SizedBox(
                     height: widget.isNeedToShowSearchBar
-                        ? height - (height * 0.2)
-                        : height - (height * 0.121),
+                        ? height -
+                            (height *
+                                (isIPhoneX(MediaQuery.of(context))
+                                    ? 0.264
+                                    : 0.2))
+                        : height -
+                            (height *
+                                (isIPhoneX(MediaQuery.of(context))
+                                    ? 0.19
+                                    : 0.121)),
                     width: width,
                     child: Scrollbar(
                       child: ListView.builder(
@@ -189,7 +198,8 @@ class ConnectPageState extends State<ConnectPage> {
                               width: width,
                               height: height,
                               model: usersConnect[index],
-                              pace: getFormattedPaceTime(pace: usersConnect[index].pace.toDouble()),
+                              pace: getFormattedPaceTime(
+                                  pace: usersConnect[index].pace.toDouble()),
                               onTapCard: () {
                                 BlocProvider.of<ConnectBloc>(context).add(
                                     connect_bloc.NavigateToUserInfo(

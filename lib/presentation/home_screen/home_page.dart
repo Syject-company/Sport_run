@@ -12,6 +12,7 @@ import 'package:one2one_run/components/widgets.dart';
 import 'package:one2one_run/components/widgets_drawers.dart';
 import 'package:one2one_run/data/apis/connect_api.dart';
 import 'package:one2one_run/data/apis/home_api.dart';
+import 'package:one2one_run/data/apis/interact_api.dart';
 import 'package:one2one_run/data/models/battle_request_model.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
 import 'package:one2one_run/data/models/change_battle_conditions_model.dart';
@@ -44,6 +45,7 @@ class HomePage extends StatefulWidget {
   @override
   HomePageState createState() => HomePageState();
 }
+
 //Need refactoring, but as always no Time
 class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _keyScaffold = GlobalKey<ScaffoldState>();
@@ -71,6 +73,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   final HomeApi _homeApi = HomeApi();
   final ConnectApi _connectApi = ConnectApi();
+  final InteractApi _interActApi = InteractApi();
 
   String _pageTitle = 'Connect';
   String _changeBattleDrawerTitle = 'Offer new conditions';
@@ -105,7 +108,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   double _currentDistanceValue = 5;
   late SignalR _signalR;
 
- late HomeBloc _homeBloc;
+  late HomeBloc _homeBloc;
 
   @override
   void initState() {
@@ -260,9 +263,11 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     context: context,
                     height: height,
                     width: width,
-                    currentUserName: currentUserModel.nickName ?? AppStringRes.nickname,
+                    currentUserName:
+                        currentUserModel.nickName ?? AppStringRes.nickname,
                     currentUserPhoto: currentUserModel.photoLink,
-                    opponentUserName: _userBattleModel?.nickName ?? AppStringRes.nickname,
+                    opponentUserName:
+                        _userBattleModel?.nickName ?? AppStringRes.nickname,
                     opponentUserPhoto: _userBattleModel?.photoLink,
                   );
 
@@ -286,18 +291,53 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             _changeBattleDrawerTitle = 'Offer new conditions';
           } else if (state is BattleOnNotificationIsAccepted) {
             _acceptBattleController.success();
-            await _homeApi
-                .acceptBattle(battleId: state.battleId)
-                .then((bool value) async {
-              if (value) {
-                if (_keyScaffold.currentState != null &&
-                    _keyScaffold.currentState!.isEndDrawerOpen) {
-                  Navigator.of(context).pop();
+
+            if (_battleRespondModel.status == 1) {
+              await _interActApi
+                  .battleAcceptConditions(id: state.battleId)
+                  .then((int value) async {
+                if (value == 200) {
+                  if (_keyScaffold.currentState != null &&
+                      _keyScaffold.currentState!.isEndDrawerOpen) {
+                    Navigator.of(context).pop();
+                  }
+                  await Fluttertoast.showToast(
+                      msg: 'You have successfully accepted the battle!',
+                      fontSize: 16.0,
+                      textColor: Colors.green,
+                      gravity: ToastGravity.CENTER);
+                } else {
+                  if (value == 400) {
+                    await Fluttertoast.showToast(
+                        msg: 'Conditions must be accepted by your opponent!',
+                        fontSize: 18.0,
+                        textColor: Colors.white,
+                        gravity: ToastGravity.CENTER);
+                  } else {
+                    await toastUnexpectedError();
+                  }
                 }
-              } else {
-                await toastUnexpectedError();
-              }
-            });
+              });
+            } else {
+              await _homeApi
+                  .acceptBattle(battleId: state.battleId)
+                  .then((bool value) async {
+                if (value) {
+                  if (_keyScaffold.currentState != null &&
+                      _keyScaffold.currentState!.isEndDrawerOpen) {
+                    Navigator.of(context).pop();
+                  }
+                  await Fluttertoast.showToast(
+                      msg: 'You have successfully accepted the battle!',
+                      fontSize: 16.0,
+                      textColor: Colors.green,
+                      gravity: ToastGravity.CENTER);
+                } else {
+                  await toastUnexpectedError();
+                }
+              });
+            }
+
             _acceptBattleController.reset();
           } else if (state is ApplyBattleIsChanged) {
             // _isNeedToOpenChangeBattleDrawer = false;
@@ -347,10 +387,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           } else if (state is SearchBarShownHidden) {
             _isNeedToShowSearchBar = !_isNeedToShowSearchBar;
           }
-              if(!_homeBloc.isClosed){
-                BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
-              }
-
+          if (!_homeBloc.isClosed) {
+            BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
+          }
         },
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (final BuildContext context, final HomeState state) {
@@ -546,7 +585,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                                             MainAxisSize.min,
                                                         children: <Widget>[
                                                           buildRoundedButton(
-                                                            label: AppStringRes.refresh,
+                                                            label: AppStringRes
+                                                                .refresh,
                                                             width: width,
                                                             height: 40.h,
                                                             buttonTextSize:
@@ -997,7 +1037,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       home_bloc.SendMessageToOpponent(
                           _messageController.text.isNotEmpty
                               ? _messageController.text
-                              : AppStringRes.messagesToOpponent[_selectedMessageIndex]));
+                              : AppStringRes
+                                  .messagesToOpponent[_selectedMessageIndex]));
                 } else {
                   _applyMessageController.reset();
                   await Fluttertoast.showToast(
