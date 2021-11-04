@@ -1,9 +1,9 @@
 class Constants {
   //domain
   //Test domain
-  static const String domain = 'https://one2oneruntestapi.azurewebsites.net';
+  //static const String domain = 'https://one2oneruntestapi.azurewebsites.net';
   //Main domain
-  //static const String domain = 'https://one2onerunapi.azurewebsites.net';
+  static const String domain = 'https://one2onerunapi.azurewebsites.net';
 
   //pager routs:
   static const String loginRoute = '/login';
