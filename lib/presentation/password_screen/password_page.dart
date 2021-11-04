@@ -62,7 +62,8 @@ class PasswordPageState extends State<PasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, String> title = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+    final Map<String, String> title =
+        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
@@ -240,7 +241,9 @@ class PasswordPageState extends State<PasswordPage> {
                         SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
                           child: SizedBox(
-                            height: height - 100,
+                            height: MediaQuery.of(context).size.height <= 760
+                                ? height + 100
+                                : height - 100,
                             child: _createNewPassword(
                               context: context,
                               width: width,

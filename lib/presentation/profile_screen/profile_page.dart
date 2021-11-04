@@ -176,7 +176,7 @@ class ProfilePageState extends State<ProfilePage> {
                                             context: context,
                                             //title: 'Profile picture',
                                             text: 'Profile picture',
-                                            applyButtonText: 'Change',
+                                            applyButtonText: snapshot.data!.photoLink != null ? 'Change' : 'Choose',
                                             cancelButtonText:
                                                 AppStringRes.cancel,
                                             onApplyPressed: () {
