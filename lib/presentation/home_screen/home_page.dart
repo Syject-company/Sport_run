@@ -321,8 +321,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             } else {
               await _homeApi
                   .acceptBattle(battleId: state.battleId)
-                  .then((bool value) async {
-                if (value) {
+                  .then((int value) async {
+                if (value == 200) {
                   if (_keyScaffold.currentState != null &&
                       _keyScaffold.currentState!.isEndDrawerOpen) {
                     Navigator.of(context).pop();
@@ -333,7 +333,21 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       textColor: Colors.green,
                       gravity: ToastGravity.CENTER);
                 } else {
-                  await toastUnexpectedError();
+                  if (value == 403) {
+                    await Fluttertoast.showToast(
+                        msg: "Can't accept! Waiting for other participant",
+                        fontSize: 18.0,
+                        textColor: Colors.white,
+                        gravity: ToastGravity.CENTER);
+                  } else if (value == 400) {
+                    await Fluttertoast.showToast(
+                        msg: 'Conditions must be accepted by your opponent!',
+                        fontSize: 18.0,
+                        textColor: Colors.white,
+                        gravity: ToastGravity.CENTER);
+                  } else {
+                    await toastUnexpectedError();
+                  }
                 }
               });
             }
@@ -460,8 +474,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 ? <Widget>[Container()]
                                 : null,
                       ),
-                      endDrawer: _selectedDrawerItem == DrawerItems.Connect ||
-                              _selectedDrawerItem == DrawerItems.Interact
+                      endDrawer: _selectedDrawerItem == DrawerItems.Connect
                           ? ConditionalSwitch.single<DrawersType>(
                               context: context,
                               valueBuilder: (BuildContext context) =>

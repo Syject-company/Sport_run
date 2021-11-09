@@ -49,6 +49,8 @@ class HomeApi {
           HttpHeaders.authorizationHeader: token,
         });
 
+    print('SaveUserModel: $model');
+
     return res.statusCode == 200;
   }
 
@@ -107,7 +109,7 @@ class HomeApi {
   }
 
   //@post
-  Future<bool> acceptBattle({required String battleId}) async {
+  Future<int> acceptBattle({required String battleId}) async {
     final String token = PreferenceUtils.getUserToken();
     final Response res = await post(
         Uri.parse('$_urlGetBattleById/$battleId/Accept'),
@@ -116,7 +118,7 @@ class HomeApi {
           HttpHeaders.authorizationHeader: token,
         });
 
-    return res.statusCode == 200;
+    return res.statusCode;
   }
 
   //@post
