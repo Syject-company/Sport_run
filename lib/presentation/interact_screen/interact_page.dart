@@ -93,8 +93,8 @@ class InteractPageState extends State<InteractPage> {
             } else {
               await _homeApi
                   .acceptBattle(battleId: state.id)
-                  .then((bool value) async {
-                if (value) {
+                  .then((int value) async {
+                if (value == 200) {
                   await Fluttertoast.showToast(
                       msg: 'You have successfully accepted the battle!',
                       fontSize: 16.0,
@@ -103,7 +103,21 @@ class InteractPageState extends State<InteractPage> {
                   getInteractTabsDataById =
                       _interActApi.getInteractTabsDataById(tabId: 0);
                 } else {
-                  await toastUnexpectedError();
+                  if (value == 403) {
+                    await Fluttertoast.showToast(
+                        msg: "Can't accept! Waiting for other participant",
+                        fontSize: 18.0,
+                        textColor: Colors.white,
+                        gravity: ToastGravity.CENTER);
+                  } else if (value == 400) {
+                    await Fluttertoast.showToast(
+                        msg: 'Conditions must be accepted by your opponent!',
+                        fontSize: 18.0,
+                        textColor: Colors.white,
+                        gravity: ToastGravity.CENTER);
+                  } else {
+                    await toastUnexpectedError();
+                  }
                 }
               });
             }
