@@ -13,31 +13,31 @@ dependencies:
     sdk: flutter
 
   #Architecture
-  flutter_bloc: ^7.3.0
+  flutter_bloc: ^7.3.3
   equatable: ^2.0.3
 
   #Ui
-  cupertino_icons: ^1.0.3
+  cupertino_icons: ^1.0.4
   flutter_screenutil: ^5.0.0+2
-  cached_network_image: ^3.1.0
+  cached_network_image: ^3.1.0+1
   fluttertoast: ^8.0.8
-  pinput: ^1.2.0
+  pinput: ^1.2.2
   rounded_loading_button: ^2.0.9
-  image_picker: ^0.8.4+2
+  image_picker: ^0.8.4+4
   flutter_conditional_rendering: ^2.0.0
   pinch_zoom_image_last: ^0.4.1
   smooth_page_indicator: ^1.0.0+2
 
   #Functions
   shared_preferences: ^2.0.8
-  google_sign_in: ^5.1.1
+  google_sign_in: ^5.2.1
   sign_in_with_apple: ^3.2.0
-  firebase_messaging: ^10.0.8
-  firebase_core: ^1.7.0
+  firebase_messaging: ^11.1.0
+  firebase_core: ^1.10.0
   firebase_analytics: "^8.3.0"
   intl: ^0.17.0
-  share_plus: ^3.0.2
-  path_provider: ^2.0.5
+  share_plus: ^3.0.4
+  path_provider: ^2.0.6
   signal_r:
     path: signalr_client
 
