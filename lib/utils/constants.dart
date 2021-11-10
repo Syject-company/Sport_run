@@ -39,9 +39,9 @@ class Constants {
 
   //Data:
   //Main domain
-  //static const String socketUrl = 'https://one2onerunapi.azurewebsites.net/chathub';
+  static const String socketUrl = 'https://one2onerunapi.azurewebsites.net/chathub';
   //Test domain
-  static const String socketUrl = 'https://one2oneruntestapi.azurewebsites.net/chathub';
+ // static const String socketUrl = 'https://one2oneruntestapi.azurewebsites.net/chathub';
   static const String socketConnectToGroups = 'ConnectToGroups';
   static const String socketReceiveBattleNotification = 'ReceiveBattleNotification';
   static const String socketReceiveMessage = 'ReceiveMessage';

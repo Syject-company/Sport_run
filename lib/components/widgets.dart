@@ -1803,7 +1803,7 @@ Widget pendingFinishedBattleDetailsCard({
                                     height: height * 0.01,
                                   ),
                                   Text(
-                                    opponentName,
+                                    opponentName ?? 'Nickname',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
