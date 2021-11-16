@@ -360,10 +360,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     model: ChangeBattleConditionsModel(
                       dateTime: _dateAndTime,
                       distance: _isKM
-                          ? double.parse(
-                              _currentDistanceValue.toStringAsFixed(0))
-                          : double.parse(
-                              _currentDistanceValue.toStringAsFixed(1)),
+                          ? getWeeklyDistance()
+                          : getWeeklyDistance(),
                     ),
                     battleId: state.battleId)
                 .then((bool value) async {
@@ -474,7 +472,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 ? <Widget>[Container()]
                                 : null,
                       ),
-                      endDrawer: _selectedDrawerItem == DrawerItems.Connect
+                      endDrawer: _selectedDrawerItem == DrawerItems.Connect || _selectedDrawerItem == DrawerItems.Interact
                           ? ConditionalSwitch.single<DrawersType>(
                               context: context,
                               valueBuilder: (BuildContext context) =>
@@ -973,6 +971,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         BlocProvider.of<HomeBloc>(context)
             .add(home_bloc.ChangeDistanceValue(value));
       },
+      distanceMenuValue: _distanceMenuValue,
+      onChangedDistanceMenu: (String? value) {
+        BlocProvider.of<HomeBloc>(context)
+            .add(home_bloc.ChangeDropMenuDistanceValue(value ?? '3'));
+      },
+      weeklyDistanceCustomController: _weeklyDistanceCustomController,
       onTapApplyBattle: () {
         BlocProvider.of<HomeBloc>(context)
             .add(home_bloc.ApplyBattleChanges(_battleId));

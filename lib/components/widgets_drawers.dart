@@ -26,6 +26,9 @@ Widget changeBattleDrawer({
   required RoundedLoadingButtonController applyChangeBattleController,
   required VoidCallback onTapApplyBattle,
   required VoidCallback onTapCancelBattle,
+  required Function(String? value) onChangedDistanceMenu,
+  required String distanceMenuValue,
+  required TextEditingController weeklyDistanceCustomController,
 }) {
   return Container(
     width: width,
@@ -102,7 +105,7 @@ Widget changeBattleDrawer({
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        userName,
+                        userName ?? "NickName",
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 18.sp,
@@ -143,17 +146,204 @@ Widget changeBattleDrawer({
             SizedBox(
               height: height * 0.01,
             ),
-            seekBarWeekly(
-              title: AppStringRes.distance,
-              context: context,
-              dialogTitle: AppStringRes.distance,
-              dialogText: AppStringRes.distanceText,
-              timePerKM: currentDistanceValue,
-              unit: isKM ? 'km' : 'mile',
-              minValue: isKM ? 2 : 3,
-              maxValue: isKM ? 11 : 18,
-              sliderValue: currentDistanceValue,
-              onChanged: onSeekChanged,
+            // seekBarWeekly(
+            //   title: AppStringRes.distance,
+            //   context: context,
+            //   dialogTitle: AppStringRes.distance,
+            //   dialogText: AppStringRes.distanceText,
+            //   timePerKM: currentDistanceValue,
+            //   unit: isKM ? 'km' : 'mile',
+            //   minValue: isKM ? 2 : 3,
+            //   maxValue: isKM ? 11 : 18,
+            //   sliderValue: currentDistanceValue,
+            //   onChanged: onSeekChanged,
+            // ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 13.0),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    AppStringRes.frequentDistances,
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontFamily: 'roboto',
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.info_outline_rounded,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      showDialog<dynamic>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              AppStringRes.weeklyDistance,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'roboto',
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                            content: Text(
+                              AppStringRes.weeklyDistanceText,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'roboto',
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                            actions: <Widget>[
+                              Center(
+                                child: Container(
+                                  width: 80.0,
+                                  height: 50.0,
+                                  margin:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                                  child: buttonNoIcon(
+                                    title: AppStringRes.ok,
+                                    color: redColor,
+                                    height: 40.h,
+                                    onPressed: () async {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  distanceIcon,
+                  height: height * 0.02,
+                  width: height * 0.02,
+                  fit: BoxFit.fill,
+                  color: Colors.grey,
+                ),
+                const SizedBox(
+                  width: 7.0,
+                ),
+                Text(
+                  AppStringRes.distance,
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w700),
+                ),
+                SizedBox(
+                  width: width * 0.05,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+                  height: height * 0.05,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: DropdownButton<String>(
+                    alignment: AlignmentDirectional.center,
+                    value: distanceMenuValue,
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                    underline: const Divider(
+                      color: Colors.transparent,
+                    ),
+                    elevation: 8,
+                    borderRadius: BorderRadius.circular(5),
+                    style: const TextStyle(color: Colors.black),
+                    iconEnabledColor: Colors.red,
+                    items: <String>[
+                      Constants.filterMenuThree,
+                      Constants.filterMenuFive,
+                      Constants.filterMenuTen,
+                      Constants.filterMenuHalfMarathon,
+                      Constants.filterMenuMarathon,
+                      Constants.filterMenuCustom,
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        alignment: AlignmentDirectional.center,
+                        child: Text(
+                          value,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                      );
+                    }).toList(),
+                    hint: Text(
+                      AppStringRes.select,
+                      style: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    onChanged: onChangedDistanceMenu,
+                  ),
+                ),
+                SizedBox(
+                  width: width * 0.05,
+                ),
+                Text(
+                  isKM ? 'km' : 'mile',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12.sp,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+            Visibility(
+              visible: distanceMenuValue == Constants.filterMenuCustom,
+              child: Container(
+                height: height * 0.08,
+                width: width * 0.35,
+                margin: EdgeInsets.only(
+                  top: height * 0.01,
+                  left: width * 0.31,
+                ),
+                padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.03, vertical: height * 0.01),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: inputBattleCustomTextField(
+                  controller: weeklyDistanceCustomController,
+                  errorText: null,
+                  hintText: AppStringRes.customValue,
+                  maxLength: 6,
+                  keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+                ),
+              ),
             ),
             SizedBox(
               height: height * 0.03,
