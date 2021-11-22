@@ -59,6 +59,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield DropMenuDistanceValueChanged(event.value);
     }else if (event is ShowHideSearchBar) {
       yield SearchBarShownHidden();
+    }else if (event is ChangeAcceptVisibleButton) {
+      yield AcceptNeedToVisibleFromNotification(event.battleId);
     }
   }
 }

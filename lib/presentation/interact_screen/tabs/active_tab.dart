@@ -64,7 +64,7 @@ class ActiveTab extends StatelessWidget {
                                       onNeedToRefreshActivePage:
                                           onNeedToRefreshActivePage,
                                     )));
-                      },
+                      }, needToVisible: false,
                     );
                   }),
             )

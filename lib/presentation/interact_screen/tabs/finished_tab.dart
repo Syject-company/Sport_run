@@ -62,7 +62,7 @@ class FinishedTab extends StatelessWidget {
                       onTapCard: () async {
                         await _navigateToDetailPage(
                             context: context, index: index);
-                      },
+                      }, needToVisible: false,
                     );
                   }),
             )

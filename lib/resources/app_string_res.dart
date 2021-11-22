@@ -52,6 +52,8 @@ mixin AppStringRes {
 
   static String get battle => 'Battle';
 
+  static String get challengeMe => 'Challenge me!';
+
   static String get opponent => 'Opponent';
 
   static String get nickname => 'Nickname';

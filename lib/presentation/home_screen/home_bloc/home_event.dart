@@ -135,6 +135,16 @@ class OpenChangeBattleDrawer extends HomeEvent {
   List<Object> get props => <Object>[battleId, model];
 }
 
+class ChangeAcceptVisibleButton extends HomeEvent{
+  ChangeAcceptVisibleButton(this.battleId);
+
+  final String battleId;
+
+  @override
+  List<Object> get props => <Object>[battleId];
+
+}
+
 class ChangeFilterRangePace extends HomeEvent {
   ChangeFilterRangePace(this.values);
 

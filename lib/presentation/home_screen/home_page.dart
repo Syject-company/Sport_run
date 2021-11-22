@@ -24,6 +24,7 @@ import 'package:one2one_run/presentation/home_screen/home_bloc/bloc.dart'
     as home_bloc;
 import 'package:one2one_run/presentation/home_screen/home_bloc/home_bloc.dart';
 import 'package:one2one_run/presentation/home_screen/home_bloc/home_state.dart';
+import 'package:one2one_run/presentation/interact_screen/interact_bloc/bloc.dart';
 import 'package:one2one_run/presentation/interact_screen/interact_page.dart';
 import 'package:one2one_run/presentation/settings_screen/settings_page.dart';
 import 'package:one2one_run/resources/app_string_res.dart';
@@ -37,6 +38,8 @@ import 'package:one2one_run/utils/no_glow_scroll_behavior.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+
+import 'home_bloc/home_event.dart';
 
 //NOte:'/home'
 class HomePage extends StatefulWidget {
@@ -80,6 +83,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   String _messageToOpponent = 'Come as you are, join the run!';
   String _dateAndTime = '';
   String _battleId = '';
+  String _battleIdToAccept = '';
   String _token = '';
   late String _dateAndTimeForUser;
   late String _currentUserId;
@@ -101,7 +105,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _isAppInForeground = true;
   bool _isNeedToShowSearchBar = false;
   late bool _isKM;
-
+  bool needToVisible = false;
   int _countOfRuns = 1;
   int _selectedMessageIndex = 1000;
 
@@ -398,6 +402,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             _distanceMenuValue = state.value;
           } else if (state is SearchBarShownHidden) {
             _isNeedToShowSearchBar = !_isNeedToShowSearchBar;
+          }else if(state is AcceptNeedToVisibleFromNotification){
+            //needToVisible = true;
+            _battleIdToAccept = state.battleId;
           }
           if (!_homeBloc.isClosed) {
             BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
@@ -673,6 +680,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                       height: height,
                                       child: InteractPage(
                                         signalR: _signalR,
+                                        battleId: _battleIdToAccept,
                                         drawerItems: _selectedDrawerItem,
                                         onTapChange: (String id,
                                             BattleRespondModel model) {
@@ -1229,6 +1237,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               _battleId = id;
               await getBattleById(context: context, battleId: id);
             }
+            if(messageType == 3){
+              final String id = dataNotification['battleId'] as String;
+              _battleId = id;
+              needToVisible = true;
+              await getBattleByIdWithAccept(context: context, battleId: id, needToVisible: needToVisible);
+            }
           }
           print(
               'SignalR_BattleId: ${(data as Map<dynamic, dynamic>)['battleId']} ');
@@ -1254,6 +1268,19 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       }
     });
   }
+
+  Future<void> getBattleByIdWithAccept(
+  {required BuildContext context, required String battleId, required bool needToVisible }) async{
+    await _homeApi
+        .getBattleById(battleId: battleId)
+        .then((BattleRespondModel? model) {
+      if (model != null) {
+         BlocProvider.of<HomeBloc>(context)
+            .add(ChangeAcceptVisibleButton(battleId));
+      }
+    });
+  }
+
 
   Future<bool> _onWillPop({required BuildContext context}) async {
     if (_selectedDrawersType != DrawersType.BattleDrawer) {

@@ -14,6 +14,7 @@ class PendingTab extends StatelessWidget {
     required this.onTapAccept,
     required this.onTapChange,
     required this.onTapDecline,
+    required this.battleId,
     required this.signalR,
   }) : super(key: key);
 
@@ -23,12 +24,14 @@ class PendingTab extends StatelessWidget {
   final Function(String id, BattleRespondModel model) onTapChange;
   final Function(String id) onTapDecline;
   final SignalR signalR;
+  final String battleId;
 
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
     final double width = MediaQuery.of(context).size.width;
+
     return Container(
       width: width,
       height: height,
@@ -39,6 +42,7 @@ class PendingTab extends StatelessWidget {
                   itemCount: pendingList.length,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (BuildContext con, int index) {
+                    int curent = pendingList[index].battleUsers[0].applicationUser.id == currentUserId ? 0 : 1;
                     return interactListItem(
                       context: context,
                       width: width,
@@ -64,6 +68,10 @@ class PendingTab extends StatelessWidget {
                           model: pendingList[index],
                           currentUserId: currentUserId),*/
                       onTapAccept: onTapAccept,
+                      // needToVisible: pendingList[index].id == battleId
+                      //     && pendingList[index].battleUsers[0].id == currentUserId
+                      //     && !pendingList[index].battleUsers[0].isCreater,
+                      needToVisible: !pendingList[index].battleUsers[curent].isChanger,
                       onTapChange: onTapChange,
                       onTapDecline: onTapDecline,
                       statusCodeNum: pendingList[index].status.toInt(),

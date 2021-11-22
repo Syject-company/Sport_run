@@ -219,7 +219,7 @@ class UserInfo extends StatelessWidget {
                           AppStringRes.hereWillBeYourBiography),
                 ),
                 buttonWithIcon(
-                  title: AppStringRes.battle.toUpperCase(),
+                  title: AppStringRes.challengeMe.toUpperCase(),
                   icon: battleIcon,
                   buttonColor: Colors.red,
                   iconColor: Colors.white,

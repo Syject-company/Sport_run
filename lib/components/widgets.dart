@@ -1352,6 +1352,7 @@ Widget interactListItem({
   Function(String id)? onTapDecline,
   required bool isNeedButtons,
   bool isFinishedTab = false,
+  required bool needToVisible,
   required int statusCodeNum,
   int? myStatusCodeNum,
   required double heightPercentage,
@@ -1540,7 +1541,7 @@ Widget interactListItem({
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                buttonNoIcon(
+                if (needToVisible) buttonNoIcon(
                   title: AppStringRes.accept,
                   color: const Color(0xffCFFFB1),
                   textColor: Colors.black87,
@@ -1550,6 +1551,9 @@ Widget interactListItem({
                   onPressed: () {
                     onTapAccept!(model.id, statusCodeNum == 1);
                   },
+                ) else SizedBox(
+                  width: width * 0.25,
+                  height: height * 0.055,
                 ),
                 buttonNoIcon(
                   title: AppStringRes.change,
@@ -3633,7 +3637,7 @@ Widget userCardMain({
                         width: height * 0.02,
                       ),
                       buttonWithIcon(
-                        title: AppStringRes.battle.toUpperCase(),
+                        title: AppStringRes.challengeMe.toUpperCase(),
                         icon: battleIcon,
                         iconSize: 13.0,
                         titleColor: Colors.red,

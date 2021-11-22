@@ -125,6 +125,17 @@ class BattleOnNotificationIsAccepted extends HomeState {
   List<Object> get props => <Object>[battleId];
 }
 
+class AcceptNeedToVisibleFromNotification extends HomeState {
+  const AcceptNeedToVisibleFromNotification(this.battleId);
+
+  final String battleId;
+
+  @override
+  List<Object> get props => <Object>[battleId];
+}
+
+
+
 class ApplyBattleIsChanged extends HomeState {
   const ApplyBattleIsChanged(this.battleId);
 

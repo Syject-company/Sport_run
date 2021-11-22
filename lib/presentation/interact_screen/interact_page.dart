@@ -28,11 +28,13 @@ class InteractPage extends StatefulWidget {
     required this.onTapChange,
     required this.signalR,
     required this.drawerItems,
+    required this.battleId,
   }) : super(key: key);
 
   final Function(String id, BattleRespondModel model) onTapChange;
   final SignalR signalR;
   final DrawerItems drawerItems;
+  final String battleId;
 
   @override
   InteractPageState createState() => InteractPageState();
@@ -188,6 +190,7 @@ class InteractPageState extends State<InteractPage> {
                           AsyncSnapshot<List<BattleRespondModel>?> snapshot) {
                         if (snapshot.hasData && snapshot.data != null) {
                           return PendingTab(
+                            battleId: widget.battleId,
                             pendingList:
                                 snapshot.data ?? <BattleRespondModel>[],
                             signalR: widget.signalR,
