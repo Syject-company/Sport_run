@@ -169,7 +169,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     curve: Curves.easeIn)
                 .then(
                   (_) => BlocProvider.of<HomeBloc>(context)
-                      .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: false)),
+                      .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: _isNeedFilter)),
                 );
           } else if (state is UserDataUpdated) {
             _userModelApi = _homeApi.getUserModel();
@@ -205,6 +205,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   : double.parse(state.weeklyDistanceTo.toStringAsFixed(1)),
               workoutsPerWeek: state.workoutsPerWeek,
             );
+            //_isNeedUpdateList = true;
             if (_keyScaffold.currentState != null &&
                 _keyScaffold.currentState!.isEndDrawerOpen) {
               Navigator.of(context).pop();
@@ -1237,12 +1238,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               _battleId = id;
               await getBattleById(context: context, battleId: id);
             }
-            if(messageType == 3){
-              final String id = dataNotification['battleId'] as String;
-              _battleId = id;
-              needToVisible = true;
-              await getBattleByIdWithAccept(context: context, battleId: id, needToVisible: needToVisible);
-            }
+            // if(messageType == 3){
+            //   final String id = dataNotification['battleId'] as String;
+            //   _battleId = id;
+            //   needToVisible = true;
+            //   await getBattleByIdWithAccept(context: context, battleId: id, needToVisible: needToVisible);
+            // }
           }
           print(
               'SignalR_BattleId: ${(data as Map<dynamic, dynamic>)['battleId']} ');

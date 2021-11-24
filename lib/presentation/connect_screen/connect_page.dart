@@ -39,11 +39,13 @@ class ConnectPageState extends State<ConnectPage> {
   void initState() {
     super.initState();
 
-    usersConnect.addAll(widget.users);
+    //usersConnect.addAll(widget.users);
   }
 
   @override
   Widget build(BuildContext context) {
+    usersConnect.clear();
+    usersConnect.addAll(widget.users);
     final double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top +
             kToolbarHeight +
