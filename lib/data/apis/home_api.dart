@@ -23,6 +23,9 @@ class HomeApi {
   final String _urlSendFirebaseToken =
       '${Constants.domain}${Constants.sendFireBaseTokenUrl}';
 
+  final String _urlSendFirebaseTokenAndDeviceId =
+      '${Constants.domain}${Constants.sendFireBaseTokenUrlAndDeviceId}';
+
   final String _urlGetBattleById =
       '${Constants.domain}${Constants.createBattleUrl}';
 
@@ -77,6 +80,24 @@ class HomeApi {
           HttpHeaders.contentTypeHeader: 'application/json',
           HttpHeaders.authorizationHeader: token,
         });
+
+    return res.statusCode == 200;
+  }
+
+  //@post
+  Future<bool> sendFireBaseTokenAndDeviceId(
+      {required String tokenFireBase, required String deviceId}) async {
+    final String token = PreferenceUtils.getUserToken();
+    Map<String, String> body = {
+      'token': tokenFireBase,
+      'deviceId': deviceId,
+    };
+    final Response res = await post(Uri.parse(_urlSendFirebaseTokenAndDeviceId),
+        headers: <String, String>{
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: token,
+        },
+        body: jsonEncode(body));
 
     return res.statusCode == 200;
   }

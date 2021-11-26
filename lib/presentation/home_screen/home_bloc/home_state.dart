@@ -126,10 +126,10 @@ class BattleOnNotificationIsAccepted extends HomeState {
 }
 
 class AcceptNeedToVisibleFromNotification extends HomeState {
-  const AcceptNeedToVisibleFromNotification(this.battleId);
+  const AcceptNeedToVisibleFromNotification(this.battleId, this.model);
 
   final String battleId;
-
+  final BattleRespondModel model;
   @override
   List<Object> get props => <Object>[battleId];
 }

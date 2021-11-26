@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_conditional_rendering/flutter_conditional_rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -128,9 +131,18 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _signalR.initSocketConnection(
         token: _token.replaceFirst(RegExp('Bearer '), ''));
     _messaging = FirebaseMessaging.instance;
+    String deviceId = '';
+    getDeviceDetails().then((String result){
+      setState(() {
+        deviceId = result;
+      });
+    });
     _messaging.getToken().then((String? token) {
       _homeApi.sendFireBaseToken(tokenFireBase: token ?? '');
       print('Firebase token: $token');
+
+      _homeApi.sendFireBaseTokenAndDeviceId(tokenFireBase: token ?? '', deviceId: deviceId);
+      print('Firebase token and DeviceID: token= $token deviceId= $deviceId');
     });
     _dateAndTimeForUser = getFormattedDateForUser(
         date: DateTime.now() /*, time: TimeOfDay.now()*/);
@@ -144,6 +156,28 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _userModelApi = _homeApi.getUserModel();
 
     _users = getUsers(isFilterIncluded: _isNeedFilter);
+  }
+  static Future<String> getDeviceDetails() async {
+    String deviceName = '';
+    String deviceVersion = '';
+    String identifier = '';
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    try {
+      if (Platform.isAndroid) {
+        var build = await deviceInfoPlugin.androidInfo;
+        deviceName = build.model!;
+        deviceVersion = build.version.toString();
+        identifier = build.androidId!;  //UUID for Android
+      } else if (Platform.isIOS) {
+        var data = await deviceInfoPlugin.iosInfo;
+        deviceName = data.name!;
+        deviceVersion = data.systemVersion!;
+        identifier = data.identifierForVendor!;  //UUID for iOS
+      }
+    } on PlatformException {
+      print('Failed to get platform version');
+    }
+    return identifier;
   }
 
   @override
@@ -405,7 +439,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             _isNeedToShowSearchBar = !_isNeedToShowSearchBar;
           }else if(state is AcceptNeedToVisibleFromNotification){
             //needToVisible = true;
-            _battleIdToAccept = state.battleId;
+            //_battleIdToAccept = state.battleId;
+            _battleRespondModel = state.model;
+
           }
           if (!_homeBloc.isClosed) {
             BlocProvider.of<HomeBloc>(context).add(home_bloc.UpdateState());
@@ -886,9 +922,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         _applyController.reset();
       },
       onTapCancel: () {
-        _isNeedUpdateList = true;
-        BlocProvider.of<HomeBloc>(context)
-            .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: false));
+        //_isNeedUpdateList = true;
+        // BlocProvider.of<HomeBloc>(context)
+        //     .add(home_bloc.SwitchIsNeedFilter(isNeedFilter: false));
         if (_keyScaffold.currentState != null &&
             _keyScaffold.currentState!.isEndDrawerOpen) {
           Navigator.of(context).pop();
@@ -1238,6 +1274,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               _battleId = id;
               await getBattleById(context: context, battleId: id);
             }
+            if (messageType == 4) {
+              final String id = dataNotification['battleId'] as String;
+              _battleId = id;
+              await getBattleByIdWithAccept(context: context, battleId: id,needToVisible: true);
+
+            }
             // if(messageType == 3){
             //   final String id = dataNotification['battleId'] as String;
             //   _battleId = id;
@@ -1277,7 +1319,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         .then((BattleRespondModel? model) {
       if (model != null) {
          BlocProvider.of<HomeBloc>(context)
-            .add(ChangeAcceptVisibleButton(battleId));
+            .add(ChangeAcceptVisibleButton(battleId,model));
       }
     });
   }

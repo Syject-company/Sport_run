@@ -1,9 +1,9 @@
 class Constants {
   //domain
   //Test domain
-  //static const String domain = 'https://one2oneruntestapi.azurewebsites.net';
+  static const String domain = 'https://one2oneruntestapi.azurewebsites.net';
   //Main domain
-  static const String domain = 'https://one2onerunapi.azurewebsites.net';
+  //static const String domain = 'https://one2onerunapi.azurewebsites.net';
 
   //pager routs:
   static const String loginRoute = '/login';
@@ -31,6 +31,7 @@ class Constants {
   static const String createBattleUrl = '/api/Battle';
   static const String getOpponentChatUrl = '/api/Chats/';
   static const String sendFireBaseTokenUrl = '/api/Account/FirebaseToken/';
+  static const String sendFireBaseTokenUrlAndDeviceId = '/api/Account/FirebaseToken';
   static const String enableNotificationsUrl = '/api/Account/MuteNotifications';
   static const String getNotificationsStateUrl = '/api/Account/NotificationsMode';
   static const String sendResultPhotoUrl = '/api/Battle/Photo';
@@ -39,9 +40,9 @@ class Constants {
 
   //Data:
   //Main domain
-   static const String socketUrl = 'https://one2onerunapi.azurewebsites.net/chathub';
+   //static const String socketUrl = 'https://one2onerunapi.azurewebsites.net/chathub';
   //Test domain
-  //static const String socketUrl = 'https://one2oneruntestapi.azurewebsites.net/chathub';
+  static const String socketUrl = 'https://one2oneruntestapi.azurewebsites.net/chathub';
 
   static const String socketConnectToGroups = 'ConnectToGroups';
   static const String socketReceiveBattleNotification = 'ReceiveBattleNotification';

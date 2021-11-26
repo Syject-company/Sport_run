@@ -136,12 +136,12 @@ class OpenChangeBattleDrawer extends HomeEvent {
 }
 
 class ChangeAcceptVisibleButton extends HomeEvent{
-  ChangeAcceptVisibleButton(this.battleId);
+  ChangeAcceptVisibleButton(this.battleId, this.model);
 
   final String battleId;
-
+  final BattleRespondModel model;
   @override
-  List<Object> get props => <Object>[battleId];
+  List<Object> get props => <Object>[battleId, model];
 
 }
 

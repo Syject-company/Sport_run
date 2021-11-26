@@ -60,7 +60,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }else if (event is ShowHideSearchBar) {
       yield SearchBarShownHidden();
     }else if (event is ChangeAcceptVisibleButton) {
-      yield AcceptNeedToVisibleFromNotification(event.battleId);
+      yield AcceptNeedToVisibleFromNotification(event.battleId, event.model);
     }
   }
 }

@@ -37,6 +37,7 @@ dependencies:
   firebase_analytics: "^8.3.0"
   intl: ^0.17.0
   share_plus: ^3.0.4
+  device_info_plus: ^3.1.1
   path_provider: ^2.0.6
   signal_r:
     path: signalr_client
