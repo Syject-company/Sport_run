@@ -50,6 +50,7 @@ class RegisterApi {
           HttpHeaders.contentTypeHeader: 'application/json'
         });
     if (res.statusCode == 200) {
+
       return RegisterResponseGoogleAppleModel.fromJson(
           json.decode(res.body) as Map<String, dynamic>);
     }

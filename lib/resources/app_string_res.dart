@@ -66,7 +66,7 @@ mixin AppStringRes {
 
   static String get declinedThreeDots => 'Declined...';
 
-  static String get decline => 'Decline';
+  static String get decline => 'Maybe Later';
 
   static String get accept => 'Accept';
 

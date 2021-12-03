@@ -269,9 +269,18 @@ class RegisterPageState extends State<RegisterPage> {
                                     ))
                                         .then((RegisterResponseGoogleAppleModel?
                                             value) {
-                                      BlocProvider.of<RegisterBloc>(context)
-                                          .add(register_bloc.SignInApple(
-                                              token: value!.token));
+                                         if( value!.isRegistration) {
+                                           BlocProvider.of<RegisterBloc>(
+                                               context)
+                                               .add(register_bloc.SignInApple(
+                                               token: value!.token));
+                                         }else{
+                                           Fluttertoast.showToast(
+                                               msg: 'User already exist!',
+                                               fontSize: 16.0,
+                                               gravity: ToastGravity.CENTER);
+                                         }
+
                                     });
                                   });
                             }
