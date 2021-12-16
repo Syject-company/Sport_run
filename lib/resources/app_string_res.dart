@@ -60,7 +60,7 @@ mixin AppStringRes {
 
   static String get willBePieceOfCake => 'It will be a piece of cake!';
 
-  static String get battleDate => 'Battle date';
+  static String get battleDate => 'Battle date in';
 
   static String get distance => 'Distance';
 
