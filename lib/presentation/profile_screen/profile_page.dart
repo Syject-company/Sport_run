@@ -95,6 +95,12 @@ class ProfilePageState extends State<ProfilePage> {
                 ),
                 backgroundColor: colorPrimary,
                 actions: appBarButtons(
+                  isNeedFirstButton: true,
+                  isNeedThirdButton: false,
+                  thirdButtonIcon: const Icon(Icons.edit),
+                  onTapThirdButton: (){
+
+                  },
                   isNeedSecondButton: true,
                   firstButtonIcon: const Icon(Icons.edit),
                   onTapFirstButton: () async {

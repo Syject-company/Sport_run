@@ -349,6 +349,8 @@ Widget buttonWithIconAndTitleBelow({
   );
 }
 
+
+
 Widget buttonNoIcon({
   required String title,
   required Color color,
@@ -3928,10 +3930,25 @@ List<Widget> appBarButtons({
   required Widget firstButtonIcon,
   Widget? secondButtonIcon,
   required VoidCallback onTapFirstButton,
+  Widget? thirdButtonIcon,
+  required VoidCallback onTapThirdButton,
   VoidCallback? onTapSecondButton,
   required bool isNeedSecondButton,
+  required bool isNeedThirdButton,
+  required bool isNeedFirstButton,
 }) {
   return <Widget>[
+    if(isNeedThirdButton &&
+        thirdButtonIcon != null &&
+        onTapThirdButton != null)
+      IconButton(
+        icon: thirdButtonIcon,
+        onPressed: onTapThirdButton,
+        iconSize: 20,
+      ),
+    if(isNeedFirstButton &&
+        firstButtonIcon != null &&
+        onTapFirstButton != null)
     IconButton(
       icon: firstButtonIcon,
       onPressed: onTapFirstButton,
@@ -3947,5 +3964,6 @@ List<Widget> appBarButtons({
       )
     else
       Container(),
+
   ];
 }

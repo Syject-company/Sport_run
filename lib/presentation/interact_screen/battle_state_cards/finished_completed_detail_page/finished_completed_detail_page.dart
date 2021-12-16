@@ -140,8 +140,14 @@ class FinishedCompletedDetailPageState
                       appBar: AppBar(
                         shadowColor: Colors.transparent,
                         actions: appBarButtons(
+                          isNeedFirstButton: true,
+                          isNeedThirdButton: true,
+                          onTapThirdButton: (){
+                            Share.share('Let’s share a run together. Join me one2one….. https://www.one2one.run/');
+                          },
                           isNeedSecondButton: false,
                           firstButtonIcon: const Icon(Icons.share_rounded),
+                          thirdButtonIcon: ImageIcon(AssetImage("assets/icons/share.png")),
                           onTapFirstButton: () async {
                             BlocProvider.of<FinishedCompletedDetailBloc>(
                                     context)

@@ -12,6 +12,7 @@ class BattleRequestModel {
     required this.battleName,
   });
 
+
   factory BattleRequestModel.fromJson(Map<String, dynamic> map) {
     return BattleRequestModel(
       dateTime: map['dateTime'] as String,

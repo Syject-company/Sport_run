@@ -21,6 +21,7 @@ import 'package:one2one_run/utils/constants.dart';
 import 'package:one2one_run/utils/enums.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:share_plus/share_plus.dart';
 
 //NOte:'/settings'
 class SettingsPage extends StatefulWidget {
@@ -213,6 +214,17 @@ class SettingsPageState extends State<SettingsPage> {
                           },
                           title: 'Configuration',
                           icon: configurationIcon,
+                          height: height * 0.05,
+                        ),
+                        SizedBox(
+                          height: height * 0.01,
+                        ),
+                        buttonWithIconWithOutShadow(
+                          onPressed: (){
+                            Share.share('Let’s share a run together. Join me one2one….. https://www.one2one.run/');
+                          },
+                          title: 'Challenge a friend',
+                          icon: shareIcon,
                           height: height * 0.05,
                         ),
                         const Spacer(),

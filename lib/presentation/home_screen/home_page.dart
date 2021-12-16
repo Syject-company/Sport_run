@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,6 +40,7 @@ import 'package:one2one_run/utils/no_glow_scroll_behavior.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:one2one_run/utils/signal_r.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'home_bloc/home_event.dart';
 
@@ -253,7 +253,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 //final TimeOfDay? time = await getTime(context: context);
                 // if (time != null) {
                 _dateAndTime = getFormattedDate(
-                    date: date,
+                    date: date.toLocal(),
                     time: const TimeOfDay(
                       hour: 23,
                       minute: 59,
@@ -493,13 +493,22 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               fontWeight: FontWeight.w600),
                         ),
                         backgroundColor: colorPrimary,
-                        actions: _selectedDrawerItem == DrawerItems.Connect
-                            ? appBarButtons(
-                                isNeedSecondButton: true,
+                        actions:
+                        //_selectedDrawerItem == DrawerItems.Connect ?
+                        appBarButtons(
+                                isNeedFirstButton:_selectedDrawerItem == DrawerItems.Connect,
+                                isNeedThirdButton: !(_selectedDrawerItem == DrawerItems.Settings),
+                                isNeedSecondButton: _selectedDrawerItem == DrawerItems.Connect,
                                 onTapSecondButton: () {
                                   BlocProvider.of<HomeBloc>(context)
                                       .add(home_bloc.ShowHideSearchBar());
                                 },
+                                onTapThirdButton: (){
+                                  Share.share('Let’s share a run together. Join me one2one….. https://www.one2one.run/');
+
+                                },
+                                thirdButtonIcon:
+                                const ImageIcon(AssetImage("assets/icons/share.png")),
                                 secondButtonIcon:
                                     const Icon(Icons.search_rounded),
                                 firstButtonIcon:
@@ -512,9 +521,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   }
                                 },
                               )
-                            : _selectedDrawerItem == DrawerItems.Interact
-                                ? <Widget>[Container()]
-                                : null,
+                            // : _selectedDrawerItem == DrawerItems.Interact
+                            //     ? <Widget>[Container()]
+                            //     : null,
                       ),
                       endDrawer: _selectedDrawerItem == DrawerItems.Connect || _selectedDrawerItem == DrawerItems.Interact
                           ? ConditionalSwitch.single<DrawersType>(
