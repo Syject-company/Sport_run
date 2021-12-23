@@ -17,12 +17,16 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       yield NavigatedToSignIn();
     } else if (event is AcceptTerms) {
       yield TermsIsAccepted();
+    }else if (event is AcceptPrivacy) {
+      yield PrivacyIsAccepted();
     } else if (event is SignInGoogle) {
       yield SignInedGoogle(token: event.token);
     } else if (event is SignInApple) {
       yield SignInedApple(token: event.token);
     } else if (event is ShowOrHideTerms) {
       yield TermsIsShownOrHidden();
+    } else if (event is ShowOrHidePrivacy) {
+      yield PrivacyIsShownOrHidden();
     } else if (event is CheckFields) {
       yield FieldsChecked();
     }

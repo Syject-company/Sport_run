@@ -14,6 +14,7 @@ class NavigateToRunnersData extends RegisterEvent {}
 class NavigateToSignIn extends RegisterEvent {}
 
 class AcceptTerms extends RegisterEvent {}
+class AcceptPrivacy extends RegisterEvent {}
 
 class SignInGoogle extends RegisterEvent {
   SignInGoogle({required this.token});
@@ -34,5 +35,6 @@ class SignInApple extends RegisterEvent {
 }
 
 class ShowOrHideTerms extends RegisterEvent {}
+class ShowOrHidePrivacy extends RegisterEvent {}
 
 class CheckFields extends RegisterEvent {}

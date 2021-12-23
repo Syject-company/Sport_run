@@ -18,6 +18,7 @@ class NavigatedToRunnersData extends RegisterState {}
 class NavigatedToSignIn extends RegisterState {}
 
 class TermsIsAccepted extends RegisterState {}
+class PrivacyIsAccepted extends RegisterState {}
 
 class SignInedGoogle extends RegisterState {
   const SignInedGoogle({required this.token});
@@ -38,5 +39,6 @@ class SignInedApple extends RegisterState {
 }
 
 class TermsIsShownOrHidden extends RegisterState {}
+class PrivacyIsShownOrHidden extends RegisterState {}
 
 class FieldsChecked extends RegisterState {}

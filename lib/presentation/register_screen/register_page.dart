@@ -46,6 +46,7 @@ class RegisterPageState extends State<RegisterPage> {
 
   bool isSecureText = true;
   bool isTermsAccepted = false;
+  bool isPrivacyAccepted = false;
 
   RegisterApi registerApi = RegisterApi();
 
@@ -112,12 +113,16 @@ class RegisterPageState extends State<RegisterPage> {
                     .pushReplacementNamed(Constants.loginRoute);
               } else if (state is TermsIsAccepted) {
                 isTermsAccepted = !isTermsAccepted;
+              } else if (state is PrivacyIsAccepted) {
+                isPrivacyAccepted = !isPrivacyAccepted;
               } else if (state is SignInedGoogle) {
                 await saveToken(value: state.token, context: context);
               } else if (state is SignInedApple) {
                 await saveToken(value: state.token, context: context);
               } else if (state is TermsIsShownOrHidden) {
-                _modalBottomSheetMenu(context: context, height: height);
+                _modalBottomSheetMenu(context: context, height: height, text: AppStringRes.termsText);
+              } else if (state is PrivacyIsShownOrHidden) {
+                _modalBottomSheetMenu(context: context, height: height, text: AppStringRes.privacyText);
               } else if (state is FieldsChecked) {
                 if (isFieldsChecked() && await isUserPassedToContinue()) {
                   BlocProvider.of<RegisterBloc>(context)
@@ -201,6 +206,33 @@ class RegisterPageState extends State<RegisterPage> {
                                 width: 250.w,
                                 child: Text(
                                   AppStringRes.termsButtonText,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11.sp,
+                                      color: Colors.grey),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Checkbox(
+                              value: isPrivacyAccepted,
+                              onChanged: (_) {
+                                BlocProvider.of<RegisterBloc>(context)
+                                    .add(register_bloc.AcceptPrivacy());
+                              },
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                BlocProvider.of<RegisterBloc>(context)
+                                    .add(register_bloc.ShowOrHidePrivacy());
+                              },
+                              child: SizedBox(
+                                width: 250.w,
+                                child: Text(
+                                  AppStringRes.privacyButtonText,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 11.sp,
@@ -343,7 +375,9 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   Future<bool> isUserPassedToContinue() async {
-    if (!isTermsAccepted) {
+    bool result = true;
+    if (isTermsAccepted == false || isPrivacyAccepted == false) {
+      result = false;
       await Fluttertoast.showToast(
           msg: 'Please, accept the Terms of services and '
               'Privacy Policy!',
@@ -354,12 +388,13 @@ class RegisterPageState extends State<RegisterPage> {
           fontSize: 16.0);
     }
 
-    return isTermsAccepted;
+    return result;
   }
 
   void _modalBottomSheetMenu({
     required BuildContext context,
     required double height,
+    required String text,
   }) {
     showModalBottomSheet<dynamic>(
         context: context,
@@ -386,7 +421,7 @@ class RegisterPageState extends State<RegisterPage> {
                     height: 10.h,
                   ),
                   Text(
-                    AppStringRes.termsText,
+                    text,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14.sp,
