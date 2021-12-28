@@ -120,11 +120,17 @@ class RegisterPageState extends State<RegisterPage> {
               } else if (state is SignInedApple) {
                 await saveToken(value: state.token, context: context);
               } else if (state is TermsIsShownOrHidden) {
-                _modalBottomSheetMenu(context: context, height: height, text: AppStringRes.termsText);
+                _modalBottomSheetMenu(
+                    context: context,
+                    height: height,
+                    text: AppStringRes.termsText);
               } else if (state is PrivacyIsShownOrHidden) {
-                _modalBottomSheetMenu(context: context, height: height, text: AppStringRes.privacyText);
+                _modalBottomSheetMenu(
+                    context: context,
+                    height: height,
+                    text: AppStringRes.privacyText);
               } else if (state is FieldsChecked) {
-                if (isFieldsChecked() && await isUserPassedToContinue()) {
+                if (isFieldsChecked() && await _isUserPassedToContinue()) {
                   BlocProvider.of<RegisterBloc>(context)
                       .add(register_bloc.NavigateToRunnersData());
                 } else {
@@ -291,7 +297,7 @@ class RegisterPageState extends State<RegisterPage> {
                           icon: appleIcon,
                           height: 40.h,
                           onPressed: () async {
-                            if (await isUserPassedToContinue()) {
+                            if (await _isUserPassedToContinue()) {
                               await signInWithApple(
                                   context: context,
                                   onSuccess: (String token) async {
@@ -301,18 +307,16 @@ class RegisterPageState extends State<RegisterPage> {
                                     ))
                                         .then((RegisterResponseGoogleAppleModel?
                                             value) {
-                                         if( value!.isRegistration) {
-                                           BlocProvider.of<RegisterBloc>(
-                                               context)
-                                               .add(register_bloc.SignInApple(
-                                               token: value!.token));
-                                         }else{
-                                           Fluttertoast.showToast(
-                                               msg: 'User already exist!',
-                                               fontSize: 16.0,
-                                               gravity: ToastGravity.CENTER);
-                                         }
-
+                                      if (value!.isRegistration) {
+                                        BlocProvider.of<RegisterBloc>(context)
+                                            .add(register_bloc.SignInApple(
+                                                token: value!.token));
+                                      } else {
+                                        Fluttertoast.showToast(
+                                            msg: 'User already exist!',
+                                            fontSize: 16.0,
+                                            gravity: ToastGravity.CENTER);
+                                      }
                                     });
                                   });
                             }
@@ -326,7 +330,7 @@ class RegisterPageState extends State<RegisterPage> {
                           icon: googleIcon,
                           height: 40.h,
                           onPressed: () async {
-                            if (await isUserPassedToContinue()) {
+                            if (await _isUserPassedToContinue()) {
                               await signInWithGoogle(
                                   context: context,
                                   onSuccess: (String token) async {
@@ -374,10 +378,10 @@ class RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  Future<bool> isUserPassedToContinue() async {
-    bool result = true;
-    if (isTermsAccepted == false || isPrivacyAccepted == false) {
-      result = false;
+  Future<bool> _isUserPassedToContinue() async {
+
+    if (!isTermsAccepted || !isPrivacyAccepted) {
+
       await Fluttertoast.showToast(
           msg: 'Please, accept the Terms of services and '
               'Privacy Policy!',
@@ -386,9 +390,10 @@ class RegisterPageState extends State<RegisterPage> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
+
     }
 
-    return result;
+    return isTermsAccepted && isPrivacyAccepted;
   }
 
   void _modalBottomSheetMenu({
