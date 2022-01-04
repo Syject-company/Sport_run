@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:one2one_run/data/models/battle_respond_model.dart';
@@ -20,6 +21,7 @@ import 'package:one2one_run/utils/data_values.dart';
 import 'package:one2one_run/utils/preference_utils.dart';
 import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 TextStyle get hintTextStyle => const TextStyle(
       color: Color(0xff8E8E93),
@@ -1360,6 +1362,17 @@ Widget interactListItem({
   required double heightPercentage,
   required VoidCallback onTapCard,
 }) {
+  String timeToDeadline(){
+    DateTime from = DateTime.now();
+    DateTime to = DateTime.parse(model.deadlineTime);
+    int days = to.difference(from).inDays;
+    int hours = to.difference(from).inHours - (24 * days) ;
+    int minutes = to.difference(from).inMinutes - (24 * days * 60) - (hours * 60);
+    return '$days days '
+        '$hours hours '
+        '$minutes minutes ';
+  }
+
   return GestureDetector(
     onTap: onTapCard,
     child: Container(
@@ -1493,7 +1506,7 @@ Widget interactListItem({
                 width: width + width * 0.7,
                 title: AppStringRes.battleDate,
                 icon: weeklyDistanceIcon,
-                value: model.timeLeft.toString(),
+                value: timeToDeadline(),
               ),
             ),
           ),
@@ -1603,6 +1616,17 @@ Widget pendingFinishedBattleDetailsCard({
   required Function(List<String> photos) onTapProofImage,
   bool isFinishedTab = false,
 }) {
+  String timeToDeadline(){
+    DateTime from = DateTime.now();
+    DateTime to = DateTime.parse(model.deadlineTime);
+    int days = to.difference(from).inDays;
+    int hours = to.difference(from).inHours - (24 * days) ;
+    int minutes = to.difference(from).inMinutes - (24 * days * 60) - (hours * 60);
+    return '$days days '
+        '$hours hours '
+        '$minutes minutes ';
+  }
+
   return Center(
     child: SizedBox(
       width: width,
@@ -1671,7 +1695,7 @@ Widget pendingFinishedBattleDetailsCard({
                           width: width + width * 0.7,
                           title: AppStringRes.deadline,
                           icon: weeklyDistanceIcon,
-                          value: model.timeLeft.toString(),
+                          value: timeToDeadline(),
                         ),
                         Visibility(
                           visible: isFinishedTab,
@@ -1904,14 +1928,15 @@ Widget pendingFinishedBattleDetailsCard({
                                                 ),
                                                 color: redColor,
                                               ),
-                                              child: Text(
-                                                messages[index].text ?? '.',
+                                              child:  SelectableLinkify(
+                                                text : messages[index].text ?? '.',
+                                                onOpen: (link) => launch(link.url),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'roboto',
                                                     fontSize: 12.sp,
                                                     fontWeight:
-                                                        FontWeight.w600),
+                                                        FontWeight.w500),
                                               ),
                                             ),
                                           ),
@@ -1959,14 +1984,15 @@ Widget pendingFinishedBattleDetailsCard({
                                                 ),
                                                 color: Color(0xffF5F5F5),
                                               ),
-                                              child: Text(
-                                                messages[index].text ?? '.',
+                                              child: SelectableLinkify(
+                                                text : messages[index].text ?? '.',
+                                                onOpen: (link) => launch(link.url),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontFamily: 'roboto',
                                                     fontSize: 12.sp,
                                                     fontWeight:
-                                                        FontWeight.w500),
+                                                    FontWeight.w500),
                                               ),
                                             ),
                                           ),
@@ -2340,14 +2366,15 @@ Widget finishedBattleDetailsCard({
                                                 ),
                                                 color: redColor,
                                               ),
-                                              child: Text(
-                                                messages[index].text ?? '.',
+                                              child: SelectableLinkify(
+                                                text : messages[index].text ?? '.',
+                                                onOpen: (link) => launch(link.url),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'roboto',
                                                     fontSize: 12.sp,
                                                     fontWeight:
-                                                        FontWeight.w600),
+                                                    FontWeight.w500),
                                               ),
                                             ),
                                           ),
@@ -2395,14 +2422,15 @@ Widget finishedBattleDetailsCard({
                                                 ),
                                                 color: Color(0xffF5F5F5),
                                               ),
-                                              child: Text(
-                                                messages[index].text ?? '.',
+                                              child: SelectableLinkify(
+                                                text : messages[index].text ?? '.',
+                                                onOpen: (link) => launch(link.url),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontFamily: 'roboto',
                                                     fontSize: 12.sp,
                                                     fontWeight:
-                                                        FontWeight.w500),
+                                                    FontWeight.w500),
                                               ),
                                             ),
                                           ),
@@ -2484,6 +2512,17 @@ Widget battleDetailsCard({
   required Map<String, dynamic> resultMyApprovalState,
   required Map<String, dynamic> resultOpponentApprovalState,
 }) {
+  String timeToDeadline(){
+    DateTime from = DateTime.now();
+    DateTime to = DateTime.parse(model.deadlineTime);
+    int days = to.difference(from).inDays;
+    int hours = to.difference(from).inHours - (24 * days) ;
+    int minutes = to.difference(from).inMinutes - (24 * days * 60) - (hours * 60);
+    return '$days days '
+        '$hours hours '
+        '$minutes minutes ';
+  }
+
   return Center(
     child: SizedBox(
       width: width,
@@ -2551,7 +2590,7 @@ Widget battleDetailsCard({
                           width: width + width * 0.7,
                           title: AppStringRes.deadline,
                           icon: weeklyDistanceIcon,
-                          value: model.timeLeft.toString(),
+                          value: timeToDeadline(),
                         ),
                         timeAndPhotoInteract(
                           height: height,
@@ -2828,14 +2867,15 @@ Widget battleDetailsCard({
                                                 ),
                                                 color: redColor,
                                               ),
-                                              child: Text(
-                                                messages[index].text ?? '.',
+                                              child: SelectableLinkify(
+                                                text : messages[index].text ?? '.',
+                                                onOpen: (link) => launch(link.url),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'roboto',
                                                     fontSize: 12.sp,
                                                     fontWeight:
-                                                        FontWeight.w600),
+                                                    FontWeight.w500),
                                               ),
                                             ),
                                           ),
@@ -2883,14 +2923,15 @@ Widget battleDetailsCard({
                                                 ),
                                                 color: Color(0xffF5F5F5),
                                               ),
-                                              child: Text(
-                                                messages[index].text ?? '.',
+                                              child: SelectableLinkify(
+                                                text : messages[index].text ?? '.',
+                                                onOpen: (link) => launch(link.url),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontFamily: 'roboto',
                                                     fontSize: 12.sp,
                                                     fontWeight:
-                                                        FontWeight.w600),
+                                                    FontWeight.w500),
                                               ),
                                             ),
                                           ),
