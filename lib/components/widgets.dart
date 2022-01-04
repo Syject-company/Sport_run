@@ -1931,6 +1931,7 @@ Widget pendingFinishedBattleDetailsCard({
                                               child:  SelectableLinkify(
                                                 text : messages[index].text ?? '.',
                                                 onOpen: (link) => launch(link.url),
+                                                options: const LinkifyOptions(humanize: false),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'roboto',
@@ -1987,6 +1988,7 @@ Widget pendingFinishedBattleDetailsCard({
                                               child: SelectableLinkify(
                                                 text : messages[index].text ?? '.',
                                                 onOpen: (link) => launch(link.url),
+                                                options: const LinkifyOptions(humanize: false),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontFamily: 'roboto',
@@ -2369,6 +2371,7 @@ Widget finishedBattleDetailsCard({
                                               child: SelectableLinkify(
                                                 text : messages[index].text ?? '.',
                                                 onOpen: (link) => launch(link.url),
+                                                  options: const LinkifyOptions(humanize: false),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'roboto',
@@ -2425,6 +2428,7 @@ Widget finishedBattleDetailsCard({
                                               child: SelectableLinkify(
                                                 text : messages[index].text ?? '.',
                                                 onOpen: (link) => launch(link.url),
+                                                options: const LinkifyOptions(humanize: false),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontFamily: 'roboto',
@@ -2870,6 +2874,7 @@ Widget battleDetailsCard({
                                               child: SelectableLinkify(
                                                 text : messages[index].text ?? '.',
                                                 onOpen: (link) => launch(link.url),
+                                                options: const LinkifyOptions(humanize: false),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'roboto',
@@ -2926,6 +2931,7 @@ Widget battleDetailsCard({
                                               child: SelectableLinkify(
                                                 text : messages[index].text ?? '.',
                                                 onOpen: (link) => launch(link.url),
+                                                options: const LinkifyOptions(humanize: false),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontFamily: 'roboto',
